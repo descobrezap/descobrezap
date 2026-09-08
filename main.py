@@ -32,34 +32,24 @@ async def home():
 # 2. ROTA DE CONSULTA SIMULADA DO TELEFONE
 @app.post("/api/buscar-previa")
 @app.post("/buscar-previa")
-@app.post("/consultar")
-@app.post("/api/consultar")
 async def consultar():
     return {
         "status": "sucesso",
-        "sucesso": True,
-        "encontrado": True,
-        "nome": "Titular Identificado",
-        "titular": "Titular Identificado",
-        "status_whatsapp": "Ativo",
-        "mensagem": "Consulta realizada com sucesso",
-        "dados": {
-            "encontrado": True,
-            "titular": "Titular Identificado",
-            "nome": "Titular Identificado",
-            "status_whatsapp": "Ativo"
-        }
+        "nome_parcial": "MARCOS A*** S****"
     }
 
 
 # 3. ROTA DE GERAÇÃO DO PIX DE 12,90 REAIS
-@app.post("/gerar_pix")
 @app.post("/api/gerar-pix")
+@app.post("/gerar_pix")
 async def gerar_pix():
     if not MP_TOKEN:
         return JSONResponse(
             status_code=400,
-            content={"erro": "Token do Mercado Pago não configurado no Render."}
+            content={
+                "status": "erro",
+                "mensagem": "Token do Mercado Pago não configurado no Render."
+            }
         )
 
     try:
@@ -78,10 +68,13 @@ async def gerar_pix():
         payment = payment_response.get("response", {})
 
         if payment_response.get("status") not in [200, 201]:
-            msg_erro = payment.get("message") or str(payment)
+            msg_erro = payment.get("message") or "Erro ao processar pagamento no Mercado Pago."
             return JSONResponse(
                 status_code=400,
-                content={"erro": f"Erro Mercado Pago: {msg_erro}"}
+                content={
+                    "status": "erro",
+                    "mensagem": msg_erro
+                }
             )
 
         point_of_interaction = payment.get("point_of_interaction", {})
@@ -89,60 +82,28 @@ async def gerar_pix():
 
         raw_qr_code = transaction_data.get("qr_code", "")
         raw_base64 = transaction_data.get("qr_code_base64", "")
-        ticket_url = transaction_data.get("ticket_url", "")
 
-        # Formata a string Base64 para a tag <img>
+        # Formata a imagem em Base64 nativa para a tag <img> do HTML
         formatted_base64 = raw_base64
         if raw_base64 and not raw_base64.startswith("data:image"):
             formatted_base64 = f"data:image/png;base64,{raw_base64}"
 
-        # Gera uma URL real e válida de imagem para o QR Code a partir do código do Pix
-        encoded_pix = urllib.parse.quote(raw_qr_code)
-        qr_code_url = f"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={encoded_pix}"
+        # Se por algum motivo o Base64 falhar, gera a URL alternativa
+        if not formatted_base64:
+            encoded_pix = urllib.parse.quote(raw_qr_code)
+            formatted_base64 = f"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={encoded_pix}"
 
         return {
             "status": "sucesso",
-            "sucesso": True,
-            "id": payment.get("id"),
-            
-            # URLs reais da imagem do QR Code
-            "qr_code_url": qr_code_url,
-            "image_url": qr_code_url,
-            "url_qrcode": qr_code_url,
-            "imagem_url": qr_code_url,
-            "qr_code_image": qr_code_url,
-            "qrcode_url": qr_code_url,
-            "ticket_url": ticket_url,
-            
-            # Imagem em formato Base64
-            "qr_code_base64": formatted_base64,
-            "imagem_qrcode": formatted_base64,
-            "imagem": formatted_base64,
-            "qrcode": formatted_base64,
-
-            # Chaves do código Copia e Cola (Pix)
-            "pix_code": raw_qr_code,
-            "qr_code": raw_qr_code,
-            "copia_e_cola": raw_qr_code,
-            "pix_copia_e_cola": raw_qr_code,
-            "payload": raw_qr_code,
-            "code": raw_qr_code,
-
-            # Estrutura dentro do objeto 'dados' para frontends aninhados
-            "dados": {
-                "pix_code": raw_qr_code,
-                "qr_code": raw_qr_code,
-                "copia_e_cola": raw_qr_code,
-                "qr_code_url": qr_code_url,
-                "image_url": qr_code_url,
-                "imagem_url": qr_code_url,
-                "qr_code_base64": formatted_base64,
-                "imagem_qrcode": formatted_base64
-            }
+            "qr_code_img": formatted_base64,
+            "pix_copia_cola": raw_qr_code
         }
 
     except Exception as e:
         return JSONResponse(
             status_code=500,
-            content={"erro": str(e)}
+            content={
+                "status": "erro",
+                "mensagem": str(e)
+            }
         )
