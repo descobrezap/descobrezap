@@ -14,7 +14,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Token do Mercado Pago vindo da variável de ambiente no Render
 MP_TOKEN = os.getenv("MERCADO_PAGO_TOKEN", "")
 sdk = mercadopago.SDK(MP_TOKEN) if MP_TOKEN else None
 
@@ -43,7 +42,7 @@ async def consultar():
     }
 
 
-# 3. ROTA DE GERAÇÃO DO PIX (12,90 REAIS)
+# 3. ROTA DE GERAÇÃO DO PIX (R$ 12,90) - Com todas as chaves de QR Code e Copia e Cola
 @app.post("/gerar_pix")
 @app.post("/api/gerar-pix")
 async def gerar_pix():
@@ -86,18 +85,35 @@ async def gerar_pix():
         point_of_interaction = payment.get("point_of_interaction", {})
         transaction_data = point_of_interaction.get("transaction_data", {})
 
-        qr_code = transaction_data.get("qr_code")
-        qr_code_base64 = transaction_data.get("qr_code_base64")
-        ticket_url = transaction_data.get("ticket_url")
+        raw_qr_code = transaction_data.get("qr_code", "")
+        raw_base64 = transaction_data.get("qr_code_base64", "")
+        
+        # Garante a formatação correta para a tag <img> caso o HTML precise do prefixo base64
+        formatted_base64 = raw_base64
+        if raw_base64 and not raw_base64.startswith("data:image"):
+            formatted_base64 = f"data:image/png;base64,{raw_base64}"
 
         return {
             "status": "sucesso",
+            "sucesso": True,
             "id": payment.get("id"),
-            "qr_code": qr_code,
-            "pix_code": qr_code,
-            "qr_code_base64": qr_code_base64,
-            "ticket_url": ticket_url,
-            "payment": payment
+            # Variações para o código do Pix Copia e Cola
+            "pix_code": raw_qr_code,
+            "qr_code": raw_qr_code,
+            "copia_e_cola": raw_qr_code,
+            "pix_copia_e_cola": raw_qr_code,
+            "payload": raw_qr_code,
+            # Variações para a imagem em Base64
+            "qr_code_base64": raw_base64,
+            "qr_code_base64_formatted": formatted_base64,
+            "imagem_qrcode": formatted_base64,
+            "qrcode": formatted_base64,
+            "ticket_url": transaction_data.get("ticket_url"),
+            "dados": {
+                "qr_code": raw_qr_code,
+                "pix_code": raw_qr_code,
+                "qr_code_base64": formatted_base64
+            }
         }
 
     except Exception as e:
