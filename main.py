@@ -1,4 +1,5 @@
 import os
+import urllib.parse
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
@@ -6,6 +7,7 @@ import mercadopago
 
 app = FastAPI(title="Descobre Zap API")
 
+# Libera o acesso para o seu frontend interagir com a API
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -14,19 +16,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Inicializa o Mercado Pago via variável de ambiente do Render
 MP_TOKEN = os.getenv("MERCADO_PAGO_TOKEN", "")
 sdk = mercadopago.SDK(MP_TOKEN) if MP_TOKEN else None
 
 
-# 1. ROTA PRINCIPAL
+# 1. ROTA PRINCIPAL DA PÁGINA INICIAL
 @app.api_route("/", methods=["GET", "HEAD"])
 async def home():
     if os.path.exists("index.html"):
         return FileResponse("index.html")
-    return {"status": "online"}
+    return {"status": "online", "message": "API Descobre Zap rodando"}
 
 
-# 2. ROTA DE CONSULTA
+# 2. ROTA DE CONSULTA SIMULADA DO TELEFONE
 @app.post("/api/buscar-previa")
 @app.post("/buscar-previa")
 @app.post("/consultar")
@@ -36,13 +39,20 @@ async def consultar():
         "status": "sucesso",
         "sucesso": True,
         "encontrado": True,
-        "titular": "Identificado",
-        "nome": "Identificado",
-        "dados": {"encontrado": True}
+        "nome": "Titular Identificado",
+        "titular": "Titular Identificado",
+        "status_whatsapp": "Ativo",
+        "mensagem": "Consulta realizada com sucesso",
+        "dados": {
+            "encontrado": True,
+            "titular": "Titular Identificado",
+            "nome": "Titular Identificado",
+            "status_whatsapp": "Ativo"
+        }
     }
 
 
-# 3. ROTA DE GERAÇÃO DO PIX (12,90 REAIS)
+# 3. ROTA DE GERAÇÃO DO PIX DE 12,90 REAIS
 @app.post("/gerar_pix")
 @app.post("/api/gerar-pix")
 async def gerar_pix():
@@ -81,58 +91,55 @@ async def gerar_pix():
         raw_base64 = transaction_data.get("qr_code_base64", "")
         ticket_url = transaction_data.get("ticket_url", "")
 
-        # Formata a string Base64 para ser usada diretamente em tags <img>
+        # Formata a string Base64 para a tag <img>
         formatted_base64 = raw_base64
         if raw_base64 and not raw_base64.startswith("data:image"):
             formatted_base64 = f"data:image/png;base64,{raw_base64}"
 
-        # Se o frontend preferir buscar via API externa de QR Code usando o texto do Pix
-        qr_api_url = f"https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={raw_qr_code}" if raw_qr_code else ""
+        # Gera uma URL real e válida de imagem para o QR Code a partir do código do Pix
+        encoded_pix = urllib.parse.quote(raw_qr_code)
+        qr_code_url = f"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={encoded_pix}"
 
-        # Dicionário completo com todas as variações conhecidas de chaves
-        dados_pix = {
+        return {
             "status": "sucesso",
             "sucesso": True,
             "id": payment.get("id"),
-            # Textos para Copia e Cola
+            
+            # URLs reais da imagem do QR Code
+            "qr_code_url": qr_code_url,
+            "image_url": qr_code_url,
+            "url_qrcode": qr_code_url,
+            "imagem_url": qr_code_url,
+            "qr_code_image": qr_code_url,
+            "qrcode_url": qr_code_url,
+            "ticket_url": ticket_url,
+            
+            # Imagem em formato Base64
+            "qr_code_base64": formatted_base64,
+            "imagem_qrcode": formatted_base64,
+            "imagem": formatted_base64,
+            "qrcode": formatted_base64,
+
+            # Chaves do código Copia e Cola (Pix)
             "pix_code": raw_qr_code,
             "qr_code": raw_qr_code,
             "copia_e_cola": raw_qr_code,
             "pix_copia_e_cola": raw_qr_code,
-            "code": raw_qr_code,
             "payload": raw_qr_code,
-            "point_of_interaction": point_of_interaction,
-            # URLs e Imagens do QR Code
-            "qr_code_base64": formatted_base64,
-            "imagem": formatted_base64,
-            "imagem_qrcode": formatted_base64,
-            "qrcode": formatted_base64,
-            "qr_code_url": qr_api_url,
-            "image_url": qr_api_url,
-            "url_qrcode": qr_api_url,
-            "ticket_url": ticket_url,
-            # Estruturas aninhadas para frontends que procuram em "data" ou "dados"
+            "code": raw_qr_code,
+
+            # Estrutura dentro do objeto 'dados' para frontends aninhados
             "dados": {
                 "pix_code": raw_qr_code,
                 "qr_code": raw_qr_code,
                 "copia_e_cola": raw_qr_code,
+                "qr_code_url": qr_code_url,
+                "image_url": qr_code_url,
+                "imagem_url": qr_code_url,
                 "qr_code_base64": formatted_base64,
-                "imagem": formatted_base64,
-                "qr_code_url": qr_api_url,
-                "image_url": qr_api_url
-            },
-            "data": {
-                "pix_code": raw_qr_code,
-                "qr_code": raw_qr_code,
-                "copia_e_cola": raw_qr_code,
-                "qr_code_base64": formatted_base64,
-                "imagem": formatted_base64,
-                "qr_code_url": qr_api_url,
-                "image_url": qr_api_url
+                "imagem_qrcode": formatted_base64
             }
         }
-
-        return dados_pix
 
     except Exception as e:
         return JSONResponse(
