@@ -2,6 +2,7 @@ import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 import mercadopago
 
 app = FastAPI()
@@ -56,5 +57,12 @@ async def gerar_pix():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Servir os arquivos estáticos da pasta frontend
-app.mount("/", StaticFiles(directory="frontend", html=True), name="static")
+# Tenta carregar o index.html da pasta 'frontend' se ela existir, ou da raiz se não existir
+if os.path.exists("frontend"):
+    app.mount("/", StaticFiles(directory="frontend", html=True), name="static")
+else:
+    @app.get("/")
+    async def read_index():
+        if os.path.exists("index.html"):
+            return FileResponse("index.html")
+        return {"message": "API Descobre Zap Online"}
