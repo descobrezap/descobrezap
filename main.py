@@ -18,7 +18,7 @@ app.add_middleware(
 # Inicializa o SDK do Mercado Pago
 sdk = mercadopago.SDK(os.getenv("MERCADO_PAGO_TOKEN", ""))
 
-# Aceita tanto /gerar_pix quanto /api/gerar-pix para evitar erros de rota
+# Aceita /gerar_pix e /api/gerar-pix
 @app.post("/gerar_pix")
 @app.post("/api/gerar-pix")
 async def gerar_pix():
