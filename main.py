@@ -1,13 +1,11 @@
 import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import mercadopago
 
 app = FastAPI()
 
-# Configuração de CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -16,10 +14,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Inicializa o SDK do Mercado Pago
 sdk = mercadopago.SDK(os.getenv("MERCADO_PAGO_TOKEN", ""))
 
-# Aceita tanto /gerar_pix quanto /api/gerar-pix
+# Aceita requisições GET e HEAD na raiz (evita que o Render derrube o serviço)
+@app.api_route("/", methods=["GET", "HEAD"])
+async def home():
+    if os.path.exists("index.html"):
+        return FileResponse("index.html")
+    return {"status": "ok"}
+
 @app.post("/gerar_pix")
 @app.post("/api/gerar-pix")
 async def gerar_pix():
@@ -56,13 +59,3 @@ async def gerar_pix():
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-# Tenta carregar o index.html da pasta 'frontend' se ela existir, ou da raiz se não existir
-if os.path.exists("frontend"):
-    app.mount("/", StaticFiles(directory="frontend", html=True), name="static")
-else:
-    @app.get("/")
-    async def read_index():
-        if os.path.exists("index.html"):
-            return FileResponse("index.html")
-        return {"message": "API Descobre Zap Online"}
