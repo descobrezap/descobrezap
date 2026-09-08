@@ -1,5 +1,4 @@
 import os
-import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -19,7 +18,7 @@ app.add_middleware(
 # Inicializa o SDK do Mercado Pago
 sdk = mercadopago.SDK(os.getenv("MERCADO_PAGO_TOKEN", ""))
 
-# Rotas do Pix (aceita /gerar_pix e /api/gerar-pix)
+# Aceita tanto /gerar_pix quanto /api/gerar-pix
 @app.post("/gerar_pix")
 @app.post("/api/gerar-pix")
 async def gerar_pix():
@@ -59,8 +58,3 @@ async def gerar_pix():
 
 # Servir os arquivos estáticos da pasta frontend
 app.mount("/", StaticFiles(directory="frontend", html=True), name="static")
-
-# Execução garantindo a porta do Render
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    uvicorn.run("main:app", host="0.0.0.0", port=port)
