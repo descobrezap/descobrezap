@@ -1,12 +1,11 @@
 import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 import mercadopago
 
 app = FastAPI(title="Descobre Zap API")
 
-# Configuração de CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,19 +14,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Inicializa o SDK do Mercado Pago
-sdk = mercadopago.SDK(os.getenv("MERCADO_PAGO_TOKEN", ""))
+# Token do Mercado Pago vindo da variável de ambiente no Render
+MP_TOKEN = os.getenv("MERCADO_PAGO_TOKEN", "")
+sdk = mercadopago.SDK(MP_TOKEN) if MP_TOKEN else None
 
 
-# 1. ROTA DA PÁGINA INICIAL
+# 1. ROTA PRINCIPAL
 @app.api_route("/", methods=["GET", "HEAD"])
 async def home():
     if os.path.exists("index.html"):
         return FileResponse("index.html")
-    return {"status": "online", "message": "API Descobre Zap rodando com sucesso"}
+    return {"status": "online"}
 
 
-# 2. ROTA DE CONSULTA (atendendo /api/buscar-previa)
+# 2. ROTA DE CONSULTA
 @app.post("/api/buscar-previa")
 @app.post("/buscar-previa")
 @app.post("/consultar")
@@ -35,19 +35,28 @@ async def home():
 async def consultar():
     return {
         "status": "sucesso",
-        "mensagem": "Consulta realizada com sucesso",
-        "dados": {
-            "encontrado": True,
-            "status_whatsapp": "Ativo",
-            "relatorios_disponiveis": True
-        }
+        "sucesso": True,
+        "encontrado": True,
+        "titular": "Identificado",
+        "nome": "Identificado",
+        "dados": {"encontrado": True}
     }
 
 
-# 3. ROTA DE GERAÇÃO DO PIX MERCADO PAGO (12,90 reais)
+# 3. ROTA DE GERAÇÃO DO PIX (12,90 REAIS)
 @app.post("/gerar_pix")
 @app.post("/api/gerar-pix")
 async def gerar_pix():
+    if not MP_TOKEN:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "erro": "Token do Mercado Pago não configurado no Render.",
+                "message": "Token do Mercado Pago não configurado no Render.",
+                "detail": "Token do Mercado Pago não configurado no Render."
+            }
+        )
+
     try:
         payment_data = {
             "transaction_amount": 12.90,
@@ -59,25 +68,44 @@ async def gerar_pix():
                 "last_name": "Zap"
             }
         }
-        
+
         payment_response = sdk.payment().create(payment_data)
         payment = payment_response.get("response", {})
-        
+
         if payment_response.get("status") not in [200, 201]:
-            error_msg = payment.get("message") or str(payment)
-            raise HTTPException(
-                status_code=400, 
-                detail=f"Erro Mercado Pago: {error_msg}"
+            msg_erro = payment.get("message") or str(payment)
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "erro": f"Erro Mercado Pago: {msg_erro}",
+                    "message": f"Erro Mercado Pago: {msg_erro}",
+                    "detail": f"Erro Mercado Pago: {msg_erro}"
+                }
             )
 
         point_of_interaction = payment.get("point_of_interaction", {})
         transaction_data = point_of_interaction.get("transaction_data", {})
 
+        qr_code = transaction_data.get("qr_code")
+        qr_code_base64 = transaction_data.get("qr_code_base64")
+        ticket_url = transaction_data.get("ticket_url")
+
         return {
+            "status": "sucesso",
             "id": payment.get("id"),
-            "qr_code": transaction_data.get("qr_code"),
-            "qr_code_base64": transaction_data.get("qr_code_base64"),
-            "status": payment.get("status")
+            "qr_code": qr_code,
+            "pix_code": qr_code,
+            "qr_code_base64": qr_code_base64,
+            "ticket_url": ticket_url,
+            "payment": payment
         }
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return JSONResponse(
+            status_code=500,
+            content={
+                "erro": str(e),
+                "message": str(e),
+                "detail": str(e)
+            }
+        )
