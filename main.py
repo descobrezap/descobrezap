@@ -70,12 +70,12 @@ def gerar_pix(req: PixRequest):
     
     payload = {
         "transaction_amount": 12.90,
-        "description": f"Consulta Descobre Zap - {req.telefone}",
-        "payment_method_id": "pix",
-        "payer": {
-            "email": "cliente@descobrezap.com",
-            "first_name": "Cliente",
-            "last_name": "Zap"
+    "description": "Consulta Descobre Zap",
+    "payment_method_id": "pix",
+    "payer": {
+        "email": "cliente@descobrezap.com.br",
+        "first_name": "Cliente",
+        "last_name": "Zap"
         }
     }
 
