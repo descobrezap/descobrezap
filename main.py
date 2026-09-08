@@ -6,7 +6,6 @@ import mercadopago
 
 app = FastAPI()
 
-# Configuração de CORS para permitir requisições do frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,10 +14,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Inicializa o SDK do Mercado Pago
 sdk = mercadopago.SDK(os.getenv("MERCADO_PAGO_TOKEN", ""))
 
-# Aceita /gerar_pix e /api/gerar-pix
 @app.post("/gerar_pix")
 @app.post("/api/gerar-pix")
 async def gerar_pix():
@@ -56,5 +53,4 @@ async def gerar_pix():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Servir os arquivos estáticos da pasta frontend
 app.mount("/", StaticFiles(directory="frontend", html=True), name="static")
