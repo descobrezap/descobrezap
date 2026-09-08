@@ -69,7 +69,7 @@ def gerar_pix(req: PixRequest):
     }
     
     payload = {
-        "transaction_amount": 9.90,
+        "transaction_amount": 12.90,
         "description": f"Consulta Descobre Zap - {req.telefone}",
         "payment_method_id": "pix",
         "payer": {
