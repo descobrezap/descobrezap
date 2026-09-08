@@ -6,7 +6,7 @@ import mercadopago
 
 app = FastAPI(title="Descobre Zap API")
 
-# Configuração de CORS para permitir requisições do frontend
+# Configuração de CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,12 +15,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Inicializa o SDK do Mercado Pago com a variável de ambiente
+# Inicializa o SDK do Mercado Pago
 sdk = mercadopago.SDK(os.getenv("MERCADO_PAGO_TOKEN", ""))
 
 
 # 1. ROTA DA PÁGINA INICIAL
-# Suporta GET e HEAD para a verificação do Render não derrubar o servidor
 @app.api_route("/", methods=["GET", "HEAD"])
 async def home():
     if os.path.exists("index.html"):
@@ -28,8 +27,9 @@ async def home():
     return {"status": "online", "message": "API Descobre Zap rodando com sucesso"}
 
 
-# 2. ROTA DE CONSULTA SIMULADA DO NÚMERO
-# Suporta /consultar e /api/consultar para compatibilidade total com o frontend
+# 2. ROTA DE CONSULTA (atendendo /api/buscar-previa)
+@app.post("/api/buscar-previa")
+@app.post("/buscar-previa")
 @app.post("/consultar")
 @app.post("/api/consultar")
 async def consultar():
@@ -44,8 +44,7 @@ async def consultar():
     }
 
 
-# 3. ROTA DE GERAÇÃO DO PIX MERCADO PAGO (R$ 12,90)
-# Suporta /gerar_pix e /api/gerar-pix
+# 3. ROTA DE GERAÇÃO DO PIX MERCADO PAGO (12,90 reais)
 @app.post("/gerar_pix")
 @app.post("/api/gerar-pix")
 async def gerar_pix():
