@@ -19,6 +19,9 @@ PUSHIN_PAY_TOKEN = os.getenv("PUSHIN_PAY_TOKEN", "70634|7PHvOzg8JQAqCodw1Vh1XgEW
 GMAIL_USER = "descobrezap@gmail.com"
 GMAIL_APP_PASS = "pfzh sxln wgnm tkxj"
 
+# Cache em memória para simulação/checagem de pagamentos por TXID
+PAGAMENTOS_CACHE = {}
+
 # ----------------------------------------------------
 # SERVIR O SITE (INDEX.HTML E ESTÁTICOS)
 # ----------------------------------------------------
@@ -54,14 +57,17 @@ def buscar_dados_completos(telefone: str):
 # ----------------------------------------------------
 # GERAR PIX (PUSHIN PAY)
 # ----------------------------------------------------
+@app.post("/api/gerar-pix")
+@app.post("/gerar-pix")
 @app.post("/api/criar-pix")
 @app.post("/criar-pix")
-async def criar_pix(request: Request):
+async def gerar_pix(request: Request):
     data = await request.json()
     telefone = data.get("telefone", "")
+    tipo = data.get("tipo", "consulta")
     
-    # Valor fixo de 12,90 reais (convertido para 1290 centavos)
-    valor_centavos = 1290
+    # 12,90 reais para consulta (1290 centavos) ou 4,90 reais para PDF (490 centavos)
+    valor_centavos = 490 if tipo == "pdf" else 1290
 
     headers = {
         "Authorization": f"Bearer {PUSHIN_PAY_TOKEN}",
@@ -77,11 +83,23 @@ async def criar_pix(request: Request):
         response = requests.post("https://api.pushinpay.com.br/api/pix/cashIn", json=payload, headers=headers, timeout=10)
         if response.status_code in [200, 201]:
             res_data = response.json()
+            txid = str(res_data.get("id"))
+            qr_code = res_data.get("qr_code")
+            qr_code_base64 = res_data.get("qr_code_base64")
+
+            # Armazena em cache para checagem do status pelo frontend
+            PAGAMENTOS_CACHE[txid] = {
+                "status": "pending",
+                "telefone": telefone,
+                "tipo": tipo
+            }
+
             return {
                 "status": "sucesso",
-                "qr_code": res_data.get("qr_code"),
-                "qr_code_base64": res_data.get("qr_code_base64"),
-                "txid": res_data.get("id")
+                "pix_copia_cola": qr_code,
+                "qr_code": qr_code,
+                "qr_code_base64": qr_code_base64,
+                "txid": txid
             }
         else:
             print(f"Erro Pushin Pay ({response.status_code}): {response.text}")
@@ -91,29 +109,81 @@ async def criar_pix(request: Request):
         raise HTTPException(status_code=500, detail="Falha na comunicação com gateway de pagamento.")
 
 # ----------------------------------------------------
-# WEBHOOK PIX (CONFIRMAÇÃO DE PAGAMENTO)
+# CHECAR STATUS DO PAGAMENTO POR TXID
+# ----------------------------------------------------
+@app.get("/api/checar-status/{txid}")
+@app.get("/checar-status/{txid}")
+async def checar_status(txid: str):
+    # Consulta o status direto da Pushin Pay
+    headers = {
+        "Authorization": f"Bearer {PUSHIN_PAY_TOKEN}",
+        "Accept": "application/json"
+    }
+    try:
+        response = requests.get(f"https://api.pushinpay.com.br/api/pix/cashIn/{txid}", headers=headers, timeout=5)
+        if response.status_code == 200:
+            res_data = response.json()
+            status_api = res_data.get("status", "").lower()
+            if status_api in ["paid", "approved", "concluido"]:
+                PAGAMENTOS_CACHE[txid] = PAGAMENTOS_CACHE.get(txid, {})
+                PAGAMENTOS_CACHE[txid]["status"] = "paid"
+    except Exception as e:
+        print(f"Erro ao checar status do TXID na Pushin Pay: {str(e)}")
+
+    info = PAGAMENTOS_CACHE.get(txid, {})
+    if info.get("status") == "paid":
+        telefone = info.get("telefone", "")
+        dados_api = buscar_dados_completos(telefone) if telefone else None
+        
+        # Estrutura tratada para retorno ao frontend
+        registros_formatados = []
+        if dados_api and "dados" in dados_api:
+            for item in dados_api.get("dados", []):
+                registros_formatados.append({
+                    "nome": item.get("nome", "NÃO INFORMADO"),
+                    "cpf": item.get("cpf", "***.***.***-**"),
+                    "operadora": item.get("operadora", "NÃO INFORMADA"),
+                    "status": item.get("status", "Cadastro Encontrado")
+                })
+        
+        return {
+            "status": "pago",
+            "registros": registros_formatados
+        }
+    
+    return {"status": "pendente"}
+
+# ----------------------------------------------------
+# WEBHOOK PIX (CONFIRMAÇÃO DE PAGAMENTO AUTOMÁTICA)
 # ----------------------------------------------------
 @app.post("/api/webhook-pix")
 @app.post("/webhook-pix")
 async def webhook_pix(request: Request):
-    data = await request.json()
-    status = data.get("status")
-    
-    if status in ["paid", "PAID", "approved"]:
-        telefone = data.get("telefone", "")
-        if telefone:
-            dados = buscar_dados_completos(telefone)
-            # Lógica para entregar o relatório completo ao cliente
-    return {"status": "ok"}
+    try:
+        data = await request.json()
+        status = str(data.get("status", "")).lower()
+        txid = str(data.get("id") or data.get("txid", ""))
+
+        if status in ["paid", "approved", "concluido"]:
+            if txid in PAGAMENTOS_CACHE:
+                PAGAMENTOS_CACHE[txid]["status"] = "paid"
+            else:
+                PAGAMENTOS_CACHE[txid] = {"status": "paid", "telefone": data.get("telefone", "")}
+
+        return {"status": "ok"}
+    except Exception as e:
+        print(f"Erro no Webhook: {str(e)}")
+        return {"status": "erro", "detalhe": str(e)}
 
 # ----------------------------------------------------
 # FORMULÁRIO DE SAC (ENVIO DE E-MAIL VIA GMAIL)
 # ----------------------------------------------------
 @app.post("/api/sac")
+@app.post("/sac")
 async def enviar_sac(request: Request):
     data = await request.json()
     nome = data.get("nome")
-    email_cliente = data.get("email")
+    email_cliente = data.get("email") or data.get("contato")
     mensagem = data.get("mensagem")
 
     if not nome or not email_cliente or not mensagem:
@@ -125,7 +195,7 @@ async def enviar_sac(request: Request):
         msg['To'] = GMAIL_USER
         msg['Subject'] = f"Novo Contato SAC - DescobreZap ({nome})"
 
-        corpo = f"Nome: {nome}\nE-mail do Cliente: {email_cliente}\n\nMensagem:\n{mensagem}"
+        corpo = f"Nome: {nome}\nContato do Cliente: {email_cliente}\nNúmero Pesquisado: {data.get('numero_pesquisado', 'N/A')}\n\nMensagem:\n{mensagem}"
         msg.attach(MIMEText(corpo, 'plain'))
 
         server = smtplib.SMTP('smtp.gmail.com', 587)
