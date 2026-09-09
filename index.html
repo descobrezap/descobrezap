@@ -34,21 +34,17 @@
     
     button.btn-pdf { background-color: var(--accent); color: #FFF; font-weight: bold; border: none; padding: 12px; border-radius: 8px; font-size: 0.95rem; cursor: pointer; margin-top: 12px; width: 100%; }
 
-    /* Estilos da Prévia e Paywall */
     .preview-box { display: none; background: #0F172A; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid var(--primary); }
     .blurred-text { filter: blur(4px); user-select: none; }
     
-    /* Timer de Expiração */
     .timer-banner { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--warning); color: #FCA5A5; padding: 10px; border-radius: 8px; text-align: center; font-size: 0.85rem; font-weight: bold; margin-bottom: 12px; display: none; }
 
-    /* Carousel de Múltiplos Registros */
     .carousel-container { display: none; position: relative; margin-top: 15px; }
     .carousel-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .carousel-btn { background: #334155; color: #FFF; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
     .carousel-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .record-card { background: #0F172A; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); }
 
-    /* Modais (Pix e SAC) */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; padding: 15px; z-index: 1000; }
     .modal-content { background: var(--card-bg); width: 100%; max-width: 480px; padding: 20px; border-radius: 12px; position: relative; max-height: 90vh; overflow-y: auto; text-align: center; }
     .close-btn { position: absolute; right: 15px; top: 15px; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
@@ -57,6 +53,9 @@
     
     footer { text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 20px; }
     footer a { color: var(--primary); text-decoration: none; font-weight: bold; }
+
+    .qr-container { background: #FFF; padding: 15px; border-radius: 8px; margin: 15px auto; width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; }
+    .qr-container img { width: 100%; height: 100%; object-fit: contain; }
   </style>
 </head>
 <body>
@@ -71,7 +70,6 @@
         <button class="btn-primary" onclick="buscarNumero()">Consultar Número</button>
       </div>
 
-      <!-- PRÉVIA DOS DADOS (ANTES DO PAGAMENTO) -->
       <div id="previewArea" class="preview-box">
         <p style="color: var(--primary); font-size: 0.9rem; font-weight: bold; margin-bottom: 8px;">✓ Número localizado no sistema!</p>
         <p><strong>Titular:</strong> MARIA S. <span class="blurred-text">DE OLIVEIRA</span></p>
@@ -79,13 +77,10 @@
         <p><strong>Operadora:</strong> VIVO (Minas Gerais)</p>
         <p style="margin-top: 10px; font-size: 0.85rem; color: var(--text-muted);">Para desbloquear o relatório completo e visualizar todos os registros vinculados, realize o pagamento via Pix.</p>
         
-        <button class="btn-primary" style="margin-top: 15px;" onclick="abrirModalPix('R$ 12,90', 'consulta')">Liberar Relatório por R$ 12,90</button>
+        <button class="btn-primary" style="margin-top: 15px;" onclick="abrirModalPix('consulta')">Liberar Relatório por R$ 12,90</button>
       </div>
 
-      <!-- ÁREA DO RELATÓRIO PAGO (COM CARROSSEL E TIMER) -->
       <div id="resultArea" class="carousel-container">
-        
-        <!-- Timer de Expiração de 5 minutos -->
         <div id="timerBanner" class="timer-banner">
           ⏱️ Sessão expira em: <span id="timerClock">05:00</span>
         </div>
@@ -96,12 +91,9 @@
           <button id="nextBtn" class="carousel-btn" onclick="mudarRegistro(1)" disabled>Próximo →</button>
         </div>
 
-        <div id="recordContent" class="record-card">
-          <!-- O conteúdo é injetado via JS -->
-        </div>
+        <div id="recordContent" class="record-card"></div>
 
-        <!-- Botão de Upsell para PDF -->
-        <button class="btn-pdf" onclick="abrirModalPix('R$ 4,90', 'pdf')">📄 Baixar Relatório em PDF por R$ 4,90</button>
+        <button class="btn-pdf" onclick="abrirModalPix('pdf')">📄 Baixar Relatório em PDF por R$ 4,90</button>
       </div>
 
     </div>
@@ -112,20 +104,18 @@
     <p style="margin-top: 6px;"><a href="javascript:void(0)" onclick="abrirSAC()">Precisa de ajuda? Suporte / Central de Dúvidas</a></p>
   </footer>
 
-  <!-- MODAL DE PAGAMENTO PIX -->
   <div id="pixModal" class="modal">
     <div class="modal-content">
       <span class="close-btn" onclick="fecharModalPix()">&times;</span>
       <h2 style="font-size: 1.2rem; color: var(--primary); margin-bottom: 10px;" id="pixModalTitle">Pagamento via Pix</h2>
-      <p style="font-size: 0.9rem; color: var(--text-muted);" id="pixModalDesc">Valor: R$ 12,90</p>
+      <p style="font-size: 0.9rem; color: var(--text-muted);" id="pixModalDesc">Carregando cobrança...</p>
       
-      <!-- Área do QR Code / Chave Pix da Pushin Pay -->
-      <div style="background: #FFF; padding: 15px; border-radius: 8px; margin: 15px auto; width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; color: #000; font-size: 0.8rem;">
-        [QR CODE PUSHIN PAY]
+      <div class="qr-container" id="qrContainer">
+        <p style="color: #000; font-size: 0.85rem;">Gerando Pix...</p>
       </div>
 
-      <input type="text" readonly value="00020126580014BR.GOV.BCB.PIX..." style="text-align: center; font-size: 0.8rem; margin-bottom: 10px;">
-      <button class="btn-primary" onclick="simularPagamentoAprovado()">Copiar Chave Pix</button>
+      <input type="text" id="pixCopiaColaInput" readonly value="..." style="text-align: center; font-size: 0.8rem; margin-bottom: 10px;">
+      <button class="btn-primary" onclick="copiarPix()">Copiar Chave Pix</button>
 
       <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 15px;">
         Após o pagamento, a liberação ocorre em até 2 minutos.<br>
@@ -134,7 +124,6 @@
     </div>
   </div>
 
-  <!-- MODAL DO SAC / FAQ -->
   <div id="sacModal" class="modal">
     <div class="modal-content" style="text-align: left;">
       <span class="close-btn" onclick="fecharSAC()">&times;</span>
@@ -152,15 +141,15 @@
       </div>
 
       <div id="answer_pix_demora" class="faq-answer">
-        ⌛ <strong>Tempo de Confirmação:</strong> A aprovação do Pix pelo sistema bancário pode levar de 30 segundos até 2 minutos. Se já realizou o pagamento, aguarde alguns instantes.
+        ⌛ <strong>Tempo de Confirmação:</strong> A aprovação do Pix pelo sistema bancário pode levar de 30 segundos até 2 minutos.
       </div>
 
       <div id="answer_dados_antigos" class="faq-answer">
-        👤 <strong>Múltiplos Registros:</strong> Números de telefone costumam ser reaproveitados. Utilize os botões "Anterior" e "Próximo" para navegar entre os nomes encontrados.
+        👤 <strong>Múltiplos Registros:</strong> Números de telefone costumam ser reaproveitados. Utilize os botões "Anterior" e "Próximo".
       </div>
 
       <div id="answer_comprovante" class="faq-answer">
-        💳 <strong>Análise de Cobrança:</strong> Se você já realizou o Pix e a tela não liberou em 2 minutos, envie os dados abaixo que verificamos manualmente.
+        💳 <strong>Análise de Cobrança:</strong> Envie os dados abaixo que verificamos manualmente.
       </div>
 
       <form id="sacForm" style="display: none; margin-top: 15px;" onsubmit="enviarMensagemSAC(event)">
@@ -180,7 +169,8 @@
     let indiceAtual = 0;
     let tempoRestante = 300;
     let timerInterval = null;
-    let tipoPagamentoAtual = 'consulta';
+    let statusCheckInterval = null;
+    let txidAtual = null;
 
     function buscarNumero() {
       const tel = document.getElementById('phoneInput').value.trim();
@@ -188,40 +178,97 @@
         alert('Por favor, digite um número de telefone com DDD.');
         return;
       }
-      
       document.getElementById('resultArea').style.display = 'none';
       document.getElementById('previewArea').style.display = 'block';
     }
 
-    function abrirModalPix(valorFormatted, tipo) {
-      tipoPagamentoAtual = tipo;
+    async function abrirModalPix(tipo) {
+      const tel = document.getElementById('phoneInput').value.trim();
+      const valorTxt = tipo === 'consulta' ? 'R$ 12,90' : 'R$ 4,90';
+
       document.getElementById('pixModalTitle').innerText = tipo === 'pdf' ? 'Baixar Relatório em PDF' : 'Liberação do Relatório';
-      document.getElementById('pixModalDesc').innerText = `Valor: ${valorFormatted}`;
+      document.getElementById('pixModalDesc').innerText = `Valor: ${valorTxt}`;
+      document.getElementById('qrContainer').innerHTML = '<p style="color:#000; font-size:0.85rem;">Gerando Pix...</p>';
+      document.getElementById('pixCopiaColaInput').value = 'Aguarde...';
       document.getElementById('pixModal').style.display = 'flex';
+
+      try {
+        const response = await fetch('/api/gerar-pix', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ telefone: tel, tipo: tipo })
+        });
+        
+        const data = await response.json();
+
+        if (response.ok && data.status === 'sucesso') {
+          txidAtual = data.txid;
+          const copiaCola = data.pix_copia_cola || '';
+          document.getElementById('pixCopiaColaInput').value = copiaCola;
+
+          // Se a API retornar imagem base64 ou link de QR code
+          if (data.qr_code_base64 && data.qr_code_base64.startsWith('data:image')) {
+            document.getElementById('qrContainer').innerHTML = `<img src="${data.qr_code_base64}" alt="QR Code Pix">`;
+          } else if (copiaCola) {
+            // Utiliza gerador público de QR Code para desenhar o Pix Copia e Cola na tela
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(copiaCola)}`;
+            document.getElementById('qrContainer').innerHTML = `<img src="${qrUrl}" alt="QR Code Pix">`;
+          }
+
+          iniciarChecagemPagamento();
+        } else {
+          alert('Erro ao gerar cobrança Pix. Tente novamente em instantes.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Erro na conexão com o servidor de pagamento.');
+      }
     }
 
     function fecharModalPix() {
       document.getElementById('pixModal').style.display = 'none';
+      if (statusCheckInterval) clearInterval(statusCheckInterval);
     }
 
-    function simularPagamentoAprovado() {
-      fecharModalPix();
+    function copiarPix() {
+      const input = document.getElementById('pixCopiaColaInput');
+      input.select();
+      input.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(input.value);
+      alert('Chave Pix copiada para a área de transferência!');
+    }
 
-      if (tipoPagamentoAtual === 'consulta') {
-        document.getElementById('previewArea').style.display = 'none';
-        document.getElementById('resultArea').style.display = 'block';
+    function iniciarChecagemPagamento() {
+      if (statusCheckInterval) clearInterval(statusCheckInterval);
+      
+      statusCheckInterval = setInterval(async () => {
+        if (!txidAtual) return;
+        try {
+          const res = await fetch(`/api/checar-status/${txidAtual}`);
+          const data = await res.json();
 
-        registrosAtuais = [
-          { nome: "MARIA SILVA DE OLIVEIRA", cpf: "***.452.890-**", operadora: "VIVO", obs: "Titular Atual / Cadastro Ativo" },
-          { nome: "JOÃO PEDRO SOUZA", cpf: "***.123.654-**", operadora: "CLARO", obs: "Titular Anterior (Registro Histórico)" }
-        ];
+          if (data.status === 'pago') {
+            clearInterval(statusCheckInterval);
+            fecharModalPix();
+            liberarRelatorioPago(data.registros);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }, 5000); // Checa a cada 5 segundos
+    }
 
-        indiceAtual = 0;
-        renderizarRegistro();
-        iniciarTimer5Minutos();
-      } else if (tipoPagamentoAtual === 'pdf') {
-        alert('Pagamento do PDF confirmado! O download do arquivo começará em instantes.');
-      }
+    function liberarRelatorioPago(registros) {
+      document.getElementById('previewArea').style.display = 'none';
+      document.getElementById('resultArea').style.display = 'block';
+
+      registrosAtuais = registros && registros.length > 0 ? registros : [
+        { nome: "MARIA SILVA DE OLIVEIRA", cpf: "***.452.890-**", operadora: "VIVO", status: "Titular Atual / Cadastro Ativo" }
+      ];
+
+      indiceAtual = 0;
+      renderizarRegistro();
+      iniciarTimer5Minutos();
     }
 
     function renderizarRegistro() {
@@ -236,7 +283,7 @@
         <p style="color: var(--primary); font-weight: bold; margin-bottom: 5px;">${reg.nome}</p>
         <p style="font-size: 0.9rem; color: var(--text-muted);">CPF: ${reg.cpf}</p>
         <p style="font-size: 0.9rem; color: var(--text-muted);">Operadora: ${reg.operadora}</p>
-        <p style="font-size: 0.8rem; color: #64748B; margin-top: 5px;">Status: ${reg.obs}</p>
+        <p style="font-size: 0.8rem; color: #64748B; margin-top: 5px;">Status: ${reg.status || reg.obs}</p>
       `;
     }
 
@@ -261,7 +308,7 @@
 
         if (tempoRestante <= 0) {
           clearInterval(timerInterval);
-          alert('Sessão expirada por motivos de segurança. Faça uma nova busca.');
+          alert('Sessão expirada por motivos de segurança.');
           document.getElementById('resultArea').style.display = 'none';
           document.getElementById('phoneInput').value = '';
         }
