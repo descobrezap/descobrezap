@@ -207,14 +207,12 @@
 
         if (response.ok && data.status === 'sucesso') {
           txidAtual = data.txid;
-          const copiaCola = data.pix_copia_cola || '';
+          const copiaCola = data.pix_copia_cola || data.qr_code || '';
           document.getElementById('pixCopiaColaInput').value = copiaCola;
 
-          // Se a API retornar imagem base64 ou link de QR code
           if (data.qr_code_base64 && data.qr_code_base64.startsWith('data:image')) {
             document.getElementById('qrContainer').innerHTML = `<img src="${data.qr_code_base64}" alt="QR Code Pix">`;
           } else if (copiaCola) {
-            // Utiliza gerador público de QR Code para desenhar o Pix Copia e Cola na tela
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(copiaCola)}`;
             document.getElementById('qrContainer').innerHTML = `<img src="${qrUrl}" alt="QR Code Pix">`;
           }
@@ -259,7 +257,7 @@
         } catch (e) {
           console.error(e);
         }
-      }, 5000); // Checa a cada 5 segundos
+      }, 5000);
     }
 
     function liberarRelatorioPago(registros) {
@@ -287,7 +285,7 @@
         <p style="color: var(--primary); font-weight: bold; margin-bottom: 5px;">${reg.nome}</p>
         <p style="font-size: 0.9rem; color: var(--text-muted);">CPF: ${reg.cpf}</p>
         <p style="font-size: 0.9rem; color: var(--text-muted);">Operadora: ${reg.operadora}</p>
-        <p style="font-size: 0.8rem; color: #64748B; margin-top: 5px;">Status: ${reg.status || reg.obs}</p>
+        <p style="font-size: 0.8rem; color: #64748B; margin-top: 5px;">Status: ${reg.status || reg.obs || 'Ativo'}</p>
       `;
     }
 
@@ -336,10 +334,29 @@
       }
     }
 
-    function enviarMensagemSAC(event) {
+    async function enviarMensagemSAC(event) {
       event.preventDefault();
-      alert('Mensagem enviada com sucesso! Retornaremos em breve.');
-      fecharSAC();
+      const nome = document.getElementById('sacNome').value;
+      const contato = document.getElementById('sacContato').value;
+      const numero_pesquisado = document.getElementById('sacNumeroPesquisado').value;
+      const mensagem = document.getElementById('sacMensagem').value;
+
+      try {
+        const response = await fetch('/api/sac', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nome, contato, numero_pesquisado, mensagem })
+        });
+        
+        if (response.ok) {
+          alert('Mensagem enviada com sucesso ao suporte!');
+          fecharSAC();
+        } else {
+          alert('Erro ao enviar mensagem. Tente novamente.');
+        }
+      } catch (e) {
+        alert('Erro ao conectar com o servidor do SAC.');
+      }
     }
   </script>
 </body>
