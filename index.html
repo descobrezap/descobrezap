@@ -24,6 +24,7 @@
         .paywall-box { background: linear-gradient(135deg, #15803d 0%, #166534 100%); border-radius: 10px; padding: 20px; text-align: center; margin-top: 20px; }
         .btn-pix { background-color: #ffffff; color: #15803d; margin-top: 10px; }
         .btn-pix:hover { background-color: #f0fdf4; }
+        .pix-notice { font-size: 12px; color: #dcfce7; margin-top: 12px; line-height: 1.4; background: rgba(0, 0, 0, 0.2); padding: 10px; border-radius: 6px; }
         .modal-pix { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; }
         .modal-content { background: #1e293b; padding: 25px; border-radius: 12px; text-align: center; max-width: 400px; width: 90%; }
         .qr-code { width: 200px; height: 200px; margin: 15px auto; background: #fff; padding: 10px; border-radius: 8px; }
@@ -63,9 +64,15 @@
 
             <div class="paywall-box">
                 <h4 style="margin: 0 0 5px 0;">Liberar Relatório Completo</h4>
-                <p style="font-size: 22px; font-weight: bold; margin: 5px 0; color: #86efac;">R$ 12,90</p>
+                <p style="font-size: 22px; font-weight: bold; margin: 5px 0; color: #86efac;">12 reais e 90 centavos</p>
                 <p style="font-size: 12px; color: #dcfce7; margin: 0;">Acesso imediato via Pix automático</p>
                 <button class="btn-pix" onclick="gerarPix()">GERAR PIX DE LIBERAÇÃO 📱</button>
+                
+                <!-- AVISO DE TRANSPARÊNCIA DO PIX -->
+                <div class="pix-notice">
+                    🔒 <strong>Pagamento Seguro</strong><br>
+                    O comprovante será emitido em nome de <strong>Pushin Pay Pagamentos</strong> (nossa processadora oficial).
+                </div>
             </div>
         </div>
     </div>
@@ -74,8 +81,11 @@
     <div id="modalPix" class="modal-pix">
         <div class="modal-content">
             <h3 style="margin-top: 0; color: #22c55e;">Pagamento via Pix</h3>
-            <p style="font-size: 14px; color: #cbd5e1;">Escaneie o QR Code abaixo no app do seu banco:</p>
+            <p style="font-size: 14px; color: #cbd5e1; margin-bottom: 5px;">Escaneie o QR Code abaixo no app do seu banco:</p>
+            <p style="font-size: 11px; color: #94a3b8; margin-top: 0;">(Destinatário do Pix: <strong>Pushin Pay Pagamentos</strong>)</p>
+            
             <img id="qrImg" class="qr-code" src="" alt="QR Code Pix">
+            
             <p style="font-size: 12px; color: #94a3b8;">Ou use o código Pix Copia e Cola:</p>
             <input type="text" id="pixCode" readonly style="font-size: 12px; text-align: center;">
             <button class="btn-search" style="margin-top: 10px; background-color: #38bdf8;" onclick="copiarPix()">COPIAR CÓDIGO PIX 📋</button>
