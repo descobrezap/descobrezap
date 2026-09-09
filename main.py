@@ -2,11 +2,12 @@ import os
 import requests
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 app = FastAPI(title="Descobre Zap - API Backend")
 
-# Libera o acesso para o seu front-end (site HTML)
+# Libera o acesso para o seu front-end
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -26,6 +27,13 @@ class ConsultaRequest(BaseModel):
 class GerarPixRequest(BaseModel):
     telefone: str
     tipo: str = "consulta"
+
+# ROTA PARA SERVIR O SITE (INDEX.HTML) NA PÁGINA INICIAL
+@app.get("/")
+def home():
+    if os.path.exists("index.html"):
+        return FileResponse("index.html")
+    return {"status": "API rodando. Arquivo index.html não encontrado."}
 
 @app.post("/api/previa")
 def obter_previa(payload: ConsultaRequest):
