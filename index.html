@@ -1,146 +1,208 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Descobre Zap - Identifique Proprietários de WhatsApp</title>
-    <style>
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #0f172a; color: #f8fafc; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .header { text-align: center; margin-bottom: 25px; }
-        .logo { font-size: 28px; font-weight: bold; color: #22c55e; }
-        .card { background-color: #1e293b; border-radius: 12px; border: 1px solid #334155; padding: 25px; width: 100%; max-width: 480px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: #cbd5e1; }
-        input[type="text"] { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #475569; background-color: #0f172a; color: #fff; font-size: 16px; outline: none; }
-        button { width: 100%; padding: 14px; border-radius: 8px; border: none; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; }
-        .btn-search { background-color: #22c55e; color: #0f172a; }
-        .btn-search:hover { background-color: #16a34a; }
-        .result-panel { margin-top: 20px; display: none; }
-        .result-item { background-color: #0f172a; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 4px solid #22c55e; }
-        .label-sm { font-size: 12px; color: #94a3b8; text-transform: uppercase; }
-        .val-lg { font-size: 16px; font-weight: bold; margin-top: 4px; }
-        .locked-box { background-color: #1e293b; border: 1px dashed #475569; color: #94a3b8; text-align: center; padding: 12px; border-radius: 8px; margin-top: 5px; }
-        .paywall-box { background: linear-gradient(135deg, #15803d 0%, #166534 100%); border-radius: 10px; padding: 20px; text-align: center; margin-top: 20px; }
-        .btn-pix { background-color: #ffffff; color: #15803d; margin-top: 10px; }
-        .btn-pix:hover { background-color: #f0fdf4; }
-        .pix-notice { font-size: 12px; color: #dcfce7; margin-top: 12px; line-height: 1.4; background: rgba(0, 0, 0, 0.2); padding: 10px; border-radius: 6px; }
-        .modal-pix { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; }
-        .modal-content { background: #1e293b; padding: 25px; border-radius: 12px; text-align: center; max-width: 400px; width: 90%; }
-        .qr-code { width: 200px; height: 200px; margin: 15px auto; background: #fff; padding: 10px; border-radius: 8px; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Descobre Zap - Identificação Rápida de WhatsApp</title>
+  <style>
+    :root {
+      --primary: #25D366;
+      --primary-dark: #1EBE5D;
+      --dark: #0F172A;
+      --card-bg: #1E293B;
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+      --accent: #0284C7;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--dark); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; align-items: center; justify-content: space-between; padding: 20px 10px; }
+    
+    .container { width: 100%; max-width: 500px; }
+    .card { background-color: var(--card-bg); padding: 24px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin-bottom: 20px; }
+    
+    h1 { font-size: 1.6rem; text-align: center; margin-bottom: 10px; color: var(--primary); }
+    p.subtitle { text-align: center; font-size: 0.95rem; color: var(--text-muted); margin-bottom: 20px; }
+    
+    .input-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    input[type="text"], input[type="email"], textarea, select { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #334155; background-color: #0F172A; color: #FFF; font-size: 1rem; outline: none; }
+    input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+    
+    button.btn-primary { background-color: var(--primary); color: #000; font-weight: bold; border: none; padding: 14px; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: 0.2s; width: 100%; }
+    button.btn-primary:hover { background-color: var(--primary-dark); }
+    
+    /* Carousel de Múltiplos Registros */
+    .carousel-container { display: none; position: relative; margin-top: 15px; }
+    .carousel-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .carousel-btn { background: #334155; color: #FFF; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+    .carousel-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .record-card { background: #0F172A; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); }
+
+    /* Modal do SAC */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; padding: 15px; z-index: 1000; }
+    .modal-content { background: var(--card-bg); width: 100%; max-width: 480px; padding: 20px; border-radius: 12px; position: relative; max-height: 90vh; overflow-y: auto; }
+    .close-btn { position: absolute; right: 15px; top: 15px; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
+    
+    .faq-answer { background: #0F172A; padding: 12px; border-radius: 6px; border-left: 3px solid var(--accent); margin: 10px 0; font-size: 0.9rem; display: none; color: #E2E8F0; }
+    
+    footer { text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 20px; }
+    footer a { color: var(--primary); text-decoration: none; font-weight: bold; }
+  </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="logo">⚡ Descobre Zap</div>
-        <p style="color: #94a3b8;">Identifique quem é o dono do WhatsApp em segundos</p>
-    </div>
-
+  <div class="container">
     <div class="card">
+      <h1>Descobre Zap</h1>
+      <p class="subtitle">Identificação completa do titular e dados vinculados em segundos</p>
+
+      <div class="input-group">
+        <input type="text" id="phoneInput" placeholder="Digite o DDD + Número (ex: 31988887777)">
+        <button class="btn-primary" onclick="buscarNumero()">Consultar Número</button>
+      </div>
+
+      <!-- Área do Carrossel de Resultados (Prévia ou Relatório) -->
+      <div id="resultArea" class="carousel-container">
+        <div class="carousel-nav">
+          <button id="prevBtn" class="carousel-btn" onclick="mudarRegistro(-1)" disabled>← Anterior</button>
+          <span id="recordIndicator" style="font-size: 0.85rem; color: var(--text-muted);">Registro 1 de 1</span>
+          <button id="nextBtn" class="carousel-btn" onclick="mudarRegistro(1)" disabled>Próximo →</button>
+        </div>
+
+        <div id="recordContent" class="record-card">
+          <!-- O conteúdo do registro atual é injetado dinamicamente via JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Descobre Zap © 2026 • Todos os direitos reservados</p>
+    <p style="margin-top: 6px;"><a href="javascript:void(0)" onclick="abrirSAC()">Precisa de ajuda? Suporte / Central de Dúvidas</a></p>
+  </footer>
+
+  <!-- MODAL DO SAC / FAQ -->
+  <div id="sacModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="fecharSAC()">&times;</span>
+      <h2 style="font-size: 1.2rem; margin-bottom: 10px; color: var(--primary);">Central de Ajuda & Suporte</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Selecione o motivo do contato para ver a solução rápida ou enviar uma mensagem.</p>
+
+      <div class="input-group">
+        <label style="font-size: 0.85rem; color: var(--text-muted);">Selecione o assunto:</label>
+        <select id="sacMotivo" onchange="tratarMotivoSAC()">
+          <option value="">-- Escolha uma opção --</option>
+          <option value="pix_demora">Fiz o Pix e a tela não liberou o relatório</option>
+          <option value="dados_antigos">O nome retornado é de um antigo dono</option>
+          <option value="comprovante">Tenho um comprovante / Erro no pagamento</option>
+          <option value="outro">Outro assunto / Falar com o suporte</option>
+        </select>
+      </div>
+
+      <!-- Respostas Automáticas / FAQ -->
+      <div id="answer_pix_demora" class="faq-answer">
+        ⌛ <strong>Tempo de Confirmação:</strong> A aprovação do Pix pelo sistema bancário pode levar de 30 segundos até 2 minutos. Se já realizou o pagamento, aguarde alguns instantes que a tela atualizará sozinha.
+      </div>
+
+      <div id="answer_dados_antigos" class="faq-answer">
+        👤 <strong>Múltiplos Registros:</strong> Números de telefone costumam ser reaproveitados pelas operadoras. Se o relatório indicar mais de um titular, utilize os botões de navegação (setas para os lados) no relatório para alternar entre os registros encontrados.
+      </div>
+
+      <div id="answer_comprovante" class="faq-answer">
+        💳 <strong>Análise de Cobrança:</strong> Caso o valor tenha saído da sua conta mas o site apresentou erro, preencha o formulário abaixo informando o número pesquisado e o horário do Pix.
+      </div>
+
+      <!-- Formulário de Mensagem Direta -->
+      <form id="sacForm" style="display: none; margin-top: 15px;" onsubmit="enviarMensagemSAC(event)">
         <div class="input-group">
-            <label for="phone">Digite o número do WhatsApp (com DDD):</label>
-            <input type="text" id="phone" placeholder="(31) 98765-4321">
+          <input type="text" id="sacNome" placeholder="Seu Nome Completo" required>
+          <input type="text" id="sacContato" placeholder="Seu WhatsApp ou E-mail" required>
+          <input type="text" id="sacNumeroPesquisado" placeholder="Número que você pesquisou (DDD + Tel)">
+          <textarea id="sacMensagem" rows="3" placeholder="Descreva brevemente o que aconteceu..." required></textarea>
         </div>
-        <button class="btn-search" onclick="realizarBusca()">CONSULTAR NÚMERO 🔍</button>
-
-        <div id="resultPanel" class="result-panel">
-            <h3 style="color: #22c55e; margin-top: 0;">✅ Registro Encontrado!</h3>
-            
-            <div class="result-item">
-                <div class="label-sm">Titular Identificado (Prévia Grátis)</div>
-                <div id="nomeParcial" class="val-lg" style="color: #4ade80;">-</div>
-            </div>
-
-            <div class="result-item">
-                <div class="label-sm">CPF Vinculado</div>
-                <div id="cpfLocked" class="locked-box">🔒 ***.123.***-** (Bloqueado)</div>
-            </div>
-
-            <div class="result-item">
-                <div class="label-sm">Operadora e Região</div>
-                <div id="operadoraLocked" class="locked-box">🔒 Bloqueado</div>
-            </div>
-
-            <div class="paywall-box">
-                <h4 style="margin: 0 0 5px 0;">Liberar Relatório Completo</h4>
-                <p style="font-size: 22px; font-weight: bold; margin: 5px 0; color: #86efac;">12 reais e 90 centavos</p>
-                <p style="font-size: 12px; color: #dcfce7; margin: 0;">Acesso imediato via Pix automático</p>
-                <button class="btn-pix" onclick="gerarPix()">GERAR PIX DE LIBERAÇÃO 📱</button>
-                
-                <!-- AVISO DE TRANSPARÊNCIA DO PIX -->
-                <div class="pix-notice">
-                    🔒 <strong>Pagamento Seguro</strong><br>
-                    O comprovante será emitido em nome de <strong>Pushin Pay Pagamentos</strong> (nossa processadora oficial).
-                </div>
-            </div>
-        </div>
+        <button type="submit" class="btn-primary">Enviar Mensagem ao Suporte</button>
+      </form>
     </div>
+  </div>
 
-    <!-- Modal Pix -->
-    <div id="modalPix" class="modal-pix">
-        <div class="modal-content">
-            <h3 style="margin-top: 0; color: #22c55e;">Pagamento via Pix</h3>
-            <p style="font-size: 14px; color: #cbd5e1; margin-bottom: 5px;">Escaneie o QR Code abaixo no app do seu banco:</p>
-            <p style="font-size: 11px; color: #94a3b8; margin-top: 0;">(Destinatário do Pix: <strong>Pushin Pay Pagamentos</strong>)</p>
-            
-            <img id="qrImg" class="qr-code" src="" alt="QR Code Pix">
-            
-            <p style="font-size: 12px; color: #94a3b8;">Ou use o código Pix Copia e Cola:</p>
-            <input type="text" id="pixCode" readonly style="font-size: 12px; text-align: center;">
-            <button class="btn-search" style="margin-top: 10px; background-color: #38bdf8;" onclick="copiarPix()">COPIAR CÓDIGO PIX 📋</button>
-            <button style="margin-top: 10px; background-color: transparent; color: #94a3b8; border: 1px solid #475569;" onclick="fecharModal()">Fechar</button>
-        </div>
-    </div>
+  <script>
+    // Exemplo de estrutura de dados com MÚLTIPLOS REGISTROS para o carrossel
+    let registrosAtuais = [];
+    let indiceAtual = 0;
 
-    <script>
-        async function realizarBusca() {
-            const phone = document.getElementById('phone').value;
-            if(!phone) return alert("Por favor, digite o número do WhatsApp.");
+    function buscarNumero() {
+      const tel = document.getElementById('phoneInput').value.trim();
+      if (!tel) {
+        alert('Por favor, digite um número de telefone com DDD.');
+        return;
+      }
 
-            const response = await fetch('/api/buscar-previa', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ telefone: phone })
-            });
+      // Simulação de retorno com 2 registros encontrados para o mesmo número
+      registrosAtuais = [
+        { nome: "MARIA S. (TITULAR ATUAL)", cpf: "***.452.890-**", operadora: "VIVO", obs: "Cadastro Ativo" },
+        { nome: "JOÃO P. (TITULAR ANTERIOR)", cpf: "***.123.654-**", operadora: "CLARO", obs: "Registro Histórico" }
+      ];
 
-            const data = await response.json();
-            if(response.ok) {
-                document.getElementById('nomeParcial').innerText = data.nome_parcial;
-                document.getElementById('resultPanel').style.display = 'block';
-            } else {
-                alert(data.detail || "Erro ao realizar busca.");
-            }
-        }
+      indiceAtual = 0;
+      document.getElementById('resultArea').style.display = 'block';
+      renderizarRegistro();
+    }
 
-        async function gerarPix() {
-            const phone = document.getElementById('phone').value;
-            const response = await fetch('/api/gerar-pix', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ telefone: phone })
-            });
+    function renderizarRegistro() {
+      const total = registrosAtuais.length;
+      const reg = registrosAtuais[indiceAtual];
 
-            const data = await response.json();
-            if(data.status === 'sucesso') {
-                document.getElementById('qrImg').src = data.qr_code_img;
-                document.getElementById('pixCode').value = data.pix_copia_cola;
-                document.getElementById('modalPix').style.display = 'flex';
-            } else {
-                alert("Erro ao gerar Pix: " + data.mensagem);
-            }
-        }
+      document.getElementById('recordIndicator').innerText = `Registro ${indiceAtual + 1} de ${total}`;
+      document.getElementById('prevBtn').disabled = (indiceAtual === 0);
+      document.getElementById('nextBtn').disabled = (indiceAtual === total - 1);
 
-        function copiarPix() {
-            const copyText = document.getElementById("pixCode");
-            copyText.select();
-            document.execCommand("copy");
-            alert("Código Pix copiado com sucesso!");
-        }
+      document.getElementById('recordContent').innerHTML = `
+        <p style="color: var(--primary); font-weight: bold; margin-bottom: 5px;">${reg.nome}</p>
+        <p style="font-size: 0.9rem; color: var(--text-muted);">CPF: ${reg.cpf}</p>
+        <p style="font-size: 0.9rem; color: var(--text-muted);">Operadora: ${reg.operadora}</p>
+        <p style="font-size: 0.8rem; color: #64748B; margin-top: 5px;">Status: ${reg.obs}</p>
+      `;
+    }
 
-        function fecharModal() {
-            document.getElementById('modalPix').style.display = 'none';
-        }
-    </script>
+    function mudarRegistro(direcao) {
+      indiceAtual += direcao;
+      renderizarRegistro();
+    }
+
+    // LÓGICA DO SAC / FAQ INTERATIVO
+    function abrirSAC() {
+      document.getElementById('sacModal').style.display = 'flex';
+    }
+
+    function fecharSAC() {
+      document.getElementById('sacModal').style.display = 'none';
+    }
+
+    function tratarMotivoSAC() {
+      const motivo = document.getElementById('sacMotivo').value;
+      
+      // Oculta todas as respostas prévias
+      document.querySelectorAll('.faq-answer').forEach(el => el.style.display = 'none');
+      
+      if (motivo) {
+        const respostaEl = document.getElementById('answer_' + motivo);
+        if (respostaEl) respostaEl.style.display = 'block';
+        
+        // Exibe o formulário para preenchimento
+        document.getElementById('sacForm').style.display = 'block';
+      } else {
+        document.getElementById('sacForm').style.display = 'none';
+      }
+    }
+
+    function enviarMensagemSAC(event) {
+      event.preventDefault();
+      alert('Mensagem enviada com sucesso! Nossa equipe analisará e retornará em breve.');
+      fecharSAC();
+      document.getElementById('sacForm').reset();
+      document.getElementById('sacMotivo').value = '';
+      tratarMotivoSAC();
+    }
+  </script>
 </body>
 </html>
