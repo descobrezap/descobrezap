@@ -1,9 +1,9 @@
 import os
 import urllib.parse
-from fastapi import FastAPI, HTTPException
+import httpx
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
-import mercadopago
 
 app = FastAPI(title="Descobre Zap API")
 
@@ -16,9 +16,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Inicializa o Mercado Pago via variável de ambiente do Render
-MP_TOKEN = os.getenv("MERCADO_PAGO_TOKEN", "")
-sdk = mercadopago.SDK(MP_TOKEN) if MP_TOKEN else None
+# Token do Pushin Pay
+PUSHIN_PAY_TOKEN = os.getenv("PUSHIN_PAY_TOKEN", "70634|7PHvOzg8JQAqCodw1Vh1XgEWx92KpSPG5TVvvQhi423c8a77")
 
 
 # 1. ROTA PRINCIPAL DA PÁGINA INICIAL
@@ -39,65 +38,70 @@ async def consultar():
     }
 
 
-# 3. ROTA DE GERAÇÃO DO PIX DE 12,90 REAIS
+# 3. ROTA DE GERAÇÃO DO PIX DE 12,90 REAIS (PUSHIN PAY)
 @app.post("/api/gerar-pix")
 @app.post("/gerar_pix")
 async def gerar_pix():
-    if not MP_TOKEN:
+    if not PUSHIN_PAY_TOKEN:
         return JSONResponse(
             status_code=400,
             content={
                 "status": "erro",
-                "mensagem": "Token do Mercado Pago não configurado no Render."
+                "mensagem": "Token do Pushin Pay não configurado."
             }
         )
 
     try:
-        payment_data = {
-            "transaction_amount": 12.90,
-            "description": "Consulta Descobre Zap",
-            "payment_method_id": "pix",
-            "payer": {
-                "email": "cliente@descobrezap.com.br",
-                "first_name": "Cliente",
-                "last_name": "Zap"
-            }
+        # Valor em centavos: R$ 12,90 -> 1290
+        payload = {
+            "value": 1290,
+            "webhook_url": "https://descobrezap.com.br/webhook/pushinpay"
         }
 
-        payment_response = sdk.payment().create(payment_data)
-        payment = payment_response.get("response", {})
+        headers = {
+            "Authorization": f"Bearer {PUSHIN_PAY_TOKEN}",
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        }
 
-        if payment_response.get("status") not in [200, 201]:
-            msg_erro = payment.get("message") or "Erro ao processar pagamento no Mercado Pago."
-            return JSONResponse(
-                status_code=400,
-                content={
-                    "status": "erro",
-                    "mensagem": msg_erro
-                }
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "https://api.pushinpay.com.br/api/pix/cashIn",
+                json=payload,
+                headers=headers
             )
 
-        point_of_interaction = payment.get("point_of_interaction", {})
-        transaction_data = point_of_interaction.get("transaction_data", {})
+            data = response.json()
 
-        raw_qr_code = transaction_data.get("qr_code", "")
-        raw_base64 = transaction_data.get("qr_code_base64", "")
+            if response.status_code not in [200, 201]:
+                msg_erro = data.get("message") or "Erro ao processar pagamento no Pushin Pay."
+                return JSONResponse(
+                    status_code=400,
+                    content={
+                        "status": "erro",
+                        "mensagem": msg_erro
+                    }
+                )
 
-        # Formata a imagem em Base64 nativa para a tag <img> do HTML
-        formatted_base64 = raw_base64
-        if raw_base64 and not raw_base64.startswith("data:image"):
-            formatted_base64 = f"data:image/png;base64,{raw_base64}"
+            # Pega o código Pix Copia e Cola e a imagem do QR Code
+            raw_qr_code = data.get("qr_code_text") or data.get("pix_copia_e_cola") or data.get("qr_code", "")
+            raw_base64 = data.get("qr_code_base64") or data.get("qr_code", "")
 
-        # Se por algum motivo o Base64 falhar, gera a URL alternativa
-        if not formatted_base64:
-            encoded_pix = urllib.parse.quote(raw_qr_code)
-            formatted_base64 = f"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={encoded_pix}"
+            # Formata a imagem em Base64 nativa para a tag <img> do HTML
+            formatted_base64 = raw_base64
+            if raw_base64 and not raw_base64.startswith("data:image") and not raw_base64.startswith("http"):
+                formatted_base64 = f"data:image/png;base64,{raw_base64}"
 
-        return {
-            "status": "sucesso",
-            "qr_code_img": formatted_base64,
-            "pix_copia_cola": raw_qr_code
-        }
+            # Se não vier a imagem pronta, gera a imagem via API do QR Code usando o texto do Pix
+            if not formatted_base64 or formatted_base64 == raw_qr_code:
+                encoded_pix = urllib.parse.quote(raw_qr_code)
+                formatted_base64 = f"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={encoded_pix}"
+
+            return {
+                "status": "sucesso",
+                "qr_code_img": formatted_base64,
+                "pix_copia_cola": raw_qr_code
+            }
 
     except Exception as e:
         return JSONResponse(
@@ -107,3 +111,20 @@ async def gerar_pix():
                 "mensagem": str(e)
             }
         )
+
+
+# 4. ROTA DE WEBHOOK (RECEBIMENTO DA CONFIRMAÇÃO DE PAGAMENTO)
+@app.post("/webhook/pushinpay")
+async def pushinpay_webhook(request: Request):
+    try:
+        data = await request.json()
+        status = data.get("status")
+        pix_id = data.get("id")
+
+        if status in ["paid", "approved", "completed"]:
+            print(f"Pagamento Pix {pix_id} aprovado com sucesso!")
+            return {"status": "sucesso", "mensagem": "Pagamento confirmado"}
+
+        return {"status": "ignorado"}
+    except Exception as e:
+        return JSONResponse(status_code=400, content={"status": "erro", "mensagem": str(e)})
