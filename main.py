@@ -2,9 +2,10 @@ import os
 import requests
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 
-# 1. INICIALIZAÇÃO DO APP (Deve vir antes das rotas!)
+# 1. INICIALIZAÇÃO DA APLICAÇÃO
 app = FastAPI()
 
 app.add_middleware(
@@ -18,11 +19,11 @@ app.add_middleware(
 # 2. CONFIGURAÇÕES E TOKENS
 PUSHIN_PAY_TOKEN = os.getenv("PUSHIN_PAY_TOKEN", "30932|p8kKk97R6gInFpGedR4cOQ0KThE94a8mS6D4A0x5e954e3d0")
 APIBRASIL_TOKEN = os.getenv("APIBRASIL_TOKEN", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3OTRjMzcxZWYzZDNjM2E0Y2M2YTZjMiIsImNsaWVudF9pZCI6IjY3OTRjMzcxZWYzZDNjM2E0Y2M2YTZjMiIsImVtYWlsIjoiZnJlZHJpY2suc29hcmVzLm5vZ3VlaXJhQGdtYWlsLmNvbSIsImlhdCI6MTczNzgzOTk4NX0.sE3C-4l9D4p3t3b3z_d7l6k5j4i3h2g1f0e9d8c7b6a")
-BASE_URL = os.getenv("BASE_URL", "https://descobrezap.onrender.com")
+BASE_URL = os.getenv("BASE_URL", "https://descobrezap.com.br")
 
 PAGAMENTOS_CACHE = {}
 
-# 3. FUNÇÕES AUXILIARES
+# 3. FUNÇÃO DE CONSULTA NA APIBRASIL
 def buscar_dados_completos(telefone: str):
     phone_clean = "".join(filter(str.isdigit, telefone))
     url = "https://app.apibrasil.io/api/v2/dados/telefone"
@@ -42,11 +43,14 @@ def buscar_dados_completos(telefone: str):
         print(f"Exceção APIBrasil: {str(e)}")
         return None
 
-# 4. ROTAS DA APLICAÇÃO
+# 4. ROTA RAIZ (Abre a página visual do site descobrezap.com.br)
 @app.get("/")
-def read_root():
-    return {"status": "API Online"}
+async def read_root():
+    if os.path.exists("index.html"):
+        return FileResponse("index.html")
+    return {"status": "API Online (index.html não encontrado na raiz)"}
 
+# 5. GERAR PIX DE 12,90 REAIS
 @app.post("/api/gerar-pix")
 @app.post("/gerar-pix")
 async def gerar_pix(payload: dict):
@@ -54,8 +58,7 @@ async def gerar_pix(payload: dict):
     if not phone:
         return {"erro": "Telefone não informado"}
 
-    # Valor mantido em 12,90 reais (1290 centavos)
-    valor_em_centavos = 1290  
+    valor_em_centavos = 1290  # 12,90 reais
 
     headers = {
         "Authorization": f"Bearer {PUSHIN_PAY_TOKEN}",
@@ -98,6 +101,7 @@ async def gerar_pix(payload: dict):
         print(f"Exceção ao gerar Pix: {str(e)}")
         return {"erro": "Erro de conexão ao gerar o Pix."}
 
+# 6. CHECAR STATUS DO PIX E BUSCAR DADOS
 @app.get("/api/checar-status/{txid}")
 @app.get("/checar-status/{txid}")
 async def checar_status(txid: str):
@@ -158,6 +162,7 @@ async def checar_status(txid: str):
     
     return {"status": "pendente"}
 
+# 7. WEBHOOK PUSHIN PAY
 @app.post("/api/webhook/pushinpay")
 async def webhook_pushinpay(request: Request):
     try:
@@ -174,6 +179,7 @@ async def webhook_pushinpay(request: Request):
         print(f"Erro no webhook: {str(e)}")
         return JSONResponse(status_code=400, content={"error": str(e)})
 
+# 8. SAC DA PÁGINA
 @app.post("/api/sac")
 async def enviar_sac(payload: dict):
     nome = payload.get("nome")
