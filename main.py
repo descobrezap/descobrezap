@@ -1,5 +1,8 @@
 import os
 import requests
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -15,8 +18,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Token Real recuperado da Pushin Pay
 PUSHIN_PAY_TOKEN = "70634|7PHvOzg8JQAqCodw1Vh1XgEWx92KpSPG5TVvvQhi423c8a77"
+
+# Configuração de E-mail nativo (Gmail SMTP)
+GMAIL_USER = "descobrezap@gmail.com"
+GMAIL_APP_PASS = "pfzh sxln wgnm tkxj"
 
 pedidos_db = {}
 
@@ -26,6 +32,13 @@ class ConsultaRequest(BaseModel):
 class GerarPixRequest(BaseModel):
     telefone: str
     tipo: str = "consulta"
+
+class SacRequest(BaseModel):
+    nome: str
+    contato: str
+    numero_pesquisado: str = ""
+    motivo: str = ""
+    mensagem: str
 
 @app.get("/")
 def home():
@@ -121,6 +134,41 @@ def checar_status(txid: str):
         }
     
     return {"status": "aguardando_pagamento"}
+
+# Rota para receber formulário de SAC e enviar por e-mail para descobrezap@gmail.com
+@app.post("/api/enviar-sac")
+def enviar_sac(payload: SacRequest):
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = GMAIL_USER
+        msg['To'] = GMAIL_USER
+        msg['Subject'] = f"[SAC Descobre Zap] Nova mensagem de {payload.nome}"
+
+        corpo_email = f"""
+        NOVA MENSAGEM RECEBIDA PELO SAC DO SITE
+
+        Nome: {payload.nome}
+        Contato (WhatsApp/E-mail): {payload.contato}
+        Número Pesquisado: {payload.numero_pesquisado if payload.numero_pesquisado else 'Não informado'}
+        Motivo Selecionado: {payload.motivo if payload.motivo else 'Geral'}
+
+        Mensagem do Cliente:
+        -----------------------------------------
+        {payload.mensagem}
+        -----------------------------------------
+        """
+        
+        msg.attach(MIMEText(corpo_email, 'plain', 'utf-8'))
+
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(GMAIL_USER, GMAIL_APP_PASS)
+        server.send_message(msg)
+        server.quit()
+
+        return {"status": "sucesso", "mensagem": "E-mail enviado com sucesso."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao enviar e-mail: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn
