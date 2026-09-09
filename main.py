@@ -1,6 +1,7 @@
 import os
+import json
 import urllib.parse
-import httpx
+import urllib.request
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
@@ -53,56 +54,58 @@ async def gerar_pix():
 
     try:
         # Valor em centavos: R$ 12,90 -> 1290
-        payload = {
+        payload = json.dumps({
             "value": 1290,
             "webhook_url": "https://descobrezap.com.br/webhook/pushinpay"
-        }
+        }).encode("utf-8")
 
         headers = {
             "Authorization": f"Bearer {PUSHIN_PAY_TOKEN}",
             "Accept": "application/json",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "User-Agent": "Mozilla/5.0"
         }
 
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                "https://api.pushinpay.com.br/api/pix/cashIn",
-                json=payload,
-                headers=headers
-            )
+        req = urllib.request.Request(
+            "https://api.pushinpay.com.br/api/pix/cashIn",
+            data=payload,
+            headers=headers,
+            method="POST"
+        )
 
-            data = response.json()
+        with urllib.request.urlopen(req) as response:
+            res_body = response.read().decode("utf-8")
+            data = json.loads(res_body)
 
-            if response.status_code not in [200, 201]:
-                msg_erro = data.get("message") or "Erro ao processar pagamento no Pushin Pay."
-                return JSONResponse(
-                    status_code=400,
-                    content={
-                        "status": "erro",
-                        "mensagem": msg_erro
-                    }
-                )
+        # Pega o código Pix Copia e Cola e a imagem do QR Code
+        raw_qr_code = data.get("qr_code_text") or data.get("pix_copia_e_cola") or data.get("qr_code", "")
+        raw_base64 = data.get("qr_code_base64") or data.get("qr_code", "")
 
-            # Pega o código Pix Copia e Cola e a imagem do QR Code
-            raw_qr_code = data.get("qr_code_text") or data.get("pix_copia_e_cola") or data.get("qr_code", "")
-            raw_base64 = data.get("qr_code_base64") or data.get("qr_code", "")
+        # Formata a imagem em Base64 nativa para a tag <img> do HTML
+        formatted_base64 = raw_base64
+        if raw_base64 and not raw_base64.startswith("data:image") and not raw_base64.startswith("http"):
+            formatted_base64 = f"data:image/png;base64,{raw_base64}"
 
-            # Formata a imagem em Base64 nativa para a tag <img> do HTML
-            formatted_base64 = raw_base64
-            if raw_base64 and not raw_base64.startswith("data:image") and not raw_base64.startswith("http"):
-                formatted_base64 = f"data:image/png;base64,{raw_base64}"
+        # Se não vier a imagem pronta, gera a imagem via API do QR Code usando o texto do Pix
+        if not formatted_base64 or formatted_base64 == raw_qr_code:
+            encoded_pix = urllib.parse.quote(raw_qr_code)
+            formatted_base64 = f"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={encoded_pix}"
 
-            # Se não vier a imagem pronta, gera a imagem via API do QR Code usando o texto do Pix
-            if not formatted_base64 or formatted_base64 == raw_qr_code:
-                encoded_pix = urllib.parse.quote(raw_qr_code)
-                formatted_base64 = f"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={encoded_pix}"
+        return {
+            "status": "sucesso",
+            "qr_code_img": formatted_base64,
+            "pix_copia_cola": raw_qr_code
+        }
 
-            return {
-                "status": "sucesso",
-                "qr_code_img": formatted_base64,
-                "pix_copia_cola": raw_qr_code
+    except urllib.error.HTTPError as e:
+        error_content = e.read().decode("utf-8") if e.fp else str(e)
+        return JSONResponse(
+            status_code=400,
+            content={
+                "status": "erro",
+                "mensagem": f"Erro ao processar pagamento no Pushin Pay: {error_content}"
             }
-
+        )
     except Exception as e:
         return JSONResponse(
             status_code=500,
