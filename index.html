@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Descobre Zap - Identificação Rápida de WhatsApp</title>
+
+  <!-- FAVICON: Balão estilo Zap Verde com Interrogação Branca -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%2325D366'/><path d='M35,68 L32,80 L44,74 C46,75 48,75 50,75 C64,75 75,64 75,50 C75,36 64,25 50,25 C36,25 25,36 25,50 C25,57 28,63 35,68 Z' fill='%2325D366' stroke='white' stroke-width='2'/><text x='50' y='63' font-family='Arial, sans-serif' font-weight='bold' font-size='42' fill='white' text-anchor='middle'>?</text></svg>">
+
   <style>
     :root {
       --primary: #25D366;
@@ -77,7 +81,7 @@
         <p><strong>Operadora:</strong> VIVO (Minas Gerais)</p>
         <p style="margin-top: 10px; font-size: 0.85rem; color: var(--text-muted);">Para desbloquear o relatório completo e visualizar todos os registros vinculados, realize o pagamento via Pix.</p>
         
-        <button class="btn-primary" style="margin-top: 15px;" onclick="abrirModalPix('consulta')">Liberar Relatório por R$ 12,90</button>
+        <button class="btn-primary" style="margin-top: 15px;" onclick="abrirModalPix('consulta')">Liberar Relatório por 12,90 reais</button>
       </div>
 
       <div id="resultArea" class="carousel-container">
@@ -93,7 +97,7 @@
 
         <div id="recordContent" class="record-card"></div>
 
-        <button class="btn-pdf" onclick="abrirModalPix('pdf')">📄 Baixar Relatório em PDF por R$ 4,90</button>
+        <button class="btn-pdf" onclick="abrirModalPix('pdf')">📄 Baixar Relatório em PDF por 4,90 reais</button>
       </div>
 
     </div>
@@ -184,7 +188,7 @@
 
     async function abrirModalPix(tipo) {
       const tel = document.getElementById('phoneInput').value.trim();
-      const valorTxt = tipo === 'consulta' ? 'R$ 12,90' : 'R$ 4,90';
+      const valorTxt = tipo === 'consulta' ? '12,90 reais' : '4,90 reais';
 
       document.getElementById('pixModalTitle').innerText = tipo === 'pdf' ? 'Baixar Relatório em PDF' : 'Liberação do Relatório';
       document.getElementById('pixModalDesc').innerText = `Valor: ${valorTxt}`;
