@@ -10,15 +10,18 @@ from fastapi.responses import FileResponse
 app = FastAPI()
 
 # ----------------------------------------------------
-# CONFIGURAÇÕES E CREDENCIAIS
+# CONFIGURAÇÕES E TOKENS
 # ----------------------------------------------------
 APIBRASIL_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FwcC5hcGlicmFzaWwuaW8vYXBpL3YyL2F1dGgvbG9naW4iLCJpYXQiOjE3ODg5OTQ3MTUsImV4cCI6MTgyMDUzMDcxNSwibmJmIjoxNzg4OTk0NzE1LCJqdGkiOiIxMkhtMk9YR2Q4d3JDTjdzIiwic3ViIjoiNjAzMzMiLCJzZWFyY2giOiIwMThhNGRjOC1lMDQ5LTQ5MzQtOTlhOS1mYWUwMTFhZmQ2NDcifQ.QaLq6W3H-GfXtxgncytiM3sRRef2bJownImyqf3ZXDQ"
+
+# Token do Pushin Pay (substitua se o seu for diferente)
+PUSHIN_PAY_TOKEN = os.getenv("PUSHIN_PAY_TOKEN", "SEU_TOKEN_PUSHIN_PAY_AQUI")
 
 GMAIL_USER = "descobrezap@gmail.com"
 GMAIL_APP_PASS = "pfzh sxln wgnm tkxj"
 
 # ----------------------------------------------------
-# ARQUIVOS ESTÁTICOS E ROTA RAIZ (PÁGINA PRINCIPAL)
+# ARQUIVOS ESTÁTICOS E ROTA RAIZ
 # ----------------------------------------------------
 if os.path.exists("static"):
     app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -50,7 +53,59 @@ def buscar_dados_completos(telefone: str):
         return None
 
 # ----------------------------------------------------
-# FORMULÁRIO DE SAC / AJUDA (ENVIO VIA GMAIL SMTP)
+# INTEGRAÇÃO PUSHIN PAY (GERAÇÃO DE PIX)
+# ----------------------------------------------------
+@app.post("/api/criar-pix")
+@app.post("/criar-pix")
+async def criar_pix(request: Request):
+    data = await request.json()
+    telefone = data.get("telefone", "")
+    
+    # Converte R$ 12,90 para centavos (1290)
+    valor_centavos = 1290
+
+    headers = {
+        "Authorization": f"Bearer {PUSHIN_PAY_TOKEN}",
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "value": valor_centavos,
+        "webhook_url": "https://descobrezap.com.br/api/webhook-pix"
+    }
+
+    try:
+        response = requests.post("https://api.pushinpay.com.br/api/pix/cashIn", json=payload, headers=headers, timeout=10)
+        if response.status_code in [200, 201]:
+            res_data = response.json()
+            return {
+                "status": "sucesso",
+                "qr_code": res_data.get("qr_code"),
+                "qr_code_base64": res_data.get("qr_code_base64"),
+                "txid": res_data.get("id")
+            }
+        else:
+            print(f"Erro Pushin Pay ({response.status_code}): {response.text}")
+            raise HTTPException(status_code=400, detail="Erro ao gerar cobrança Pix na intermediadora.")
+    except Exception as e:
+        print(f"Exceção Pix: {str(e)}")
+        raise HTTPException(status_code=500, detail="Falha na comunicação com gateway de pagamento.")
+
+@app.post("/api/webhook-pix")
+@app.post("/webhook-pix")
+async def webhook_pix(request: Request):
+    data = await request.json()
+    status = data.get("status")
+    # Quando o Pix é pago, realiza a chamada da APIBrasil para liberar os dados
+    if status in ["paid", "PAID", "approved"]:
+        telefone = data.get("telefone", "")
+        if telefone:
+            dados = buscar_dados_completos(telefone)
+            # Lógica para salvar/retornar o relatório
+    return {"status": "ok"}
+
+# ----------------------------------------------------
+# FORMULÁRIO DE SAC / AJUDA
 # ----------------------------------------------------
 @app.post("/api/sac")
 async def enviar_sac(request: Request):
