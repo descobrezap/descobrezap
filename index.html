@@ -36,7 +36,7 @@
 
     /* Estilos da Prévia e Paywall */
     .preview-box { display: none; background: #0F172A; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid var(--primary); }
-    .blurred-text { filter: blur(5px); user-select: none; }
+    .blurred-text { filter: blur(4px); user-select: none; }
     
     /* Timer de Expiração */
     .timer-banner { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--warning); color: #FCA5A5; padding: 10px; border-radius: 8px; text-align: center; font-size: 0.85rem; font-weight: bold; margin-bottom: 12px; display: none; }
@@ -74,12 +74,12 @@
       <!-- PRÉVIA DOS DADOS (ANTES DO PAGAMENTO) -->
       <div id="previewArea" class="preview-box">
         <p style="color: var(--primary); font-size: 0.9rem; font-weight: bold; margin-bottom: 8px;">✓ Número localizado no sistema!</p>
-        <p><strong>Titular:</strong> <span class="blurred-text">MARIA SILVA DE OLIVEIRA</span></p>
-        <p><strong>CPF:</strong> <span class="blurred-text">***.452.890-**</span></p>
+        <p><strong>Titular:</strong> MARIA S. <span class="blurred-text">DE OLIVEIRA</span></p>
+        <p><strong>CPF:</strong> ***.452.<span class="blurred-text">890-**</span></p>
         <p><strong>Operadora:</strong> VIVO (Minas Gerais)</p>
         <p style="margin-top: 10px; font-size: 0.85rem; color: var(--text-muted);">Para desbloquear o relatório completo e visualizar todos os registros vinculados, realize o pagamento via Pix.</p>
         
-        <button class="btn-primary" style="margin-top: 15px;" onclick="abrirModalPix('12.90', 'consulta')">Liberar Relatório por 12 reais e 90 centavos</button>
+        <button class="btn-primary" style="margin-top: 15px;" onclick="abrirModalPix('R$ 12,90', 'consulta')">Liberar Relatório por R$ 12,90</button>
       </div>
 
       <!-- ÁREA DO RELATÓRIO PAGO (COM CARROSSEL E TIMER) -->
@@ -101,7 +101,7 @@
         </div>
 
         <!-- Botão de Upsell para PDF -->
-        <button class="btn-pdf" onclick="abrirModalPix('4.90', 'pdf')">📄 Baixar Relatório em PDF por 4 reais e 90 centavos</button>
+        <button class="btn-pdf" onclick="abrirModalPix('R$ 4,90', 'pdf')">📄 Baixar Relatório em PDF por R$ 4,90</button>
       </div>
 
     </div>
@@ -117,7 +117,7 @@
     <div class="modal-content">
       <span class="close-btn" onclick="fecharModalPix()">&times;</span>
       <h2 style="font-size: 1.2rem; color: var(--primary); margin-bottom: 10px;" id="pixModalTitle">Pagamento via Pix</h2>
-      <p style="font-size: 0.9rem; color: var(--text-muted);" id="pixModalDesc">Valor: 12 reais e 90 centavos</p>
+      <p style="font-size: 0.9rem; color: var(--text-muted);" id="pixModalDesc">Valor: R$ 12,90</p>
       
       <!-- Área do QR Code / Chave Pix da Pushin Pay -->
       <div style="background: #FFF; padding: 15px; border-radius: 8px; margin: 15px auto; width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; color: #000; font-size: 0.8rem;">
@@ -178,11 +178,10 @@
   <script>
     let registrosAtuais = [];
     let indiceAtual = 0;
-    let tempoRestante = 300; // 5 minutos em segundos
+    let tempoRestante = 300;
     let timerInterval = null;
-    let tipoPagamentoAtual = 'consulta'; // 'consulta' ou 'pdf'
+    let tipoPagamentoAtual = 'consulta';
 
-    // STEP 1: USUÁRIO DIGITA O NÚMERO E CLICA EM CONSULTAR
     function buscarNumero() {
       const tel = document.getElementById('phoneInput').value.trim();
       if (!tel) {
@@ -190,16 +189,14 @@
         return;
       }
       
-      // Oculta resultado anterior e exibe a prévia bloqueada para incentivar o Pix
       document.getElementById('resultArea').style.display = 'none';
       document.getElementById('previewArea').style.display = 'block';
     }
 
-    // STEP 2: MODAL DO PIX (CONSULTA OU PDF)
-    function abrirModalPix(valor, tipo) {
+    function abrirModalPix(valorFormatted, tipo) {
       tipoPagamentoAtual = tipo;
       document.getElementById('pixModalTitle').innerText = tipo === 'pdf' ? 'Baixar Relatório em PDF' : 'Liberação do Relatório';
-      document.getElementById('pixModalDesc').innerText = `Valor: ${valor.replace('.', ',')} reais`;
+      document.getElementById('pixModalDesc').innerText = `Valor: ${valorFormatted}`;
       document.getElementById('pixModal').style.display = 'flex';
     }
 
@@ -207,18 +204,16 @@
       document.getElementById('pixModal').style.display = 'none';
     }
 
-    // SIMULAÇÃO DA CONFIRMAÇÃO DO PIX (NO SEU BACKEND SERÁ VIA WEBHOOK)
     function simularPagamentoAprovado() {
       fecharModalPix();
 
       if (tipoPagamentoAtual === 'consulta') {
-        // Esconde a prévia e exibe o relatório completo com carrossel
         document.getElementById('previewArea').style.display = 'none';
         document.getElementById('resultArea').style.display = 'block';
 
         registrosAtuais = [
-          { nome: "MARIA S. (TITULAR ATUAL)", cpf: "***.452.890-**", operadora: "VIVO", obs: "Cadastro Ativo" },
-          { nome: "JOÃO P. (TITULAR ANTERIOR)", cpf: "***.123.654-**", operadora: "CLARO", obs: "Registro Histórico" }
+          { nome: "MARIA SILVA DE OLIVEIRA", cpf: "***.452.890-**", operadora: "VIVO", obs: "Titular Atual / Cadastro Ativo" },
+          { nome: "JOÃO PEDRO SOUZA", cpf: "***.123.654-**", operadora: "CLARO", obs: "Titular Anterior (Registro Histórico)" }
         ];
 
         indiceAtual = 0;
@@ -229,7 +224,6 @@
       }
     }
 
-    // CARROSSEL DE REGISTROS
     function renderizarRegistro() {
       const total = registrosAtuais.length;
       const reg = registrosAtuais[indiceAtual];
@@ -251,7 +245,6 @@
       renderizarRegistro();
     }
 
-    // TIMER REGRESSIVO DE 5 MINUTOS (300s)
     function iniciarTimer5Minutos() {
       document.getElementById('timerBanner').style.display = 'block';
       tempoRestante = 300;
@@ -276,7 +269,6 @@
       }, 1000);
     }
 
-    // LÓGICA DO SAC / FAQ
     function abrirSAC() { document.getElementById('sacModal').style.display = 'flex'; }
     function fecharSAC() { document.getElementById('sacModal').style.display = 'none'; }
 
