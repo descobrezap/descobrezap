@@ -13,6 +13,7 @@
       --text: #F8FAFC;
       --text-muted: #94A3B8;
       --accent: #0284C7;
+      --warning: #EF4444;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -31,6 +32,15 @@
     button.btn-primary { background-color: var(--primary); color: #000; font-weight: bold; border: none; padding: 14px; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: 0.2s; width: 100%; }
     button.btn-primary:hover { background-color: var(--primary-dark); }
     
+    button.btn-pdf { background-color: var(--accent); color: #FFF; font-weight: bold; border: none; padding: 12px; border-radius: 8px; font-size: 0.95rem; cursor: pointer; margin-top: 12px; width: 100%; }
+
+    /* Estilos da Prévia e Paywall */
+    .preview-box { display: none; background: #0F172A; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid var(--primary); }
+    .blurred-text { filter: blur(5px); user-select: none; }
+    
+    /* Timer de Expiração */
+    .timer-banner { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--warning); color: #FCA5A5; padding: 10px; border-radius: 8px; text-align: center; font-size: 0.85rem; font-weight: bold; margin-bottom: 12px; display: none; }
+
     /* Carousel de Múltiplos Registros */
     .carousel-container { display: none; position: relative; margin-top: 15px; }
     .carousel-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -38,12 +48,12 @@
     .carousel-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .record-card { background: #0F172A; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); }
 
-    /* Modal do SAC */
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; padding: 15px; z-index: 1000; }
-    .modal-content { background: var(--card-bg); width: 100%; max-width: 480px; padding: 20px; border-radius: 12px; position: relative; max-height: 90vh; overflow-y: auto; }
+    /* Modais (Pix e SAC) */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; padding: 15px; z-index: 1000; }
+    .modal-content { background: var(--card-bg); width: 100%; max-width: 480px; padding: 20px; border-radius: 12px; position: relative; max-height: 90vh; overflow-y: auto; text-align: center; }
     .close-btn { position: absolute; right: 15px; top: 15px; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
     
-    .faq-answer { background: #0F172A; padding: 12px; border-radius: 6px; border-left: 3px solid var(--accent); margin: 10px 0; font-size: 0.9rem; display: none; color: #E2E8F0; }
+    .faq-answer { background: #0F172A; padding: 12px; border-radius: 6px; border-left: 3px solid var(--accent); margin: 10px 0; font-size: 0.9rem; display: none; color: #E2E8F0; text-align: left; }
     
     footer { text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 20px; }
     footer a { color: var(--primary); text-decoration: none; font-weight: bold; }
@@ -61,8 +71,25 @@
         <button class="btn-primary" onclick="buscarNumero()">Consultar Número</button>
       </div>
 
-      <!-- Área do Carrossel de Resultados (Prévia ou Relatório) -->
+      <!-- PRÉVIA DOS DADOS (ANTES DO PAGAMENTO) -->
+      <div id="previewArea" class="preview-box">
+        <p style="color: var(--primary); font-size: 0.9rem; font-weight: bold; margin-bottom: 8px;">✓ Número localizado no sistema!</p>
+        <p><strong>Titular:</strong> <span class="blurred-text">MARIA SILVA DE OLIVEIRA</span></p>
+        <p><strong>CPF:</strong> <span class="blurred-text">***.452.890-**</span></p>
+        <p><strong>Operadora:</strong> VIVO (Minas Gerais)</p>
+        <p style="margin-top: 10px; font-size: 0.85rem; color: var(--text-muted);">Para desbloquear o relatório completo e visualizar todos os registros vinculados, realize o pagamento via Pix.</p>
+        
+        <button class="btn-primary" style="margin-top: 15px;" onclick="abrirModalPix('12.90', 'consulta')">Liberar Relatório por 12 reais e 90 centavos</button>
+      </div>
+
+      <!-- ÁREA DO RELATÓRIO PAGO (COM CARROSSEL E TIMER) -->
       <div id="resultArea" class="carousel-container">
+        
+        <!-- Timer de Expiração de 5 minutos -->
+        <div id="timerBanner" class="timer-banner">
+          ⏱️ Sessão expira em: <span id="timerClock">05:00</span>
+        </div>
+
         <div class="carousel-nav">
           <button id="prevBtn" class="carousel-btn" onclick="mudarRegistro(-1)" disabled>← Anterior</button>
           <span id="recordIndicator" style="font-size: 0.85rem; color: var(--text-muted);">Registro 1 de 1</span>
@@ -70,9 +97,13 @@
         </div>
 
         <div id="recordContent" class="record-card">
-          <!-- O conteúdo do registro atual é injetado dinamicamente via JS -->
+          <!-- O conteúdo é injetado via JS -->
         </div>
+
+        <!-- Botão de Upsell para PDF -->
+        <button class="btn-pdf" onclick="abrirModalPix('4.90', 'pdf')">📄 Baixar Relatório em PDF por 4 reais e 90 centavos</button>
       </div>
+
     </div>
   </div>
 
@@ -81,15 +112,36 @@
     <p style="margin-top: 6px;"><a href="javascript:void(0)" onclick="abrirSAC()">Precisa de ajuda? Suporte / Central de Dúvidas</a></p>
   </footer>
 
+  <!-- MODAL DE PAGAMENTO PIX -->
+  <div id="pixModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="fecharModalPix()">&times;</span>
+      <h2 style="font-size: 1.2rem; color: var(--primary); margin-bottom: 10px;" id="pixModalTitle">Pagamento via Pix</h2>
+      <p style="font-size: 0.9rem; color: var(--text-muted);" id="pixModalDesc">Valor: 12 reais e 90 centavos</p>
+      
+      <!-- Área do QR Code / Chave Pix da Pushin Pay -->
+      <div style="background: #FFF; padding: 15px; border-radius: 8px; margin: 15px auto; width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; color: #000; font-size: 0.8rem;">
+        [QR CODE PUSHIN PAY]
+      </div>
+
+      <input type="text" readonly value="00020126580014BR.GOV.BCB.PIX..." style="text-align: center; font-size: 0.8rem; margin-bottom: 10px;">
+      <button class="btn-primary" onclick="simularPagamentoAprovado()">Copiar Chave Pix</button>
+
+      <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 15px;">
+        Após o pagamento, a liberação ocorre em até 2 minutos.<br>
+        <a href="javascript:void(0)" onclick="fecharModalPix(); abrirSAC();" style="color: var(--primary);">Problemas com o pagamento? Fale com o SAC</a>
+      </p>
+    </div>
+  </div>
+
   <!-- MODAL DO SAC / FAQ -->
   <div id="sacModal" class="modal">
-    <div class="modal-content">
+    <div class="modal-content" style="text-align: left;">
       <span class="close-btn" onclick="fecharSAC()">&times;</span>
       <h2 style="font-size: 1.2rem; margin-bottom: 10px; color: var(--primary);">Central de Ajuda & Suporte</h2>
       <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Selecione o motivo do contato para ver a solução rápida ou enviar uma mensagem.</p>
 
       <div class="input-group">
-        <label style="font-size: 0.85rem; color: var(--text-muted);">Selecione o assunto:</label>
         <select id="sacMotivo" onchange="tratarMotivoSAC()">
           <option value="">-- Escolha uma opção --</option>
           <option value="pix_demora">Fiz o Pix e a tela não liberou o relatório</option>
@@ -99,26 +151,24 @@
         </select>
       </div>
 
-      <!-- Respostas Automáticas / FAQ -->
       <div id="answer_pix_demora" class="faq-answer">
-        ⌛ <strong>Tempo de Confirmação:</strong> A aprovação do Pix pelo sistema bancário pode levar de 30 segundos até 2 minutos. Se já realizou o pagamento, aguarde alguns instantes que a tela atualizará sozinha.
+        ⌛ <strong>Tempo de Confirmação:</strong> A aprovação do Pix pelo sistema bancário pode levar de 30 segundos até 2 minutos. Se já realizou o pagamento, aguarde alguns instantes.
       </div>
 
       <div id="answer_dados_antigos" class="faq-answer">
-        👤 <strong>Múltiplos Registros:</strong> Números de telefone costumam ser reaproveitados pelas operadoras. Se o relatório indicar mais de um titular, utilize os botões de navegação (setas para os lados) no relatório para alternar entre os registros encontrados.
+        👤 <strong>Múltiplos Registros:</strong> Números de telefone costumam ser reaproveitados. Utilize os botões "Anterior" e "Próximo" para navegar entre os nomes encontrados.
       </div>
 
       <div id="answer_comprovante" class="faq-answer">
-        💳 <strong>Análise de Cobrança:</strong> Caso o valor tenha saído da sua conta mas o site apresentou erro, preencha o formulário abaixo informando o número pesquisado e o horário do Pix.
+        💳 <strong>Análise de Cobrança:</strong> Se você já realizou o Pix e a tela não liberou em 2 minutos, envie os dados abaixo que verificamos manualmente.
       </div>
 
-      <!-- Formulário de Mensagem Direta -->
       <form id="sacForm" style="display: none; margin-top: 15px;" onsubmit="enviarMensagemSAC(event)">
         <div class="input-group">
           <input type="text" id="sacNome" placeholder="Seu Nome Completo" required>
           <input type="text" id="sacContato" placeholder="Seu WhatsApp ou E-mail" required>
-          <input type="text" id="sacNumeroPesquisado" placeholder="Número que você pesquisou (DDD + Tel)">
-          <textarea id="sacMensagem" rows="3" placeholder="Descreva brevemente o que aconteceu..." required></textarea>
+          <input type="text" id="sacNumeroPesquisado" placeholder="Número pesquisado (DDD + Tel)">
+          <textarea id="sacMensagem" rows="3" placeholder="Descreva o que aconteceu..." required></textarea>
         </div>
         <button type="submit" class="btn-primary">Enviar Mensagem ao Suporte</button>
       </form>
@@ -126,28 +176,60 @@
   </div>
 
   <script>
-    // Exemplo de estrutura de dados com MÚLTIPLOS REGISTROS para o carrossel
     let registrosAtuais = [];
     let indiceAtual = 0;
+    let tempoRestante = 300; // 5 minutos em segundos
+    let timerInterval = null;
+    let tipoPagamentoAtual = 'consulta'; // 'consulta' ou 'pdf'
 
+    // STEP 1: USUÁRIO DIGITA O NÚMERO E CLICA EM CONSULTAR
     function buscarNumero() {
       const tel = document.getElementById('phoneInput').value.trim();
       if (!tel) {
         alert('Por favor, digite um número de telefone com DDD.');
         return;
       }
-
-      // Simulação de retorno com 2 registros encontrados para o mesmo número
-      registrosAtuais = [
-        { nome: "MARIA S. (TITULAR ATUAL)", cpf: "***.452.890-**", operadora: "VIVO", obs: "Cadastro Ativo" },
-        { nome: "JOÃO P. (TITULAR ANTERIOR)", cpf: "***.123.654-**", operadora: "CLARO", obs: "Registro Histórico" }
-      ];
-
-      indiceAtual = 0;
-      document.getElementById('resultArea').style.display = 'block';
-      renderizarRegistro();
+      
+      // Oculta resultado anterior e exibe a prévia bloqueada para incentivar o Pix
+      document.getElementById('resultArea').style.display = 'none';
+      document.getElementById('previewArea').style.display = 'block';
     }
 
+    // STEP 2: MODAL DO PIX (CONSULTA OU PDF)
+    function abrirModalPix(valor, tipo) {
+      tipoPagamentoAtual = tipo;
+      document.getElementById('pixModalTitle').innerText = tipo === 'pdf' ? 'Baixar Relatório em PDF' : 'Liberação do Relatório';
+      document.getElementById('pixModalDesc').innerText = `Valor: ${valor.replace('.', ',')} reais`;
+      document.getElementById('pixModal').style.display = 'flex';
+    }
+
+    function fecharModalPix() {
+      document.getElementById('pixModal').style.display = 'none';
+    }
+
+    // SIMULAÇÃO DA CONFIRMAÇÃO DO PIX (NO SEU BACKEND SERÁ VIA WEBHOOK)
+    function simularPagamentoAprovado() {
+      fecharModalPix();
+
+      if (tipoPagamentoAtual === 'consulta') {
+        // Esconde a prévia e exibe o relatório completo com carrossel
+        document.getElementById('previewArea').style.display = 'none';
+        document.getElementById('resultArea').style.display = 'block';
+
+        registrosAtuais = [
+          { nome: "MARIA S. (TITULAR ATUAL)", cpf: "***.452.890-**", operadora: "VIVO", obs: "Cadastro Ativo" },
+          { nome: "JOÃO P. (TITULAR ANTERIOR)", cpf: "***.123.654-**", operadora: "CLARO", obs: "Registro Histórico" }
+        ];
+
+        indiceAtual = 0;
+        renderizarRegistro();
+        iniciarTimer5Minutos();
+      } else if (tipoPagamentoAtual === 'pdf') {
+        alert('Pagamento do PDF confirmado! O download do arquivo começará em instantes.');
+      }
+    }
+
+    // CARROSSEL DE REGISTROS
     function renderizarRegistro() {
       const total = registrosAtuais.length;
       const reg = registrosAtuais[indiceAtual];
@@ -169,26 +251,42 @@
       renderizarRegistro();
     }
 
-    // LÓGICA DO SAC / FAQ INTERATIVO
-    function abrirSAC() {
-      document.getElementById('sacModal').style.display = 'flex';
+    // TIMER REGRESSIVO DE 5 MINUTOS (300s)
+    function iniciarTimer5Minutos() {
+      document.getElementById('timerBanner').style.display = 'block';
+      tempoRestante = 300;
+      clearInterval(timerInterval);
+
+      timerInterval = setInterval(() => {
+        let minutos = Math.floor(tempoRestante / 60);
+        let segundos = tempoRestante % 60;
+
+        minutos = minutos < 10 ? '0' + minutos : minutos;
+        segundos = segundos < 10 ? '0' + segundos : segundos;
+
+        document.getElementById('timerClock').innerText = `${minutos}:${segundos}`;
+
+        if (tempoRestante <= 0) {
+          clearInterval(timerInterval);
+          alert('Sessão expirada por motivos de segurança. Faça uma nova busca.');
+          document.getElementById('resultArea').style.display = 'none';
+          document.getElementById('phoneInput').value = '';
+        }
+        tempoRestante--;
+      }, 1000);
     }
 
-    function fecharSAC() {
-      document.getElementById('sacModal').style.display = 'none';
-    }
+    // LÓGICA DO SAC / FAQ
+    function abrirSAC() { document.getElementById('sacModal').style.display = 'flex'; }
+    function fecharSAC() { document.getElementById('sacModal').style.display = 'none'; }
 
     function tratarMotivoSAC() {
       const motivo = document.getElementById('sacMotivo').value;
-      
-      // Oculta todas as respostas prévias
       document.querySelectorAll('.faq-answer').forEach(el => el.style.display = 'none');
       
       if (motivo) {
         const respostaEl = document.getElementById('answer_' + motivo);
         if (respostaEl) respostaEl.style.display = 'block';
-        
-        // Exibe o formulário para preenchimento
         document.getElementById('sacForm').style.display = 'block';
       } else {
         document.getElementById('sacForm').style.display = 'none';
@@ -197,11 +295,8 @@
 
     function enviarMensagemSAC(event) {
       event.preventDefault();
-      alert('Mensagem enviada com sucesso! Nossa equipe analisará e retornará em breve.');
+      alert('Mensagem enviada com sucesso! Retornaremos em breve.');
       fecharSAC();
-      document.getElementById('sacForm').reset();
-      document.getElementById('sacMotivo').value = '';
-      tratarMotivoSAC();
     }
   </script>
 </body>
