@@ -10,12 +10,11 @@ from fastapi.responses import FileResponse
 app = FastAPI()
 
 # ----------------------------------------------------
-# CREDENCIAIS E TOKENS
+# CREDENCIAIS E TOKENS OFICIAIS
 # ----------------------------------------------------
 APIBRASIL_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FwcC5hcGlicmFzaWwuaW8vYXBpL3YyL2F1dGgvbG9naW4iLCJpYXQiOjE3ODg5OTQ3MTUsImV4cCI6MTgyMDUzMDcxNSwibmJmIjoxNzg4OTk0NzE1LCJqdGkiOiIxMkhtMk9YR2Q4d3JDTjdzIiwic3ViIjoiNjAzMzMiLCJzZWFyY2giOiIwMThhNGRjOC1lMDQ5LTQ5MzQtOTlhOS1mYWUwMTFhZmQ2NDcifQ.QaLq6W3H-GfXtxgncytiM3sRRef2bJownImyqf3ZXDQ"
 
-# Token do Pushin Pay para geração do Pix
-PUSHIN_PAY_TOKEN = os.getenv("PUSHIN_PAY_TOKEN", "SEU_TOKEN_PUSHIN_PAY_AQUI")
+PUSHIN_PAY_TOKEN = os.getenv("PUSHIN_PAY_TOKEN", "70634|7PHvOzg8JQAqCodw1Vh1XgEWx92KpSPG5TVvvQhi423c8a77")
 
 GMAIL_USER = "descobrezap@gmail.com"
 GMAIL_APP_PASS = "pfzh sxln wgnm tkxj"
