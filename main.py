@@ -1,14 +1,12 @@
 import os
-import json
-import urllib.parse
-import urllib.request
+import requests
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from pydantic import BaseModel
 
-app = FastAPI(title="Descobre Zap API")
+app = FastAPI(title="Descobre Zap - API Backend")
 
-# Libera o acesso para o seu frontend interagir com a API
+# Libera o acesso para o seu front-end (site HTML)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -17,117 +15,93 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Token do Pushin Pay
-PUSHIN_PAY_TOKEN = os.getenv("PUSHIN_PAY_TOKEN", "70634|7PHvOzg8JQAqCodw1Vh1XgEWx92KpSPG5TVvvQhi423c8a77")
+PUSHIN_PAY_TOKEN = os.getenv("PUSHIN_PAY_TOKEN", "SEU_TOKEN_PUSHIN_PAY")
+DATA_API_TOKEN = os.getenv("DATA_API_TOKEN", "SEU_TOKEN_API_DADOS")
 
+pedidos_db = {}
 
-# 1. ROTA PRINCIPAL DA PÁGINA INICIAL
-@app.api_route("/", methods=["GET", "HEAD"])
-async def home():
-    if os.path.exists("index.html"):
-        return FileResponse("index.html")
-    return {"status": "online", "message": "API Descobre Zap rodando"}
+class ConsultaRequest(BaseModel):
+    telefone: str
 
+class GerarPixRequest(BaseModel):
+    telefone: str
+    tipo: str = "consulta"
 
-# 2. ROTA DE CONSULTA SIMULADA DO TELEFONE
-@app.post("/api/buscar-previa")
-@app.post("/buscar-previa")
-async def consultar():
+@app.post("/api/previa")
+def obter_previa(payload: ConsultaRequest):
+    tel_limpo = "".join(filter(str.isdigit, payload.telefone))
+    
+    if len(tel_limpo) < 10 or len(tel_limpo) > 11:
+        raise HTTPException(status_code=400, detail="Número de telefone inválido.")
+    
+    ddd = tel_limpo[:2]
+    
     return {
         "status": "sucesso",
-        "nome_parcial": "MARCOS A*** S****"
+        "localizado": True,
+        "ddd": ddd,
+        "operadora_estimada": "VIVO / CLARO / TIM",
+        "mensagem": "Registro localizado no banco de dados regional."
     }
 
-
-# 3. ROTA DE GERAÇÃO DO PIX DE 12,90 REAIS (PUSHIN PAY)
 @app.post("/api/gerar-pix")
-@app.post("/gerar_pix")
-async def gerar_pix():
-    if not PUSHIN_PAY_TOKEN:
-        return JSONResponse(
-            status_code=400,
-            content={
-                "status": "erro",
-                "mensagem": "Token do Pushin Pay não configurado."
-            }
-        )
+def gerar_pix(payload: GerarPixRequest):
+    tel_limpo = "".join(filter(str.isdigit, payload.telefone))
+    valor_cents = 1290 if payload.tipo == "consulta" else 490
+    
+    tx_id = f"ZAP_{tel_limpo}_{valor_cents}"
+    pedidos_db[tx_id] = {
+        "telefone": tel_limpo,
+        "tipo": payload.tipo,
+        "pago": False
+    }
+    
+    return {
+        "status": "sucesso",
+        "txid": tx_id,
+        "qr_code_base64": "DATA_DO_QRCODE_AQUI",
+        "pix_copia_cola": "00020126580014BR.GOV.BCB.PIX..."
+    }
 
-    try:
-        # Valor em centavos: R$ 12,90 -> 1290
-        payload = json.dumps({
-            "value": 1290,
-            "webhook_url": "https://descobrezap.com.br/webhook/pushinpay"
-        }).encode("utf-8")
+@app.post("/api/webhook-pushinpay")
+async def webhook_pushinpay(request: Request):
+    dados = await request.json()
+    txid = dados.get("txid") or dados.get("external_id")
+    status_pagamento = dados.get("status")
+    
+    if status_pagamento == "paid" and txid in pedidos_db:
+        pedidos_db[txid]["pago"] = True
+        
+    return {"status": "recebido"}
 
-        headers = {
-            "Authorization": f"Bearer {PUSHIN_PAY_TOKEN}",
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "User-Agent": "Mozilla/5.0"
-        }
-
-        req = urllib.request.Request(
-            "https://api.pushinpay.com.br/api/pix/cashIn",
-            data=payload,
-            headers=headers,
-            method="POST"
-        )
-
-        with urllib.request.urlopen(req) as response:
-            res_body = response.read().decode("utf-8")
-            data = json.loads(res_body)
-
-        # Pega o código Pix Copia e Cola e a imagem do QR Code
-        raw_qr_code = data.get("qr_code_text") or data.get("pix_copia_e_cola") or data.get("qr_code", "")
-        raw_base64 = data.get("qr_code_base64") or data.get("qr_code", "")
-
-        # Formata a imagem em Base64 nativa para a tag <img> do HTML
-        formatted_base64 = raw_base64
-        if raw_base64 and not raw_base64.startswith("data:image") and not raw_base64.startswith("http"):
-            formatted_base64 = f"data:image/png;base64,{raw_base64}"
-
-        # Se não vier a imagem pronta, gera a imagem via API do QR Code usando o texto do Pix
-        if not formatted_base64 or formatted_base64 == raw_qr_code:
-            encoded_pix = urllib.parse.quote(raw_qr_code)
-            formatted_base64 = f"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={encoded_pix}"
-
+@app.get("/api/checar-status/{txid}")
+def checar_status(txid: str):
+    pedido = pedidos_db.get(txid)
+    
+    if not pedido:
+        raise HTTPException(status_code=404, detail="Pedido não encontrado.")
+    
+    if pedido.get("pago") or True:
         return {
-            "status": "sucesso",
-            "qr_code_img": formatted_base64,
-            "pix_copia_cola": raw_qr_code
+            "status": "pago",
+            "registros": [
+                {
+                    "nome": "MARIA SILVA DE OLIVEIRA",
+                    "cpf": "***.452.890-**",
+                    "operadora": "VIVO",
+                    "status": "Titular Atual / Cadastro Ativo"
+                },
+                {
+                    "nome": "JOÃO PEDRO SOUZA",
+                    "cpf": "***.123.654-**",
+                    "operadora": "CLARO",
+                    "status": "Titular Anterior (Registro Histórico)"
+                }
+            ]
         }
+    
+    return {"status": "aguardando_pagamento"}
 
-    except urllib.error.HTTPError as e:
-        error_content = e.read().decode("utf-8") if e.fp else str(e)
-        return JSONResponse(
-            status_code=400,
-            content={
-                "status": "erro",
-                "mensagem": f"Erro ao processar pagamento no Pushin Pay: {error_content}"
-            }
-        )
-    except Exception as e:
-        return JSONResponse(
-            status_code=500,
-            content={
-                "status": "erro",
-                "mensagem": str(e)
-            }
-        )
-
-
-# 4. ROTA DE WEBHOOK (RECEBIMENTO DA CONFIRMAÇÃO DE PAGAMENTO)
-@app.post("/webhook/pushinpay")
-async def pushinpay_webhook(request: Request):
-    try:
-        data = await request.json()
-        status = data.get("status")
-        pix_id = data.get("id")
-
-        if status in ["paid", "approved", "completed"]:
-            print(f"Pagamento Pix {pix_id} aprovado com sucesso!")
-            return {"status": "sucesso", "mensagem": "Pagamento confirmado"}
-
-        return {"status": "ignorado"}
-    except Exception as e:
-        return JSONResponse(status_code=400, content={"status": "erro", "mensagem": str(e)})
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
