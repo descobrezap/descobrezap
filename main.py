@@ -44,18 +44,28 @@ async def read_index():
 # ----------------------------------------------------
 def buscar_dados_completos(telefone: str):
     phone_clean = "".join(filter(str.isdigit, telefone))
+    
+    # Garante o formato com 55 se o usuário digitou apenas DDD + número (ex: 11 dígitos)
+    if len(phone_clean) in [10, 11]:
+        phone_clean = "55" + phone_clean
+
     url = "https://app.apibrasil.io/api/v2/dados/telefone"
     headers = {
         "Authorization": f"Bearer {APIBRASIL_TOKEN}",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Accept": "application/json"
     }
+    
+    # Testando variações comuns de payload que a API Brasil costuma aceitar
     payload = {"phone": phone_clean}
     
     try:
+        print(f"Enviando para API Brasil - URL: {url} | Payload: {payload}")
         response = requests.post(url, json=payload, headers=headers, timeout=10)
+        print(f"Resposta API Brasil - Status: {response.status_code} | Corpo: {response.text}")
+        
         if response.status_code == 200:
             return response.json()
-        print(f"Erro APIBrasil: {response.status_code} - {response.text}")
         return None
     except Exception as e:
         print(f"Exceção APIBrasil: {str(e)}")
