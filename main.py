@@ -9,13 +9,22 @@ from fastapi.responses import FileResponse
 
 app = FastAPI()
 
+# ----------------------------------------------------
+# CREDENCIAIS E TOKENS OFICIAIS
+# ----------------------------------------------------
 APIBRASIL_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FwcC5hcGlicmFzaWwuaW8vYXBpL3YyL2F1dGgvbG9naW4iLCJpYXQiOjE3ODg5OTQ3MTUsImV4cCI6MTgyMDUzMDcxNSwibmJmIjoxNzg4OTk0NzE1LCJqdGkiOiIxMkhtMk9YR2Q4d3JDTjdzIiwic3ViIjoiNjAzMzMiLCJzZWFyY2giOiIwMThhNGRjOC1lMDQ5LTQ5MzQtOTlhOS1mYWUwMTFhZmQ2NDcifQ.QaLq6W3H-GfXtxgncytiM3sRRef2bJownImyqf3ZXDQ"
+
 PUSHIN_PAY_TOKEN = os.getenv("PUSHIN_PAY_TOKEN", "70634|7PHvOzg8JQAqCodw1Vh1XgEWx92KpSPG5TVvvQhi423c8a77")
+
 GMAIL_USER = "descobrezap@gmail.com"
 GMAIL_APP_PASS = "pfzh sxln wgnm tkxj"
 
+# Cache em memória para simulação/checagem de pagamentos por TXID
 PAGAMENTOS_CACHE = {}
 
+# ----------------------------------------------------
+# SERVIR O SITE (INDEX.HTML E ESTÁTICOS)
+# ----------------------------------------------------
 if os.path.exists("static"):
     app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -23,6 +32,9 @@ if os.path.exists("static"):
 async def read_index():
     return FileResponse("index.html")
 
+# ----------------------------------------------------
+# CONSULTA DE DADOS REAIS (APIBRASIL)
+# ----------------------------------------------------
 def buscar_dados_completos(telefone: str):
     phone_clean = "".join(filter(str.isdigit, telefone))
     if len(phone_clean) in [10, 11]:
@@ -94,6 +106,9 @@ async def consultar_telefone(request: Request):
     else:
         raise HTTPException(status_code=404, detail="Número não encontrado na base de dados.")
 
+# ----------------------------------------------------
+# GERAR PIX (PUSHIN PAY)
+# ----------------------------------------------------
 @app.post("/api/gerar-pix")
 @app.post("/gerar-pix")
 @app.post("/api/criar-pix")
@@ -136,6 +151,9 @@ async def gerar_pix(request: Request):
     except Exception as e:
         raise HTTPException(status_code=500, detail="Falha na comunicação com gateway.")
 
+# ----------------------------------------------------
+# CHECAR STATUS DO PAGAMENTO POR TXID
+# ----------------------------------------------------
 @app.get("/api/checar-status/{txid}")
 @app.get("/checar-status/{txid}")
 async def checar_status(txid: str):
@@ -168,6 +186,9 @@ async def checar_status(txid: str):
         return {"status": "pago", "registros": registros_formatados}
     return {"status": "pendente"}
 
+# ----------------------------------------------------
+# WEBHOOK PIX
+# ----------------------------------------------------
 @app.post("/api/webhook-pix")
 @app.post("/webhook-pix")
 async def webhook_pix(request: Request):
@@ -184,6 +205,9 @@ async def webhook_pix(request: Request):
     except Exception as e:
         return {"status": "erro", "detalhe": str(e)}
 
+# ----------------------------------------------------
+# FORMULÁRIO DE SAC
+# ----------------------------------------------------
 @app.post("/api/sac")
 @app.post("/sac")
 async def enviar_sac(request: Request):
@@ -192,7 +216,7 @@ async def enviar_sac(request: Request):
     email_cliente = data.get("email") or data.get("contato")
     mensagem = data.get("mensagem")
 
-    if not nome or not email_email_cliente := email_cliente or not mensagem:
+    if not nome or not email_cliente or not mensagem:
         raise HTTPException(status_code=400, detail="Preencha todos os campos.")
 
     try:
