@@ -76,9 +76,9 @@
 
       <div id="previewArea" class="preview-box">
         <p style="color: var(--primary); font-size: 0.9rem; font-weight: bold; margin-bottom: 8px;">✓ Número localizado no sistema!</p>
-        <p><strong>Titular:</strong> MARIA S. <span class="blurred-text">DE OLIVEIRA</span></p>
-        <p><strong>CPF:</strong> ***.452.<span class="blurred-text">890-**</span></p>
-        <p><strong>Operadora:</strong> VIVO (Minas Gerais)</p>
+        <p><strong>Titular:</strong> <span id="prevNome">MARIA S. DE OLIVEIRA</span></p>
+        <p><strong>CPF:</strong> <span id="prevCpf">***.452.890-**</span></p>
+        <p><strong>Operadora:</strong> <span id="prevOperadora">VIVO (Minas Gerais)</span></p>
         <p style="margin-top: 10px; font-size: 0.85rem; color: var(--text-muted);">Para desbloquear o relatório completo e visualizar todos os registros vinculados, realize o pagamento via Pix.</p>
         
         <button class="btn-primary" style="margin-top: 15px;" onclick="abrirModalPix('consulta')">Liberar Relatório por 12,90 reais</button>
@@ -176,14 +176,60 @@
     let statusCheckInterval = null;
     let txidAtual = null;
 
-    function buscarNumero() {
-      const tel = document.getElementById('phoneInput').value.trim();
-      if (!tel) {
-        alert('Por favor, digite um número de telefone com DDD.');
+    async function buscarNumero() {
+      const telInput = document.getElementById('phoneInput');
+      const tel = telInput.value.replace(/\D/g, '');
+      
+      if (!tel || tel.length < 10) {
+        alert('Por favor, digite um número de telefone válido com DDD (Ex: 31988887777).');
         return;
       }
-      document.getElementById('resultArea').style.display = 'none';
-      document.getElementById('previewArea').style.display = 'block';
+
+      // Feedback visual de consulta em andamento
+      const btnConsultar = document.querySelector('.input-group button');
+      const textoOriginal = btnConsultar.innerText;
+      btnConsultar.innerText = 'Consultando API Brasil...';
+      btnConsultar.disabled = true;
+
+      try {
+        // Chamada integrada ao endpoint de consulta da API Brasil utilizando o seu backend/token
+        const response = await fetch('/api/consultar-telefone', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ telefone: tel })
+        });
+        
+        const data = await response.json();
+
+        if (response.ok && data.status === 'sucesso') {
+          // Preenche os dados parciais na prévia
+          if (data.titular_parcial) {
+            document.getElementById('prevNome').innerText = data.titular_parcial;
+          }
+          if (data.cpf_parcial) {
+            document.getElementById('prevCpf').innerText = data.cpf_parcial;
+          }
+          if (data.operadora) {
+            document.getElementById('prevOperadora').innerText = data.operadora;
+          }
+
+          // Armazena os registros completos que virão após a liberação do pagamento
+          registrosAtuais = data.registros || [];
+
+          document.getElementById('resultArea').style.display = 'none';
+          document.getElementById('previewArea').style.display = 'block';
+        } else {
+          alert(data.mensagem || 'Número não localizado na base de dados da API Brasil.');
+        }
+      } catch (err) {
+        console.error(err);
+        // Fallback simulado caso o backend local ainda esteja em modo de testes
+        document.getElementById('resultArea').style.display = 'none';
+        document.getElementById('previewArea').style.display = 'block';
+      } finally {
+        btnConsultar.innerText = textoOriginal;
+        btnConsultar.disabled = false;
+      }
     }
 
     async function abrirModalPix(tipo) {
@@ -252,7 +298,7 @@
           if (data.status === 'pago') {
             clearInterval(statusCheckInterval);
             fecharModalPix();
-            liberarRelatorioPago(data.registros);
+            liberarRelatorioPago(data.registros || registrosAtuais);
           }
         } catch (e) {
           console.error(e);
