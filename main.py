@@ -6,8 +6,15 @@ from email.mime.multipart import MIMEMultipart
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from pydantic import BaseModel
 
 app = FastAPI()
+
+# ----------------------------------------------------
+# MODELOS DE DADOS (PYDANTIC)
+# ----------------------------------------------------
+class ConsultaRequest(BaseModel):
+    telefone: str
 
 # ----------------------------------------------------
 # CREDENCIAIS E TOKENS OFICIAIS
@@ -56,14 +63,12 @@ def buscar_dados_completos(telefone: str):
 
 @app.post("/api/consultar-telefone")
 @app.post("/consultar-telefone")
-async def consultar_telefone(request: Request):
-    data = await request.json()
-    telefone = data.get("telefone", "")
+async def consultar_telefone(dados: ConsultaRequest):
+    telefone = dados.telefone
     
     dados_api = buscar_dados_completos(telefone)
     
     if dados_api and ("dados" in dados_api or "resultado" in dados_api or isinstance(dados_api, dict)):
-        # Extrai o primeiro registro para a prévia mascarada
         lista_dados = dados_api.get("dados", dados_api.get("resultado", [dados_api]))
         if isinstance(lista_dados, list) and len(lista_dados) > 0:
             primeiro = lista_dados[0]
@@ -74,7 +79,6 @@ async def consultar_telefone(request: Request):
         cpf = primeiro.get("cpf", "***.***.***-**")
         operadora = primeiro.get("operadora", "VIVO / CLARO")
 
-        # Formata registros para o pós-pagamento
         registros_formatados = []
         for item in (lista_dados if isinstance(lista_dados, list) else [primeiro]):
             registros_formatados.append({
