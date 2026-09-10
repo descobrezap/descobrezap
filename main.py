@@ -6,32 +6,16 @@ from email.mime.multipart import MIMEMultipart
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from pydantic import BaseModel
 
 app = FastAPI()
 
-# ----------------------------------------------------
-# MODELOS DE DADOS (PYDANTIC)
-# ----------------------------------------------------
-class ConsultaRequest(BaseModel):
-    telefone: str
-
-# ----------------------------------------------------
-# CREDENCIAIS E TOKENS OFICIAIS
-# ----------------------------------------------------
 APIBRASIL_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FwcC5hcGlicmFzaWwuaW8vYXBpL3YyL2F1dGgvbG9naW4iLCJpYXQiOjE3ODg5OTQ3MTUsImV4cCI6MTgyMDUzMDcxNSwibmJmIjoxNzg4OTk0NzE1LCJqdGkiOiIxMkhtMk9YR2Q4d3JDTjdzIiwic3ViIjoiNjAzMzMiLCJzZWFyY2giOiIwMThhNGRjOC1lMDQ5LTQ5MzQtOTlhOS1mYWUwMTFhZmQ2NDcifQ.QaLq6W3H-GfXtxgncytiM3sRRef2bJownImyqf3ZXDQ"
-
 PUSHIN_PAY_TOKEN = os.getenv("PUSHIN_PAY_TOKEN", "70634|7PHvOzg8JQAqCodw1Vh1XgEWx92KpSPG5TVvvQhi423c8a77")
-
 GMAIL_USER = "descobrezap@gmail.com"
 GMAIL_APP_PASS = "pfzh sxln wgnm tkxj"
 
-# Cache em memória para simulação/checagem de pagamentos por TXID
 PAGAMENTOS_CACHE = {}
 
-# ----------------------------------------------------
-# SERVIR O SITE (INDEX.HTML E ESTÁTICOS)
-# ----------------------------------------------------
 if os.path.exists("static"):
     app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -39,13 +23,8 @@ if os.path.exists("static"):
 async def read_index():
     return FileResponse("index.html")
 
-# ----------------------------------------------------
-# CONSULTA DE DADOS REAIS (APIBRASIL)
-# ----------------------------------------------------
 def buscar_dados_completos(telefone: str):
     phone_clean = "".join(filter(str.isdigit, telefone))
-    
-    # Garante o formato com 55 se o usuário digitou apenas DDD + número (ex: 11 dígitos)
     if len(phone_clean) in [10, 11]:
         phone_clean = "55" + phone_clean
 
@@ -55,27 +34,34 @@ def buscar_dados_completos(telefone: str):
         "Content-Type": "application/json",
         "Accept": "application/json"
     }
-    
-    # Testando variações comuns de payload que a API Brasil costuma aceitar
     payload = {"phone": phone_clean}
     
     try:
-        print(f"Enviando para API Brasil - URL: {url} | Payload: {payload}")
+        print(f"-> CHAMANDO API BRASIL COM: {phone_clean}")
         response = requests.post(url, json=payload, headers=headers, timeout=10)
-        print(f"Resposta API Brasil - Status: {response.status_code} | Corpo: {response.text}")
+        print(f"<- RESPOSTA API BRASIL STATUS: {response.status_code} | TEXTO: {response.text}")
         
         if response.status_code == 200:
             return response.json()
         return None
     except Exception as e:
-        print(f"Exceção APIBrasil: {str(e)}")
+        print(f"EXCEÇÃO API BRASIL: {str(e)}")
         return None
 
 @app.post("/api/consultar-telefone")
 @app.post("/consultar-telefone")
-async def consultar_telefone(dados: ConsultaRequest):
-    telefone = dados.telefone
+async def consultar_telefone(request: Request):
+    try:
+        body = await request.json()
+        telefone = body.get("telefone", "")
+    except Exception:
+        telefone = ""
+
+    print(f">> ROTA /consultar-telefone ACIONADA COM TELEFONE: {telefone}")
     
+    if not telefone:
+        raise HTTPException(status_code=400, detail="Telefone não informado.")
+
     dados_api = buscar_dados_completos(telefone)
     
     if dados_api and ("dados" in dados_api or "resultado" in dados_api or isinstance(dados_api, dict)):
@@ -108,9 +94,6 @@ async def consultar_telefone(dados: ConsultaRequest):
     else:
         raise HTTPException(status_code=404, detail="Número não encontrado na base de dados.")
 
-# ----------------------------------------------------
-# GERAR PIX (PUSHIN PAY)
-# ----------------------------------------------------
 @app.post("/api/gerar-pix")
 @app.post("/gerar-pix")
 @app.post("/api/criar-pix")
@@ -119,7 +102,6 @@ async def gerar_pix(request: Request):
     data = await request.json()
     telefone = data.get("telefone", "")
     tipo = data.get("tipo", "consulta")
-    
     valor_centavos = 490 if tipo == "pdf" else 1290
 
     headers = {
@@ -140,11 +122,7 @@ async def gerar_pix(request: Request):
             qr_code = res_data.get("qr_code")
             qr_code_base64 = res_data.get("qr_code_base64")
 
-            PAGAMENTOS_CACHE[txid] = {
-                "status": "pending",
-                "telefone": telefone,
-                "tipo": tipo
-            }
+            PAGAMENTOS_CACHE[txid] = {"status": "pending", "telefone": telefone, "tipo": tipo}
 
             return {
                 "status": "sucesso",
@@ -154,22 +132,14 @@ async def gerar_pix(request: Request):
                 "txid": txid
             }
         else:
-            print(f"Erro Pushin Pay ({response.status_code}): {response.text}")
-            raise HTTPException(status_code=400, detail="Erro ao gerar cobrança Pix na intermediadora.")
+            raise HTTPException(status_code=400, detail="Erro ao gerar cobrança Pix.")
     except Exception as e:
-        print(f"Exceção Pix: {str(e)}")
-        raise HTTPException(status_code=500, detail="Falha na comunicação com gateway de pagamento.")
+        raise HTTPException(status_code=500, detail="Falha na comunicação com gateway.")
 
-# ----------------------------------------------------
-# CHECAR STATUS DO PAGAMENTO POR TXID
-# ----------------------------------------------------
 @app.get("/api/checar-status/{txid}")
 @app.get("/checar-status/{txid}")
 async def checar_status(txid: str):
-    headers = {
-        "Authorization": f"Bearer {PUSHIN_PAY_TOKEN}",
-        "Accept": "application/json"
-    }
+    headers = {"Authorization": f"Bearer {PUSHIN_PAY_TOKEN}", "Accept": "application/json"}
     try:
         response = requests.get(f"https://api.pushinpay.com.br/api/pix/cashIn/{txid}", headers=headers, timeout=5)
         if response.status_code == 200:
@@ -178,14 +148,13 @@ async def checar_status(txid: str):
             if status_api in ["paid", "approved", "concluido"]:
                 PAGAMENTOS_CACHE[txid] = PAGAMENTOS_CACHE.get(txid, {})
                 PAGAMENTOS_CACHE[txid]["status"] = "paid"
-    except Exception as e:
-        print(f"Erro ao checar status do TXID na Pushin Pay: {str(e)}")
+    except Exception:
+        pass
 
     info = PAGAMENTOS_CACHE.get(txid, {})
     if info.get("status") == "paid":
         telefone = info.get("telefone", "")
         dados_api = buscar_dados_completos(telefone) if telefone else None
-        
         registros_formatados = []
         if dados_api:
             lista_dados = dados_api.get("dados", dados_api.get("resultado", [dados_api]))
@@ -196,17 +165,9 @@ async def checar_status(txid: str):
                     "operadora": item.get("operadora", "NÃO INFORMADA"),
                     "status": item.get("status", "Liberado")
                 })
-        
-        return {
-            "status": "pago",
-            "registros": registros_formatados
-        }
-    
+        return {"status": "pago", "registros": registros_formatados}
     return {"status": "pendente"}
 
-# ----------------------------------------------------
-# WEBHOOK PIX
-# ----------------------------------------------------
 @app.post("/api/webhook-pix")
 @app.post("/webhook-pix")
 async def webhook_pix(request: Request):
@@ -214,21 +175,15 @@ async def webhook_pix(request: Request):
         data = await request.json()
         status = str(data.get("status", "")).lower()
         txid = str(data.get("id") or data.get("txid", ""))
-
         if status in ["paid", "approved", "concluido"]:
             if txid in PAGAMENTOS_CACHE:
                 PAGAMENTOS_CACHE[txid]["status"] = "paid"
             else:
                 PAGAMENTOS_CACHE[txid] = {"status": "paid", "telefone": data.get("telefone", "")}
-
         return {"status": "ok"}
     except Exception as e:
-        print(f"Erro no Webhook: {str(e)}")
         return {"status": "erro", "detalhe": str(e)}
 
-# ----------------------------------------------------
-# FORMULÁRIO DE SAC
-# ----------------------------------------------------
 @app.post("/api/sac")
 @app.post("/sac")
 async def enviar_sac(request: Request):
@@ -237,16 +192,15 @@ async def enviar_sac(request: Request):
     email_cliente = data.get("email") or data.get("contato")
     mensagem = data.get("mensagem")
 
-    if not nome or not email_cliente or not mensagem:
-        raise HTTPException(status_code=400, detail="Preencha todos os campos do formulário.")
+    if not nome or not email_email_cliente := email_cliente or not mensagem:
+        raise HTTPException(status_code=400, detail="Preencha todos os campos.")
 
     try:
         msg = MIMEMultipart()
         msg['From'] = GMAIL_USER
         msg['To'] = GMAIL_USER
         msg['Subject'] = f"Novo Contato SAC - DescobreZap ({nome})"
-
-        corpo = f"Nome: {nome}\nContato do Cliente: {email_cliente}\nNúmero Pesquisado: {data.get('numero_pesquisado', 'N/A')}\n\nMensagem:\n{mensagem}"
+        corpo = f"Nome: {nome}\nContato: {email_cliente}\nNúmero: {data.get('numero_pesquisado', 'N/A')}\n\nMensagem:\n{mensagem}"
         msg.attach(MIMEText(corpo, 'plain'))
 
         server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -254,8 +208,6 @@ async def enviar_sac(request: Request):
         server.login(GMAIL_USER, GMAIL_APP_PASS)
         server.sendmail(GMAIL_USER, GMAIL_USER, msg.as_string())
         server.quit()
-
-        return {"status": "sucesso", "mensagem": "Mensagem enviada com sucesso!"}
-    except Exception as e:
-        print(f"Erro ao enviar e-mail: {str(e)}")
-        raise HTTPException(status_code=500, detail="Erro interno ao enviar e-mail.")
+        return {"status": "sucesso", "mensagem": "Enviado com sucesso!"}
+    except Exception:
+        raise HTTPException(status_code=500, detail="Erro ao enviar e-mail.")
