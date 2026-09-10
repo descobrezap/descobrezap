@@ -178,9 +178,9 @@
 
     async function buscarNumero() {
       const telInput = document.getElementById('phoneInput');
-      const tel = telInput.value.trim();
+      const tel = telInput.value.replace(/\D/g, '');
       
-      if (!tel) {
+      if (!tel || tel.length < 10) {
         alert('Por favor, digite um número de telefone com DDD.');
         return;
       }
@@ -213,7 +213,7 @@
         }
       } catch (err) {
         console.error(err);
-        alert('Erro de conexão com o servidor.');
+        alert('Erro de conexão ao consultar os dados.');
       } finally {
         btnConsultar.innerText = textoOriginal;
         btnConsultar.disabled = false;
