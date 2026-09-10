@@ -39,7 +39,6 @@
     button.btn-pdf { background-color: var(--accent); color: #FFF; font-weight: bold; border: none; padding: 12px; border-radius: 8px; font-size: 0.95rem; cursor: pointer; margin-top: 12px; width: 100%; }
 
     .preview-box { display: none; background: #0F172A; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid var(--primary); }
-    .blurred-text { filter: blur(4px); user-select: none; }
     
     .timer-banner { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--warning); color: #FCA5A5; padding: 10px; border-radius: 8px; text-align: center; font-size: 0.85rem; font-weight: bold; margin-bottom: 12px; display: none; }
 
@@ -81,7 +80,7 @@
         <p><strong>Operadora:</strong> <span id="prevOperadora">Aguardando...</span></p>
         <p style="margin-top: 10px; font-size: 0.85rem; color: var(--text-muted);">Para desbloquear o relatório completo e visualizar todos os registros vinculados, realize o pagamento via Pix.</p>
         
-        <button class="btn-primary" style="margin-top: 15px;" onclick="abrirModalPix('consulta')">Liberar Relatório por 12,90 reais</button>
+        <button class="btn-primary" style="margin-top: 15px;" onclick="abrirModalPix('consulta')">Liberar Relatório por 12 reais e 90 centavos</button>
       </div>
 
       <div id="resultArea" class="carousel-container">
@@ -97,7 +96,7 @@
 
         <div id="recordContent" class="record-card"></div>
 
-        <button class="btn-pdf" onclick="abrirModalPix('pdf')">📄 Baixar Relatório em PDF por 4,90 reais</button>
+        <button class="btn-pdf" onclick="abrirModalPix('pdf')">📄 Baixar Relatório em PDF por 4 reais e 90 centavos</button>
       </div>
 
     </div>
@@ -191,7 +190,8 @@
       btnConsultar.disabled = true;
 
       try {
-        const response = await fetch('/api/consultar-telefone', {
+        // Chamada apontando diretamente para a rota raiz sem conflito de prefixo
+        const response = await fetch('/consultar-telefone', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ telefone: tel })
@@ -222,7 +222,7 @@
 
     async function abrirModalPix(tipo) {
       const tel = document.getElementById('phoneInput').value.trim();
-      const valorTxt = tipo === 'consulta' ? '12,90 reais' : '4,90 reais';
+      const valorTxt = tipo === 'consulta' ? '12 reais e 90 centavos' : '4 reais e 90 centavos';
 
       document.getElementById('pixModalTitle').innerText = tipo === 'pdf' ? 'Baixar Relatório em PDF' : 'Liberação do Relatório';
       document.getElementById('pixModalDesc').innerText = `Valor: ${valorTxt}`;
@@ -231,7 +231,7 @@
       document.getElementById('pixModal').style.display = 'flex';
 
       try {
-        const response = await fetch('/api/gerar-pix', {
+        const response = await fetch('/criar-pix', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ telefone: tel, tipo: tipo })
@@ -280,7 +280,7 @@
       statusCheckInterval = setInterval(async () => {
         if (!txidAtual) return;
         try {
-          const res = await fetch(`/api/checar-status/${txidAtual}`);
+          const res = await fetch(`/checar-status/${txidAtual}`);
           const data = await res.json();
 
           if (data.status === 'pago') {
@@ -376,7 +376,7 @@
       const mensagem = document.getElementById('sacMensagem').value;
 
       try {
-        const response = await fetch('/api/sac', {
+        const response = await fetch('/sac', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ nome, contato, numero_pesquisado, mensagem })
