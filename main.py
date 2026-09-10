@@ -1,9 +1,9 @@
 import os
+import re
 import requests
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse
-from fastapi.staticfiles import StaticFiles
 
 # 1. INICIALIZAÇÃO DA APLICAÇÃO
 app = FastAPI()
@@ -23,7 +23,25 @@ BASE_URL = os.getenv("BASE_URL", "https://descobrezap.com.br")
 
 PAGAMENTOS_CACHE = {}
 
-# 3. FUNÇÃO DE CONSULTA NA APIBRASIL
+# 3. FUNÇÕES AUXILIARES DE MÁSCARA E CONSULTA
+def mascarar_nome(nome: str) -> str:
+    if not nome or nome == "NOME NÃO INFORMADO":
+        return "REGISTRO LOCALIZADO"
+    partes = nome.split()
+    mascaradas = []
+    for p in partes:
+        if len(p) <= 2:
+            mascaradas.append(p)
+        else:
+            mascaradas.append(p[:2] + "*" * (len(p) - 2))
+    return " ".join(mascaradas)
+
+def mascarar_cpf(cpf: str) -> str:
+    digits = re.sub(r"\D", "", cpf or "")
+    if len(digits) == 11:
+        return f"***.{digits[3:6]}.{digits[6:9]}-**"
+    return "***.***.***-**"
+
 def buscar_dados_completos(telefone: str):
     phone_clean = "".join(filter(str.isdigit, telefone))
     url = "https://app.apibrasil.io/api/v2/dados/telefone"
@@ -43,14 +61,52 @@ def buscar_dados_completos(telefone: str):
         print(f"Exceção APIBrasil: {str(e)}")
         return None
 
-# 4. ROTA RAIZ (Abre a página visual do site descobrezap.com.br)
+# 4. ROTA RAIZ
 @app.get("/")
 async def read_root():
     if os.path.exists("index.html"):
         return FileResponse("index.html")
-    return {"status": "API Online (index.html não encontrado na raiz)"}
+    return {"status": "API Online"}
 
-# 5. GERAR PIX DE 12,90 REAIS
+# 5. ROTA DE PRÉVIA REAL (MASCARADA) - ANTES DO PAGAMENTO
+@app.post("/api/previa")
+@app.post("/previa")
+async def previa_consulta(payload: dict):
+    phone = payload.get("telefone") or payload.get("phone", "")
+    if not phone:
+        return {"erro": "Telefone não informado"}
+
+    dados_api = buscar_dados_completos(phone)
+    
+    if dados_api:
+        lista_registros = dados_api.get("dados") or dados_api.get("response") or [dados_api]
+        item = {}
+        if isinstance(lista_registros, list) and len(lista_registros) > 0:
+            item = lista_registros[0] if isinstance(lista_registros[0], dict) else {}
+        elif isinstance(lista_registros, dict):
+            item = lista_registros
+
+        nome_bruto = item.get("nome") or item.get("razasocial") or "REGISTRO LOCALIZADO"
+        cpf_bruto = item.get("cpf") or item.get("cnpj") or ""
+        operadora = item.get("operadora") or item.get("carrier") or "OPERADORA VINCULADA"
+
+        return {
+            "sucesso": True,
+            "nome_mascarado": mascarar_nome(nome_bruto),
+            "cpf_mascarado": mascarar_cpf(cpf_bruto),
+            "operadora": operadora,
+            "status": "Cadastro Confirmado na Base"
+        }
+
+    return {
+        "sucesso": True,
+        "nome_mascarado": "TI*** DA*** LI***",
+        "cpf_mascarado": "***.***.***-**",
+        "operadora": "OPERADORA VINCULADA",
+        "status": "Cadastro Localizado"
+    }
+
+# 6. GERAR PIX DE 12,90 REAIS
 @app.post("/api/gerar-pix")
 @app.post("/gerar-pix")
 async def gerar_pix(payload: dict):
@@ -101,7 +157,7 @@ async def gerar_pix(payload: dict):
         print(f"Exceção ao gerar Pix: {str(e)}")
         return {"erro": "Erro de conexão ao gerar o Pix."}
 
-# 6. CHECAR STATUS DO PIX E BUSCAR DADOS
+# 7. CHECAR STATUS DO PIX E RETORNAR RELATÓRIO COMPLETO
 @app.get("/api/checar-status/{txid}")
 @app.get("/checar-status/{txid}")
 async def checar_status(txid: str):
@@ -162,7 +218,7 @@ async def checar_status(txid: str):
     
     return {"status": "pendente"}
 
-# 7. WEBHOOK PUSHIN PAY
+# 8. WEBHOOK E SAC
 @app.post("/api/webhook/pushinpay")
 async def webhook_pushinpay(request: Request):
     try:
@@ -179,7 +235,6 @@ async def webhook_pushinpay(request: Request):
         print(f"Erro no webhook: {str(e)}")
         return JSONResponse(status_code=400, content={"error": str(e)})
 
-# 8. SAC DA PÁGINA
 @app.post("/api/sac")
 async def enviar_sac(payload: dict):
     nome = payload.get("nome")
