@@ -44,7 +44,7 @@
       <div id="searchSpinner" class="spinner-border text-success mt-3 hidden" role="status"></div>
     </div>
 
-    <!-- ETAPA 2: PRÉVIA REAL & GERAR PIX -->
+    <!-- ETAPA 2: PRÉVIA & PAGAMENTO -->
     <div id="step-preview" class="card-custom p-4 mb-4 hidden">
       <h4 class="text-success fw-bold mb-3"><i class="fa-solid fa-circle-check me-2"></i>Cadastro Localizado!</h4>
       <p class="text-secondary small">Para sua segurança e privacidade, a prévia abaixo exibe os dados parcialmente ocultos:</p>
@@ -55,13 +55,8 @@
         <p class="mb-0"><strong>Operadora:</strong> <span id="prevOperadora" class="text-light">Carregando...</span></p>
       </div>
 
-      <div class="alert alert-dark border-secondary">
-        <p class="mb-1 text-white fw-semibold">Desbloquear Relatório Completo Sem Máscaras</p>
-        <h3 class="text-success fw-bold mb-0">R$ 600 <span class="fs-6 text-secondary fw-normal">(Taxa Única)</span></h3>
-      </div>
-
-      <button id="btnPay" class="btn btn-green btn-lg w-100" onclick="gerarPix()">
-        <i class="fa-solid fa-pix me-2"></i>Pagar R$ 600 via PIX e Liberar
+      <button id="btnPay" class="btn btn-green btn-lg w-100 py-3 fs-5" onclick="gerarPix()">
+        <i class="fa-solid fa-pix me-2"></i>Pagar R$ 600 via PIX e Liberar Relatório
       </button>
       <div id="paySpinner" class="spinner-border text-success mt-3 hidden" role="status"></div>
     </div>
@@ -88,7 +83,7 @@
       </div>
     </div>
 
-    <!-- ETAPA 4: RELATÓRIO COMPLETO REAL -->
+    <!-- ETAPA 4: RELATÓRIO COMPLETO -->
     <div id="step-result" class="card-custom p-4 mb-4 hidden">
       <h3 class="text-success fw-bold mb-3"><i class="fa-solid fa-file-invoice me-2"></i>Relatório Final Gerado</h3>
       <div id="resultContent" class="text-start"></div>
@@ -237,6 +232,7 @@
     }
 
     function exibirResultadoFinal(registros) {
+      document.getElementById("step-preview").classList.add("hidden");
       document.getElementById("step-pix").classList.add("hidden");
       document.getElementById("step-result").classList.remove("hidden");
 
