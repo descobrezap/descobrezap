@@ -3,360 +3,267 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Descobre Zap - Identificação Rápida de WhatsApp</title>
-
-  <!-- FAVICON: Balão estilo Zap Verde com Interrogação Branca -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%2325D366'/><path d='M35,68 L32,80 L44,74 C46,75 48,75 50,75 C64,75 75,64 75,50 C75,36 64,25 50,25 C36,25 25,36 25,50 C25,57 28,63 35,68 Z' fill='%2325D366' stroke='white' stroke-width='2'/><text x='50' y='63' font-family='Arial, sans-serif' font-weight='bold' font-size='42' fill='white' text-anchor='middle'>?</text></svg>">
-
+  <title>DescobreZap - Identificação Profissional</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    :root {
-      --primary: #25D366;
-      --primary-dark: #1EBE5D;
-      --dark: #0F172A;
-      --card-bg: #1E293B;
-      --text: #F8FAFC;
-      --text-muted: #94A3B8;
-      --accent: #0284C7;
-      --warning: #EF4444;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: var(--dark); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; align-items: center; justify-content: space-between; padding: 20px 10px; }
-    
-    .container { width: 100%; max-width: 500px; }
-    .card { background-color: var(--card-bg); padding: 24px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin-bottom: 20px; }
-    
-    h1 { font-size: 1.6rem; text-align: center; margin-bottom: 10px; color: var(--primary); }
-    p.subtitle { text-align: center; font-size: 0.95rem; color: var(--text-muted); margin-bottom: 20px; }
-    
-    .input-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-    input[type="text"], input[type="email"], textarea, select { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid #334155; background-color: #0F172A; color: #FFF; font-size: 1rem; outline: none; }
-    input:focus, select:focus, textarea:focus { border-color: var(--primary); }
-    
-    button.btn-primary { background-color: var(--primary); color: #000; font-weight: bold; border: none; padding: 14px; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: 0.2s; width: 100%; }
-    button.btn-primary:hover { background-color: var(--primary-dark); }
-    
-    button.btn-pdf { background-color: var(--accent); color: #FFF; font-weight: bold; border: none; padding: 12px; border-radius: 8px; font-size: 0.95rem; cursor: pointer; margin-top: 12px; width: 100%; }
-
-    .preview-box { display: none; background: #0F172A; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid var(--primary); }
-    .blurred-text { filter: blur(4px); user-select: none; }
-    
-    .timer-banner { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--warning); color: #FCA5A5; padding: 10px; border-radius: 8px; text-align: center; font-size: 0.85rem; font-weight: bold; margin-bottom: 12px; display: none; }
-
-    .carousel-container { display: none; position: relative; margin-top: 15px; }
-    .carousel-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .carousel-btn { background: #334155; color: #FFF; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
-    .carousel-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .record-card { background: #0F172A; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); }
-
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; padding: 15px; z-index: 1000; }
-    .modal-content { background: var(--card-bg); width: 100%; max-width: 480px; padding: 20px; border-radius: 12px; position: relative; max-height: 90vh; overflow-y: auto; text-align: center; }
-    .close-btn { position: absolute; right: 15px; top: 15px; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
-    
-    .faq-answer { background: #0F172A; padding: 12px; border-radius: 6px; border-left: 3px solid var(--accent); margin: 10px 0; font-size: 0.9rem; display: none; color: #E2E8F0; text-align: left; }
-    
-    footer { text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 20px; }
-    footer a { color: var(--primary); text-decoration: none; font-weight: bold; }
-
-    .qr-container { background: #FFF; padding: 15px; border-radius: 8px; margin: 15px auto; width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; }
-    .qr-container img { width: 100%; height: 100%; object-fit: contain; }
+    body { background-color: #0f172a; color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .card-custom { background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; }
+    .btn-green { background-color: #22c55e; color: #fff; font-weight: 600; border: none; }
+    .btn-green:hover { background-color: #16a34a; color: #fff; }
+    .hidden { display: none !important; }
+    .preview-box { background-color: #0f172a; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 6px; }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <div class="card">
-      <h1>Descobre Zap</h1>
-      <p class="subtitle">Identificação completa do titular e dados vinculados em segundos</p>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-dark bg-dark border-bottom border-secondary mb-4">
+    <div class="container">
+      <a class="navbar-brand fw-bold text-success" href="#"><i class="fa-solid fa-magnifying-glass-location me-2"></i>DescobreZap</a>
+      <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#modalSac">SAC / Suporte</button>
+    </div>
+  </nav>
 
-      <div class="input-group">
-        <input type="text" id="phoneInput" placeholder="Digite o DDD + Número (ex: 31988887777)">
-        <button class="btn-primary" onclick="buscarNumero()">Consultar Número</button>
+  <div class="container text-center py-4" style="max-width: 650px;">
+    
+    <h2 class="fw-bold mb-3"><i class="fa-brands fa-whatsapp text-success me-2"></i>Descubra o Titular de Qualquer Número</h2>
+    <p class="text-secondary mb-4">Consulte informações reais cadastradas em operadoras e bases de dados nacionais.</p>
+
+    <!-- ETAPA 1: DIGITAR TELEFONE -->
+    <div id="step-search" class="card-custom p-4 mb-4">
+      <div class="mb-3">
+        <label for="phoneInput" class="form-label text-start w-100 fw-semibold">Número do WhatsApp/Telefone (com DDD):</label>
+        <input type="text" id="phoneInput" class="form-control form-control-lg bg-dark text-white border-secondary" placeholder="(31) 99999-9999">
+      </div>
+      <button id="btnSearch" class="btn btn-green btn-lg w-100" onclick="buscarPrevia()">
+        <i class="fa-solid fa-search me-2"></i>Buscar Dados Agora
+      </button>
+      <div id="searchSpinner" class="spinner-border text-success mt-3 hidden" role="status"></div>
+    </div>
+
+    <!-- ETAPA 2: PRÉVIA REAL & GERAR PIX -->
+    <div id="step-preview" class="card-custom p-4 mb-4 hidden">
+      <h4 class="text-success fw-bold mb-3"><i class="fa-solid fa-circle-check me-2"></i>Cadastro Localizado!</h4>
+      <p class="text-secondary small">Para sua segurança e privacidade, a prévia abaixo exibe os dados parcialmente ocultos:</p>
+
+      <div class="preview-box text-start mb-4">
+        <p class="mb-2"><strong>Titular Identificado:</strong> <span id="prevNome" class="text-warning fw-bold">Buscando...</span></p>
+        <p class="mb-2"><strong>Documento CPF:</strong> <span id="prevCpf" class="text-light">***.***.***-**</span></p>
+        <p class="mb-0"><strong>Operadora:</strong> <span id="prevOperadora" class="text-light">Carregando...</span></p>
       </div>
 
-      <div id="previewArea" class="preview-box">
-        <p style="color: var(--primary); font-size: 0.9rem; font-weight: bold; margin-bottom: 8px;">✓ Número localizado no sistema!</p>
-        <p><strong>Titular:</strong> MARIA S. <span class="blurred-text">DE OLIVEIRA</span></p>
-        <p><strong>CPF:</strong> ***.452.<span class="blurred-text">890-**</span></p>
-        <p><strong>Operadora:</strong> VIVO (Minas Gerais)</p>
-        <p style="margin-top: 10px; font-size: 0.85rem; color: var(--text-muted);">Para desbloquear o relatório completo e visualizar todos os registros vinculados, realize o pagamento via Pix.</p>
-        
-        <button class="btn-primary" style="margin-top: 15px;" onclick="abrirModalPix('consulta')">Liberar Relatório por 12,90 reais</button>
+      <div class="alert alert-dark border-secondary">
+        <p class="mb-1 text-white fw-semibold">Desbloquear Relatório Completo Sem Máscaras</p>
+        <h3 class="text-success fw-bold mb-0">R$ 12,90 <span class="fs-6 text-secondary fw-normal">(Taxa Única)</span></h3>
       </div>
 
-      <div id="resultArea" class="carousel-container">
-        <div id="timerBanner" class="timer-banner">
-          ⏱️ Sessão expira em: <span id="timerClock">05:00</span>
+      <button id="btnPay" class="btn btn-green btn-lg w-100" onclick="gerarPix()">
+        <i class="fa-solid fa-pix me-2"></i>Pagar R$ 12,90 via PIX e Liberar
+      </button>
+      <div id="paySpinner" class="spinner-border text-success mt-3 hidden" role="status"></div>
+    </div>
+
+    <!-- ETAPA 3: PAGAMENTO PIX -->
+    <div id="step-pix" class="card-custom p-4 mb-4 hidden">
+      <h4 class="fw-bold text-white mb-3"><i class="fa-solid fa-qrcode me-2"></i>Pagamento via PIX</h4>
+      <p class="text-secondary small">Escaneie o QR Code abaixo ou copie a chave PIX Copia e Cola:</p>
+
+      <div class="bg-white p-3 d-inline-block rounded mb-3">
+        <img id="qrCodeImg" src="" alt="QR Code PIX" style="width: 200px; height: 200px;">
+      </div>
+
+      <div class="mb-3">
+        <input type="text" id="pixCopiaCola" class="form-control form-control-sm bg-dark text-white border-secondary text-center" readonly>
+      </div>
+
+      <button class="btn btn-outline-light w-100 mb-3" onclick="copiarPix()">
+        <i class="fa-regular fa-copy me-2"></i>Copiar Chave PIX
+      </button>
+
+      <div class="alert alert-info py-2 small" role="alert">
+        <i class="fa-solid fa-spinner fa-spin me-2"></i>Aguardando confirmação do pagamento...
+      </div>
+    </div>
+
+    <!-- ETAPA 4: RELATÓRIO COMPLETO REAL -->
+    <div id="step-result" class="card-custom p-4 mb-4 hidden">
+      <h3 class="text-success fw-bold mb-3"><i class="fa-solid fa-file-invoice me-2"></i>Relatório Final Gerado</h3>
+      <div id="resultContent" class="text-start"></div>
+      <button class="btn btn-outline-success w-100 mt-3" onclick="location.reload()">Fazer Nova Consulta</button>
+    </div>
+
+  </div>
+
+  <!-- MODAL SAC -->
+  <div class="modal fade" id="modalSac" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-dark text-white border-secondary">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title"><i class="fa-solid fa-headset me-2 text-success"></i>Atendimento ao Cliente</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
-
-        <div class="carousel-nav">
-          <button id="prevBtn" class="carousel-btn" onclick="mudarRegistro(-1)" disabled>← Anterior</button>
-          <span id="recordIndicator" style="font-size: 0.85rem; color: var(--text-muted);">Registro 1 de 1</span>
-          <button id="nextBtn" class="carousel-btn" onclick="mudarRegistro(1)" disabled>Próximo →</button>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Seu Nome:</label>
+            <input type="text" id="sacNome" class="form-control bg-secondary text-white border-0">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Seu E-mail:</label>
+            <input type="email" id="sacEmail" class="form-control bg-secondary text-white border-0">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Mensagem:</label>
+            <textarea id="sacMensagem" class="form-control bg-secondary text-white border-0" rows="3"></textarea>
+          </div>
         </div>
-
-        <div id="recordContent" class="record-card"></div>
-
-        <button class="btn-pdf" onclick="abrirModalPix('pdf')">📄 Baixar Relatório em PDF por 4,90 reais</button>
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-success w-100" onclick="enviarSac()">Enviar Mensagem</button>
+        </div>
       </div>
-
     </div>
   </div>
 
-  <footer>
-    <p>Descobre Zap © 2026 • Todos os direitos reservados</p>
-    <p style="margin-top: 6px;"><a href="javascript:void(0)" onclick="abrirSAC()">Precisa de ajuda? Suporte / Central de Dúvidas</a></p>
-  </footer>
-
-  <div id="pixModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="fecharModalPix()">&times;</span>
-      <h2 style="font-size: 1.2rem; color: var(--primary); margin-bottom: 10px;" id="pixModalTitle">Pagamento via Pix</h2>
-      <p style="font-size: 0.9rem; color: var(--text-muted);" id="pixModalDesc">Carregando cobrança...</p>
-      
-      <div class="qr-container" id="qrContainer">
-        <p style="color: #000; font-size: 0.85rem;">Gerando Pix...</p>
-      </div>
-
-      <input type="text" id="pixCopiaColaInput" readonly value="..." style="text-align: center; font-size: 0.8rem; margin-bottom: 10px;">
-      <button class="btn-primary" onclick="copiarPix()">Copiar Chave Pix</button>
-
-      <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 15px;">
-        Após o pagamento, a liberação ocorre em até 2 minutos.<br>
-        <a href="javascript:void(0)" onclick="fecharModalPix(); abrirSAC();" style="color: var(--primary);">Problemas com o pagamento? Fale com o SAC</a>
-      </p>
-    </div>
-  </div>
-
-  <div id="sacModal" class="modal">
-    <div class="modal-content" style="text-align: left;">
-      <span class="close-btn" onclick="fecharSAC()">&times;</span>
-      <h2 style="font-size: 1.2rem; margin-bottom: 10px; color: var(--primary);">Central de Ajuda & Suporte</h2>
-      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Selecione o motivo do contato para ver a solução rápida ou enviar uma mensagem.</p>
-
-      <div class="input-group">
-        <select id="sacMotivo" onchange="tratarMotivoSAC()">
-          <option value="">-- Escolha uma opção --</option>
-          <option value="pix_demora">Fiz o Pix e a tela não liberou o relatório</option>
-          <option value="dados_antigos">O nome retornado é de um antigo dono</option>
-          <option value="comprovante">Tenho um comprovante / Erro no pagamento</option>
-          <option value="outro">Outro assunto / Falar com o suporte</option>
-        </select>
-      </div>
-
-      <div id="answer_pix_demora" class="faq-answer">
-        ⌛ <strong>Tempo de Confirmação:</strong> A aprovação do Pix pelo sistema bancário pode levar de 30 segundos até 2 minutos.
-      </div>
-
-      <div id="answer_dados_antigos" class="faq-answer">
-        👤 <strong>Múltiplos Registros:</strong> Números de telefone costumam ser reaproveitados. Utilize os botões "Anterior" e "Próximo".
-      </div>
-
-      <div id="answer_comprovante" class="faq-answer">
-        💳 <strong>Análise de Cobrança:</strong> Envie os dados abaixo que verificamos manualmente.
-      </div>
-
-      <form id="sacForm" style="display: none; margin-top: 15px;" onsubmit="enviarMensagemSAC(event)">
-        <div class="input-group">
-          <input type="text" id="sacNome" placeholder="Seu Nome Completo" required>
-          <input type="text" id="sacContato" placeholder="Seu WhatsApp ou E-mail" required>
-          <input type="text" id="sacNumeroPesquisado" placeholder="Número pesquisado (DDD + Tel)">
-          <textarea id="sacMensagem" rows="3" placeholder="Descreva o que aconteceu..." required></textarea>
-        </div>
-        <button type="submit" class="btn-primary">Enviar Mensagem ao Suporte</button>
-      </form>
-    </div>
-  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    let registrosAtuais = [];
-    let indiceAtual = 0;
-    let tempoRestante = 300;
-    let timerInterval = null;
-    let statusCheckInterval = null;
-    let txidAtual = null;
+    let currentPhone = "";
+    let currentTxid = "";
+    let checkInterval = null;
 
-    function buscarNumero() {
-      const tel = document.getElementById('phoneInput').value.trim();
-      if (!tel) {
-        alert('Por favor, digite um número de telefone com DDD.');
+    async function buscarPrevia() {
+      const phoneInput = document.getElementById("phoneInput").value.trim();
+      if (!phoneInput || phoneInput.length < 10) {
+        alert("Por favor, digite um número de telefone válido com DDD.");
         return;
       }
-      document.getElementById('resultArea').style.display = 'none';
-      document.getElementById('previewArea').style.display = 'block';
-    }
 
-    async function abrirModalPix(tipo) {
-      const tel = document.getElementById('phoneInput').value.trim();
-      const valorTxt = tipo === 'consulta' ? '12,90 reais' : '4,90 reais';
-
-      document.getElementById('pixModalTitle').innerText = tipo === 'pdf' ? 'Baixar Relatório em PDF' : 'Liberação do Relatório';
-      document.getElementById('pixModalDesc').innerText = `Valor: ${valorTxt}`;
-      document.getElementById('qrContainer').innerHTML = '<p style="color:#000; font-size:0.85rem;">Gerando Pix...</p>';
-      document.getElementById('pixCopiaColaInput').value = 'Aguarde...';
-      document.getElementById('pixModal').style.display = 'flex';
+      currentPhone = phoneInput;
+      document.getElementById("btnSearch").classList.add("hidden");
+      document.getElementById("searchSpinner").classList.remove("hidden");
 
       try {
-        const response = await fetch('/api/gerar-pix', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ telefone: tel, tipo: tipo })
+        const response = await fetch("/api/previa", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ telefone: currentPhone })
         });
-        
+
         const data = await response.json();
 
-        if (response.ok && data.status === 'sucesso') {
-          txidAtual = data.txid;
-          const copiaCola = data.pix_copia_cola || data.qr_code || '';
-          document.getElementById('pixCopiaColaInput').value = copiaCola;
+        if (data.sucesso) {
+          document.getElementById("prevNome").innerText = data.nome_mascarado;
+          document.getElementById("prevCpf").innerText = data.cpf_mascarado;
+          document.getElementById("prevOperadora").innerText = data.operadora;
 
-          if (data.qr_code_base64 && data.qr_code_base64.startsWith('data:image')) {
-            document.getElementById('qrContainer').innerHTML = `<img src="${data.qr_code_base64}" alt="QR Code Pix">`;
-          } else if (copiaCola) {
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(copiaCola)}`;
-            document.getElementById('qrContainer').innerHTML = `<img src="${qrUrl}" alt="QR Code Pix">`;
-          }
-
-          iniciarChecagemPagamento();
+          document.getElementById("step-search").classList.add("hidden");
+          document.getElementById("step-preview").classList.remove("hidden");
         } else {
-          alert('Erro ao gerar cobrança Pix. Tente novamente em instantes.');
+          alert("Não foi possível buscar a prévia. Tente novamente.");
         }
       } catch (err) {
-        console.error(err);
-        alert('Erro na conexão com o servidor de pagamento.');
+        alert("Erro de conexão ao consultar a prévia.");
+      } finally {
+        document.getElementById("btnSearch").classList.remove("hidden");
+        document.getElementById("searchSpinner").classList.add("hidden");
       }
     }
 
-    function fecharModalPix() {
-      document.getElementById('pixModal').style.display = 'none';
-      if (statusCheckInterval) clearInterval(statusCheckInterval);
+    async function gerarPix() {
+      document.getElementById("btnPay").classList.add("hidden");
+      document.getElementById("paySpinner").classList.remove("hidden");
+
+      try {
+        const response = await fetch("/api/gerar-pix", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ telefone: currentPhone })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          currentTxid = data.txid;
+          document.getElementById("pixCopiaCola").value = data.qr_code;
+          document.getElementById("qrCodeImg").src = data.qr_code_base64.startsWith("data:") ? data.qr_code_base64 : `data:image/png;base64,${data.qr_code_base64}`;
+
+          document.getElementById("step-preview").classList.add("hidden");
+          document.getElementById("step-pix").classList.remove("hidden");
+
+          iniciarVerificacaoPix();
+        } else {
+          alert(data.erro || "Erro ao gerar chave PIX.");
+        }
+      } catch (err) {
+        alert("Erro de conexão ao gerar o PIX.");
+      } finally {
+        document.getElementById("btnPay").classList.remove("hidden");
+        document.getElementById("paySpinner").classList.add("hidden");
+      }
     }
 
     function copiarPix() {
-      const input = document.getElementById('pixCopiaColaInput');
-      input.select();
-      input.setSelectionRange(0, 99999);
-      navigator.clipboard.writeText(input.value);
-      alert('Chave Pix copiada para a área de transferência!');
+      const copyText = document.getElementById("pixCopiaCola");
+      copyText.select();
+      navigator.clipboard.writeText(copyText.value);
+      alert("Chave PIX copiada para a área de transferência!");
     }
 
-    function iniciarChecagemPagamento() {
-      if (statusCheckInterval) clearInterval(statusCheckInterval);
-      
-      statusCheckInterval = setInterval(async () => {
-        if (!txidAtual) return;
+    function iniciarVerificacaoPix() {
+      if (checkInterval) clearInterval(checkInterval);
+
+      checkInterval = setInterval(async () => {
         try {
-          const res = await fetch(`/api/checar-status/${txidAtual}`);
-          const data = await res.json();
+          const response = await fetch(`/api/checar-status/${currentTxid}`);
+          const data = await response.json();
 
-          if (data.status === 'pago') {
-            clearInterval(statusCheckInterval);
-            fecharModalPix();
-            liberarRelatorioPago(data.registros);
+          if (data.status === "pago") {
+            clearInterval(checkInterval);
+            exibirResultadoFinal(data.registros);
           }
-        } catch (e) {
-          console.error(e);
+        } catch (err) {
+          console.error("Erro ao checar status do pagamento:", err);
         }
-      }, 5000);
+      }, 3000);
     }
 
-    function liberarRelatorioPago(registros) {
-      document.getElementById('previewArea').style.display = 'none';
-      document.getElementById('resultArea').style.display = 'block';
+    function exibirResultadoFinal(registros) {
+      document.getElementById("step-pix").classList.add("hidden");
+      document.getElementById("step-result").classList.remove("hidden");
 
-      registrosAtuais = registros && registros.length > 0 ? registros : [
-        { nome: "MARIA SILVA DE OLIVEIRA", cpf: "***.452.890-**", operadora: "VIVO", status: "Titular Atual / Cadastro Ativo" }
-      ];
+      let html = "";
+      registros.forEach((item, index) => {
+        html += `
+          <div class="card bg-dark border-secondary p-3 mb-3 text-white">
+            <p class="mb-1"><strong class="text-success">Nome Completo:</strong> ${item.nome}</p>
+            <p class="mb-1"><strong class="text-success">CPF / Documento:</strong> ${item.cpf}</p>
+            <p class="mb-1"><strong class="text-success">Operadora:</strong> ${item.operadora}</p>
+            <p class="mb-0"><strong class="text-success">Status:</strong> ${item.status}</p>
+          </div>
+        `;
+      });
 
-      indiceAtual = 0;
-      renderizarRegistro();
-      iniciarTimer5Minutos();
+      document.getElementById("resultContent").innerHTML = html;
     }
 
-    function renderizarRegistro() {
-      const total = registrosAtuais.length;
-      const reg = registrosAtuais[indiceAtual];
+    async function enviarSac() {
+      const nome = document.getElementById("sacNome").value;
+      const email = document.getElementById("sacEmail").value;
+      const mensagem = document.getElementById("sacMensagem").value;
 
-      document.getElementById('recordIndicator').innerText = `Registro ${indiceAtual + 1} de ${total}`;
-      document.getElementById('prevBtn').disabled = (indiceAtual === 0);
-      document.getElementById('nextBtn').disabled = (indiceAtual === total - 1);
-
-      document.getElementById('recordContent').innerHTML = `
-        <p style="color: var(--primary); font-weight: bold; margin-bottom: 5px;">${reg.nome}</p>
-        <p style="font-size: 0.9rem; color: var(--text-muted);">CPF: ${reg.cpf}</p>
-        <p style="font-size: 0.9rem; color: var(--text-muted);">Operadora: ${reg.operadora}</p>
-        <p style="font-size: 0.8rem; color: #64748B; margin-top: 5px;">Status: ${reg.status || reg.obs || 'Ativo'}</p>
-      `;
-    }
-
-    function mudarRegistro(direcao) {
-      indiceAtual += direcao;
-      renderizarRegistro();
-    }
-
-    function iniciarTimer5Minutos() {
-      document.getElementById('timerBanner').style.display = 'block';
-      tempoRestante = 300;
-      clearInterval(timerInterval);
-
-      timerInterval = setInterval(() => {
-        let minutos = Math.floor(tempoRestante / 60);
-        let segundos = tempoRestante % 60;
-
-        minutos = minutos < 10 ? '0' + minutos : minutos;
-        segundos = segundos < 10 ? '0' + segundos : segundos;
-
-        document.getElementById('timerClock').innerText = `${minutos}:${segundos}`;
-
-        if (tempoRestante <= 0) {
-          clearInterval(timerInterval);
-          alert('Sessão expirada por motivos de segurança.');
-          document.getElementById('resultArea').style.display = 'none';
-          document.getElementById('phoneInput').value = '';
-        }
-        tempoRestante--;
-      }, 1000);
-    }
-
-    function abrirSAC() { document.getElementById('sacModal').style.display = 'flex'; }
-    function fecharSAC() { document.getElementById('sacModal').style.display = 'none'; }
-
-    function tratarMotivoSAC() {
-      const motivo = document.getElementById('sacMotivo').value;
-      document.querySelectorAll('.faq-answer').forEach(el => el.style.display = 'none');
-      
-      if (motivo) {
-        const respostaEl = document.getElementById('answer_' + motivo);
-        if (respostaEl) respostaEl.style.display = 'block';
-        document.getElementById('sacForm').style.display = 'block';
-      } else {
-        document.getElementById('sacForm').style.display = 'none';
+      if (!nome || !email || !mensagem) {
+        alert("Preencha todos os campos do suporte.");
+        return;
       }
-    }
 
-    async function enviarMensagemSAC(event) {
-      event.preventDefault();
-      const nome = document.getElementById('sacNome').value;
-      const contato = document.getElementById('sacContato').value;
-      const numero_pesquisado = document.getElementById('sacNumeroPesquisado').value;
-      const mensagem = document.getElementById('sacMensagem').value;
+      await fetch("/api/sac", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nome, email, mensagem })
+      });
 
-      try {
-        const response = await fetch('/api/sac', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nome, contato, numero_pesquisado, mensagem })
-        });
-        
-        if (response.ok) {
-          alert('Mensagem enviada com sucesso ao suporte!');
-          fecharSAC();
-        } else {
-          alert('Erro ao enviar mensagem. Tente novamente.');
-        }
-      } catch (e) {
-        alert('Erro ao conectar com o servidor do SAC.');
-      }
+      alert("Sua mensagem foi enviada ao nosso suporte!");
+      bootstrap.Modal.getInstance(document.getElementById("modalSac")).hide();
     }
   </script>
 </body>
