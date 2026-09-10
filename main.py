@@ -33,7 +33,7 @@ async def read_index():
     return FileResponse("index.html")
 
 # ----------------------------------------------------
-# CONSULTA DE DADOS (APIBRASIL)
+# CONSULTA DE DADOS REAIS (APIBRASIL)
 # ----------------------------------------------------
 def buscar_dados_completos(telefone: str):
     phone_clean = "".join(filter(str.isdigit, telefone))
@@ -54,6 +54,46 @@ def buscar_dados_completos(telefone: str):
         print(f"Exceção APIBrasil: {str(e)}")
         return None
 
+@app.post("/api/consultar-telefone")
+@app.post("/consultar-telefone")
+async def consultar_telefone(request: Request):
+    data = await request.json()
+    telefone = data.get("telefone", "")
+    
+    dados_api = buscar_dados_completos(telefone)
+    
+    if dados_api and ("dados" in dados_api or "resultado" in dados_api or isinstance(dados_api, dict)):
+        # Extrai o primeiro registro para a prévia mascarada
+        lista_dados = dados_api.get("dados", dados_api.get("resultado", [dados_api]))
+        if isinstance(lista_dados, list) and len(lista_dados) > 0:
+            primeiro = lista_dados[0]
+        else:
+            primeiro = dados_api
+
+        nome = primeiro.get("nome", "NÃO INFORMADO")
+        cpf = primeiro.get("cpf", "***.***.***-**")
+        operadora = primeiro.get("operadora", "VIVO / CLARO")
+
+        # Formata registros para o pós-pagamento
+        registros_formatados = []
+        for item in (lista_dados if isinstance(lista_dados, list) else [primeiro]):
+            registros_formatados.append({
+                "nome": item.get("nome", "NÃO INFORMADO"),
+                "cpf": item.get("cpf", "***.***.***-**"),
+                "operadora": item.get("operadora", "NÃO INFORMADA"),
+                "status": item.get("status", "Cadastro Ativo")
+            })
+
+        return {
+            "status": "sucesso",
+            "titular_parcial": nome,
+            "cpf_parcial": cpf,
+            "operadora": operadora,
+            "registros": registros_formatados
+        }
+    else:
+        raise HTTPException(status_code=404, detail="Número não encontrado na base de dados.")
+
 # ----------------------------------------------------
 # GERAR PIX (PUSHIN PAY)
 # ----------------------------------------------------
@@ -66,7 +106,6 @@ async def gerar_pix(request: Request):
     telefone = data.get("telefone", "")
     tipo = data.get("tipo", "consulta")
     
-    # 12,90 reais para consulta (1290 centavos) ou 4,90 reais para PDF (490 centavos)
     valor_centavos = 490 if tipo == "pdf" else 1290
 
     headers = {
@@ -87,7 +126,6 @@ async def gerar_pix(request: Request):
             qr_code = res_data.get("qr_code")
             qr_code_base64 = res_data.get("qr_code_base64")
 
-            # Armazena em cache para checagem do status pelo frontend
             PAGAMENTOS_CACHE[txid] = {
                 "status": "pending",
                 "telefone": telefone,
@@ -114,7 +152,6 @@ async def gerar_pix(request: Request):
 @app.get("/api/checar-status/{txid}")
 @app.get("/checar-status/{txid}")
 async def checar_status(txid: str):
-    # Consulta o status direto da Pushin Pay
     headers = {
         "Authorization": f"Bearer {PUSHIN_PAY_TOKEN}",
         "Accept": "application/json"
@@ -135,15 +172,15 @@ async def checar_status(txid: str):
         telefone = info.get("telefone", "")
         dados_api = buscar_dados_completos(telefone) if telefone else None
         
-        # Estrutura tratada para retorno ao frontend
         registros_formatados = []
-        if dados_api and "dados" in dados_api:
-            for item in dados_api.get("dados", []):
+        if dados_api:
+            lista_dados = dados_api.get("dados", dados_api.get("resultado", [dados_api]))
+            for item in (lista_dados if isinstance(lista_dados, list) else [dados_api]):
                 registros_formatados.append({
                     "nome": item.get("nome", "NÃO INFORMADO"),
                     "cpf": item.get("cpf", "***.***.***-**"),
                     "operadora": item.get("operadora", "NÃO INFORMADA"),
-                    "status": item.get("status", "Cadastro Encontrado")
+                    "status": item.get("status", "Liberado")
                 })
         
         return {
@@ -154,7 +191,7 @@ async def checar_status(txid: str):
     return {"status": "pendente"}
 
 # ----------------------------------------------------
-# WEBHOOK PIX (CONFIRMAÇÃO DE PAGAMENTO AUTOMÁTICA)
+# WEBHOOK PIX
 # ----------------------------------------------------
 @app.post("/api/webhook-pix")
 @app.post("/webhook-pix")
@@ -176,7 +213,7 @@ async def webhook_pix(request: Request):
         return {"status": "erro", "detalhe": str(e)}
 
 # ----------------------------------------------------
-# FORMULÁRIO DE SAC (ENVIO DE E-MAIL VIA GMAIL)
+# FORMULÁRIO DE SAC
 # ----------------------------------------------------
 @app.post("/api/sac")
 @app.post("/sac")
