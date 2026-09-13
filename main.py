@@ -33,6 +33,14 @@ if os.path.exists("static"):
 async def read_index():
     return FileResponse("index.html")
 
+# ----------------------------------------------------
+# SEGUNDA PÁGINA DE TESTE
+# ----------------------------------------------------
+@app.get("/novo")
+async def read_new_index():
+    return FileResponse("index2.html")
+
+
 
 # ----------------------------------------------------
 # CONSULTA DE DADOS REAIS (APIBRASIL)
