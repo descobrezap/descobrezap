@@ -3,1783 +3,400 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Descobre Zap - Identificação Rápida de WhatsApp</title>
-
-  <!-- FAVICON -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path fill='%2325D366' d='M16 0C7.163 0 0 7.163 0 16c0 2.825.735 5.47 2.022 7.76L.622 30.622l7.1-1.385A15.86 15.86 0 0016 32c8.837 0 16-7.163 16-16S24.837 0 16 0z'/><text x='16' y='22' font-family='Arial, sans-serif' font-weight='bold' font-size='18' fill='white' text-anchor='middle'>?</text></svg>">
+  <meta name="description" content="Meu Site: ferramentas online práticas para criar documentos, organizar tarefas e resolver problemas do dia a dia.">
+  <title>Meu Site — Ferramentas para facilitar sua vida</title>
 
   <style>
     :root {
-      --primary: #25D366;
-      --primary-dark: #1EBE5D;
-      --dark: #0F172A;
-      --card-bg: #1E293B;
-      --text: #F8FAFC;
-      --text-muted: #94A3B8;
-      --accent: #0284C7;
-      --warning: #EF4444;
+      --bg: #0b1020;
+      --surface: #121a2b;
+      --surface-2: #182238;
+      --border: #26324a;
+      --text: #f5f7fb;
+      --muted: #aab4c7;
+      --primary: #5eead4;
+      --white: #ffffff;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body {
-      background-color: var(--dark);
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
       color: var(--text);
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 10px;
+      line-height: 1.5;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
     }
 
     .container {
-      width: 100%;
-      max-width: 500px;
+      width: min(1120px, 92%);
+      margin: 0 auto;
     }
 
-    .card {
-      background-color: var(--card-bg);
-      padding: 24px;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    header {
+      border-bottom: 1px solid var(--border);
+      background: rgba(11, 16, 32, 0.96);
+    }
+
+    .header-inner {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .logo {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .logo span {
+      color: var(--primary);
+    }
+
+    nav {
+      display: flex;
+      gap: 22px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    nav a:hover {
+      color: var(--white);
+    }
+
+    .hero {
+      padding: 78px 0 62px;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 7px 13px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--primary);
+      background: var(--surface);
+      font-size: 0.82rem;
       margin-bottom: 20px;
     }
 
     h1 {
-      font-size: 1.6rem;
-      text-align: center;
-      margin-bottom: 10px;
-      color: var(--primary);
+      max-width: 800px;
+      margin: 0 auto;
+      font-size: clamp(2.2rem, 6vw, 4.2rem);
+      line-height: 1.05;
+      letter-spacing: -2px;
     }
 
-    p.subtitle {
-      text-align: center;
-      font-size: 0.95rem;
-      color: var(--text-muted);
-      margin-bottom: 20px;
+    .hero p {
+      max-width: 680px;
+      margin: 22px auto 0;
+      color: var(--muted);
+      font-size: 1.08rem;
     }
 
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 20px;
+    .section {
+      padding: 30px 0 70px;
     }
 
-    input[type="text"],
-    input[type="email"],
-    textarea,
-    select {
-      width: 100%;
-      padding: 14px;
-      border-radius: 8px;
-      border: 1px solid #334155;
-      background-color: #0F172A;
-      color: #FFF;
-      font-size: 1rem;
-      outline: none;
+    .section-title {
+      margin-bottom: 25px;
     }
 
-    input:focus,
-    select:focus,
-    textarea:focus {
+    .section-title h2 {
+      font-size: 1.65rem;
+      margin-bottom: 6px;
+    }
+
+    .section-title p {
+      color: var(--muted);
+    }
+
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .category {
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface);
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .category:hover {
+      transform: translateY(-3px);
       border-color: var(--primary);
     }
 
-    button.btn-primary {
-      background-color: var(--primary);
-      color: #000;
-      font-weight: bold;
-      border: none;
-      padding: 14px;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: 0.2s;
-      width: 100%;
+    .icon {
+      font-size: 1.8rem;
+      margin-bottom: 14px;
     }
 
-    button.btn-primary:hover {
-      background-color: var(--primary-dark);
+    .category h3 {
+      margin-bottom: 7px;
+      font-size: 1.08rem;
     }
 
-    button.btn-primary:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    button.btn-pdf {
-      background-color: var(--accent);
-      color: #FFF;
-      font-weight: bold;
-      border: none;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      cursor: pointer;
-      margin-top: 12px;
-      width: 100%;
-    }
-
-    button.btn-pdf:hover {
-      opacity: 0.9;
-    }
-
-    .preview-box {
-      display: none;
-      background: #0F172A;
-      padding: 15px;
-      border-radius: 8px;
-      margin-top: 15px;
-      border-left: 4px solid var(--primary);
-    }
-
-    .timer-banner {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid var(--warning);
-      color: #FCA5A5;
-      padding: 10px;
-      border-radius: 8px;
-      text-align: center;
-      font-size: 0.85rem;
-      font-weight: bold;
-      margin-bottom: 12px;
-      display: none;
-    }
-
-    .carousel-container {
-      display: none;
-      position: relative;
-      margin-top: 15px;
-    }
-
-    .carousel-nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      gap: 8px;
-    }
-
-    .carousel-btn {
-      background: #334155;
-      color: #FFF;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.85rem;
-    }
-
-    .carousel-btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-
-    .record-card {
-      background: #0F172A;
-      padding: 15px;
-      border-radius: 8px;
-      border-left: 4px solid var(--primary);
-      min-height: 110px;
-    }
-
-    .empty-result {
-      color: var(--text-muted);
-      text-align: center;
+    .category p {
+      color: var(--muted);
       font-size: 0.9rem;
-      line-height: 1.5;
     }
 
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.85);
+    .featured {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .featured-main,
+    .featured-side {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--surface);
+      padding: 30px;
+    }
+
+    .featured-main h2 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    .featured-main p,
+    .featured-side p {
+      color: var(--muted);
+      margin-bottom: 22px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 13px 19px;
+      border-radius: 10px;
+      background: var(--primary);
+      color: #06201d;
+      font-weight: 800;
+    }
+
+    .button:hover {
+      background: #8af3e4;
+    }
+
+    .coming {
+      display: grid;
+      gap: 12px;
+    }
+
+    .coming-item {
+      padding: 13px 15px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface-2);
+      color: var(--muted);
+    }
+
+    .ad {
+      min-height: 90px;
+      margin: 10px 0 55px;
+      display: flex;
       align-items: center;
       justify-content: center;
-      padding: 15px;
-      z-index: 1000;
-    }
-
-    .modal-content {
-      background: var(--card-bg);
-      width: 100%;
-      max-width: 480px;
-      padding: 20px;
+      border: 1px dashed var(--border);
       border-radius: 12px;
-      position: relative;
-      max-height: 90vh;
-      overflow-y: auto;
-      text-align: center;
-    }
-
-    .close-btn {
-      position: absolute;
-      right: 15px;
-      top: 15px;
-      font-size: 1.5rem;
-      color: var(--text-muted);
-      cursor: pointer;
-    }
-
-    .faq-answer {
-      background: #0F172A;
-      padding: 12px;
-      border-radius: 6px;
-      border-left: 3px solid var(--accent);
-      margin: 10px 0;
-      font-size: 0.9rem;
-      display: none;
-      color: #E2E8F0;
-      text-align: left;
+      color: #718096;
+      font-size: 0.8rem;
     }
 
     footer {
+      border-top: 1px solid var(--border);
+      padding: 30px 0;
+      color: var(--muted);
       text-align: center;
       font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-top: 20px;
     }
 
-    footer a {
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: bold;
+    @media (max-width: 850px) {
+      .categories {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .featured {
+        grid-template-columns: 1fr;
+      }
     }
 
-    .qr-container {
-      background: #FFF;
-      padding: 15px;
-      border-radius: 8px;
-      margin: 15px auto;
-      width: 200px;
-      height: 200px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    @media (max-width: 560px) {
+      nav {
+        display: none;
+      }
 
-    .qr-container img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
+      .hero {
+        padding: 58px 0 45px;
+      }
 
-    .status-message {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-top: 10px;
-      min-height: 18px;
+      h1 {
+        letter-spacing: -1px;
+      }
+
+      .categories {
+        grid-template-columns: 1fr;
+      }
+
+      .featured-main,
+      .featured-side {
+        padding: 23px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <div class="container">
+  <header>
+    <div class="container header-inner">
+      <a href="/" class="logo">Meu<span>Site</span></a>
 
-    <div class="card">
+      <nav>
+        <a href="/">Início</a>
+        <a href="#ferramentas">Ferramentas</a>
+        <a href="#sobre">Sobre</a>
+      </nav>
+    </div>
+  </header>
 
-      <h1>Descobre Zap</h1>
+  <main>
 
-      <p class="subtitle">
-        Identificação completa do titular e dados vinculados em segundos
-      </p>
+    <section class="hero">
+      <div class="container">
+        <div class="badge">Ferramentas online práticas</div>
 
-      <div class="input-group">
-
-        <input
-          type="text"
-          id="phoneInput"
-          placeholder="Digite o DDD + Número (ex: 31988887777)"
-          maxlength="15"
-          autocomplete="off"
-        >
-
-        <button
-          id="btnConsultar"
-          class="btn-primary"
-          onclick="buscarNumero()"
-        >
-          Consultar Número
-        </button>
-
-      </div>
-
-      <!-- PRÉVIA -->
-      <div id="previewArea" class="preview-box">
-
-        <p style="color: var(--primary); font-size: 0.9rem; font-weight: bold; margin-bottom: 8px;">
-          ✓ Número localizado no sistema!
-        </p>
+        <h1>
+          Resolva suas tarefas de forma simples e rápida.
+        </h1>
 
         <p>
-          <strong>Titular:</strong>
-          <span id="prevNome">Aguardando...</span>
+          Um lugar para criar, organizar, transformar e facilitar
+          tarefas que fazem parte do seu dia a dia.
         </p>
-
-        <p>
-          <strong>CPF:</strong>
-          <span id="prevCpf">Aguardando...</span>
-        </p>
-
-        <p>
-          <strong>Operadora:</strong>
-          <span id="prevOperadora">Aguardando...</span>
-        </p>
-
-        <p style="margin-top: 10px; font-size: 0.85rem; color: var(--text-muted);">
-          Para desbloquear o relatório completo e visualizar todos os registros vinculados, realize o pagamento via Pix.
-        </p>
-
-        <button
-          class="btn-primary"
-          style="margin-top: 15px;"
-          onclick="abrirModalPix('consulta')"
-        >
-          Liberar Relatório por 12 reais e 90 centavos
-        </button>
-
       </div>
+    </section>
 
+    <section class="section" id="ferramentas">
+      <div class="container">
 
-      <!-- RESULTADO -->
-      <div id="resultArea" class="carousel-container">
-
-        <div id="timerBanner" class="timer-banner">
-          ⏱️ Sessão expira em:
-          <span id="timerClock">05:00</span>
+        <div class="section-title">
+          <h2>Encontre o que você precisa</h2>
+          <p>Novas ferramentas serão adicionadas ao site.</p>
         </div>
 
-        <div class="carousel-nav">
+        <div class="categories">
 
-          <button
-            id="prevBtn"
-            class="carousel-btn"
-            onclick="mudarRegistro(-1)"
-            disabled
-          >
-            ← Anterior
-          </button>
+          <a class="category" href="/orcamento">
+            <div class="icon">📄</div>
+            <h3>Documentos</h3>
+            <p>Crie orçamentos e outros documentos de forma prática.</p>
+          </a>
 
-          <span
-            id="recordIndicator"
-            style="font-size: 0.85rem; color: var(--text-muted);"
-          >
-            Registro 1 de 1
-          </span>
+          <a class="category" href="/orcamento">
+            <div class="icon">💼</div>
+            <h3>Pequenos negócios</h3>
+            <p>Ferramentas para quem trabalha por conta própria ou possui uma empresa.</p>
+          </a>
 
-          <button
-            id="nextBtn"
-            class="carousel-btn"
-            onclick="mudarRegistro(1)"
-            disabled
-          >
-            Próximo →
-          </button>
+          <a class="category" href="#em-breve">
+            <div class="icon">📑</div>
+            <h3>PDF e arquivos</h3>
+            <p>Ferramentas para organizar e transformar seus arquivos.</p>
+          </a>
 
-        </div>
-
-        <div id="recordContent" class="record-card"></div>
-
-        <button
-          class="btn-pdf"
-          onclick="abrirModalPix('pdf')"
-        >
-          📄 Baixar Relatório em PDF por 4 reais e 90 centavos
-        </button>
-
-      </div>
-
-    </div>
-  </div>
-
-
-  <!-- RODAPÉ -->
-  <footer>
-
-    <p>
-      Descobre Zap © 2026 • Todos os direitos reservados
-    </p>
-
-    <p style="margin-top: 6px;">
-      <a
-        href="javascript:void(0)"
-        onclick="abrirSAC()"
-      >
-        Precisa de ajuda? Suporte / Central de Dúvidas
-      </a>
-    </p>
-
-  </footer>
-
-
-  <!-- MODAL PIX -->
-  <div id="pixModal" class="modal">
-
-    <div class="modal-content">
-
-      <span
-        class="close-btn"
-        onclick="fecharModalPix()"
-      >
-        &times;
-      </span>
-
-      <h2
-        style="font-size: 1.2rem; color: var(--primary); margin-bottom: 10px;"
-        id="pixModalTitle"
-      >
-        Pagamento via Pix
-      </h2>
-
-      <p
-        style="font-size: 0.9rem; color: var(--text-muted);"
-        id="pixModalDesc"
-      >
-        Carregando cobrança...
-      </p>
-
-      <div
-        class="qr-container"
-        id="qrContainer"
-      >
-        <p style="color: #000; font-size: 0.85rem;">
-          Gerando Pix...
-        </p>
-      </div>
-
-      <input
-        type="text"
-        id="pixCopiaColaInput"
-        readonly
-        value="..."
-        style="text-align: center; font-size: 0.8rem; margin-bottom: 10px;"
-      >
-
-      <button
-        class="btn-primary"
-        onclick="copiarPix()"
-      >
-        Copiar código Pix
-      </button>
-
-      <p
-        id="pixStatusMessage"
-        class="status-message"
-      >
-        Aguardando pagamento...
-      </p>
-
-      <p
-        style="font-size: 0.75rem; color: var(--text-muted); margin-top: 15px;"
-      >
-        Após o pagamento, a liberação ocorre automaticamente quando o pagamento for confirmado.<br>
-
-        <a
-          href="javascript:void(0)"
-          onclick="fecharModalPix(); abrirSAC();"
-          style="color: var(--primary);"
-        >
-          Problemas com o pagamento? Fale com o SAC
-        </a>
-      </p>
-
-    </div>
-  </div>
-
-
-  <!-- MODAL SAC -->
-  <div id="sacModal" class="modal">
-
-    <div
-      class="modal-content"
-      style="text-align: left;"
-    >
-
-      <span
-        class="close-btn"
-        onclick="fecharSAC()"
-      >
-        &times;
-      </span>
-
-      <h2
-        style="font-size: 1.2rem; margin-bottom: 10px; color: var(--primary);"
-      >
-        Central de Ajuda & Suporte
-      </h2>
-
-      <p
-        style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;"
-      >
-        Selecione o motivo do contato para ver a solução rápida ou enviar uma mensagem.
-      </p>
-
-
-      <div class="input-group">
-
-        <select
-          id="sacMotivo"
-          onchange="tratarMotivoSAC()"
-        >
-
-          <option value="">
-            -- Escolha uma opção --
-          </option>
-
-          <option value="pix_demora">
-            Fiz o Pix e a tela não liberou o relatório
-          </option>
-
-          <option value="dados_antigos">
-            O nome retornado é de um antigo dono
-          </option>
-
-          <option value="comprovante">
-            Tenho um comprovante / Erro no pagamento
-          </option>
-
-          <option value="outro">
-            Outro assunto / Falar com o suporte
-          </option>
-
-        </select>
-
-      </div>
-
-
-      <div
-        id="answer_pix_demora"
-        class="faq-answer"
-      >
-        ⌛ <strong>Tempo de Confirmação:</strong>
-        A aprovação do Pix pelo sistema bancário pode levar algum tempo.
-      </div>
-
-
-      <div
-        id="answer_dados_antigos"
-        class="faq-answer"
-      >
-        👤 <strong>Múltiplos Registros:</strong>
-        Números de telefone podem ser reaproveitados. Utilize os botões "Anterior" e "Próximo" quando houver mais de um registro.
-      </div>
-
-
-      <div
-        id="answer_comprovante"
-        class="faq-answer"
-      >
-        💳 <strong>Análise de Cobrança:</strong>
-        Envie os dados abaixo para que o suporte possa verificar o ocorrido.
-      </div>
-
-
-      <form
-        id="sacForm"
-        style="display: none; margin-top: 15px;"
-        onsubmit="enviarMensagemSAC(event)"
-      >
-
-        <div class="input-group">
-
-          <input
-            type="text"
-            id="sacNome"
-            placeholder="Seu Nome Completo"
-            required
-          >
-
-          <input
-            type="text"
-            id="sacContato"
-            placeholder="Seu WhatsApp ou E-mail"
-            required
-          >
-
-          <input
-            type="text"
-            id="sacNumeroPesquisado"
-            placeholder="Número pesquisado (DDD + Tel)"
-          >
-
-          <textarea
-            id="sacMensagem"
-            rows="3"
-            placeholder="Descreva o que aconteceu..."
-            required
-          ></textarea>
+          <a class="category" href="#em-breve">
+            <div class="icon">📋</div>
+            <h3>Organização</h3>
+            <p>Planeje tarefas, projetos, viagens, eventos e muito mais.</p>
+          </a>
 
         </div>
+      </div>
+    </section>
 
-        <button
-          type="submit"
-          class="btn-primary"
-        >
-          Enviar Mensagem ao Suporte
-        </button>
+    <section class="section">
+      <div class="container">
 
-      </form>
+        <div class="featured">
 
-    </div>
-  </div>
+          <div class="featured-main">
+            <h2>Crie seu orçamento profissional</h2>
 
+            <p>
+              Preencha algumas informações e prepare um orçamento
+              organizado para apresentar ao seu cliente.
+            </p>
 
-  <script>
-
-    // ==================================================
-    // ESTADO DA APLICAÇÃO
-    // ==================================================
-
-    let registrosAtuais = [];
-    let indiceAtual = 0;
-
-    let tempoRestante = 300;
-
-    let timerInterval = null;
-    let statusCheckInterval = null;
-
-    let txidAtual = null;
-
-    let tipoPagamentoAtual = null;
-
-
-    // ==================================================
-    // CONSULTAR NÚMERO
-    // ==================================================
-
-    async function buscarNumero() {
-
-      const telInput = document.getElementById('phoneInput');
-
-      const tel = telInput.value.replace(/\D/g, '');
-
-      if (!tel || tel.length < 10) {
-
-        alert(
-          'Por favor, digite um número de telefone com DDD.'
-        );
-
-        return;
-      }
-
-
-      const btnConsultar =
-        document.getElementById('btnConsultar');
-
-      const textoOriginal =
-        btnConsultar.innerText;
-
-      btnConsultar.innerText =
-        'Consultando...';
-
-      btnConsultar.disabled = true;
-
-
-      // Limpa resultado anterior
-      document.getElementById('previewArea').style.display = 'none';
-
-      document.getElementById('resultArea').style.display = 'none';
-
-
-      try {
-
-        const response = await fetch(
-          '/consultar-telefone',
-          {
-            method: 'POST',
-
-            headers: {
-              'Content-Type': 'application/json'
-            },
-
-            body: JSON.stringify({
-              telefone: tel
-            })
-          }
-        );
-
-
-        let data = {};
-
-        try {
-          data = await response.json();
-        } catch (e) {
-          data = {};
-        }
-
-
-        if (
-          response.ok &&
-          data.status === 'sucesso'
-        ) {
-
-          document.getElementById('prevNome').innerText =
-            data.titular_parcial || 'NÃO INFORMADO';
-
-          document.getElementById('prevCpf').innerText =
-            data.cpf_parcial || '***.***.***-**';
-
-          document.getElementById('prevOperadora').innerText =
-            data.operadora || 'NÃO INFORMADA';
-
-
-          registrosAtuais =
-            Array.isArray(data.registros)
-              ? data.registros
-              : [];
-
-
-          indiceAtual = 0;
-
-
-          document.getElementById(
-            'previewArea'
-          ).style.display = 'block';
-
-        } else {
-
-          alert(
-            data.detail ||
-            'Número não localizado na base de dados.'
-          );
-
-        }
-
-      } catch (err) {
-
-        console.error(err);
-
-        alert(
-          'Erro de conexão ao consultar os dados.'
-        );
-
-      } finally {
-
-        btnConsultar.innerText =
-          textoOriginal;
-
-        btnConsultar.disabled = false;
-
-      }
-
-    }
-
-
-    // ==================================================
-    // ABRIR MODAL PIX
-    // ==================================================
-
-    async function abrirModalPix(tipo) {
-
-      const tel =
-        document.getElementById(
-          'phoneInput'
-        ).value.replace(/\D/g, '');
-
-
-      if (!tel || tel.length < 10) {
-
-        alert(
-          'Primeiro informe um número de telefone válido.'
-        );
-
-        return;
-      }
-
-
-      tipoPagamentoAtual = tipo;
-
-
-      const valorTxt =
-        tipo === 'consulta'
-          ? '12 reais e 90 centavos'
-          : '4 reais e 90 centavos';
-
-
-      document.getElementById(
-        'pixModalTitle'
-      ).innerText =
-        tipo === 'pdf'
-          ? 'Baixar Relatório em PDF'
-          : 'Liberação do Relatório';
-
-
-      document.getElementById(
-        'pixModalDesc'
-      ).innerText =
-        `Valor: ${valorTxt}`;
-
-
-      document.getElementById(
-        'qrContainer'
-      ).innerHTML =
-        '<p style="color:#000; font-size:0.85rem;">Gerando Pix...</p>';
-
-
-      document.getElementById(
-        'pixCopiaColaInput'
-      ).value =
-        'Aguarde...';
-
-
-      document.getElementById(
-        'pixStatusMessage'
-      ).innerText =
-        'Gerando cobrança...';
-
-
-      document.getElementById(
-        'pixModal'
-      ).style.display =
-        'flex';
-
-
-      try {
-
-        const response =
-          await fetch(
-            '/criar-pix',
-            {
-              method: 'POST',
-
-              headers: {
-                'Content-Type': 'application/json'
-              },
-
-              body: JSON.stringify({
-                telefone: tel,
-                tipo: tipo
-              })
-            }
-          );
-
-
-        let data = {};
-
-        try {
-          data = await response.json();
-        } catch (e) {
-          data = {};
-        }
-
-
-        if (
-          response.ok &&
-          data.status === 'sucesso'
-        ) {
-
-          txidAtual =
-            data.txid;
-
-
-          const copiaCola =
-            data.pix_copia_cola ||
-            data.qr_code ||
-            '';
-
-
-          if (!copiaCola) {
-
-            throw new Error(
-              'O gateway não retornou o código Pix.'
-            );
-
-          }
-
-
-          document.getElementById(
-            'pixCopiaColaInput'
-          ).value =
-            copiaCola;
-
-
-          // QR Code fornecido pelo gateway
-          if (
-            data.qr_code_base64 &&
-            data.qr_code_base64.startsWith(
-              'data:image'
-            )
-          ) {
-
-            const img =
-              document.createElement('img');
-
-            img.src =
-              data.qr_code_base64;
-
-            img.alt =
-              'QR Code Pix';
-
-            document.getElementById(
-              'qrContainer'
-            ).replaceChildren(img);
-
-          }
-
-          // Caso o gateway não forneça imagem,
-          // gera uma representação visual usando o
-          // código Pix retornado.
-          else if (copiaCola) {
-
-            const img =
-              document.createElement('img');
-
-            img.src =
-              `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(copiaCola)}`;
-
-            img.alt =
-              'QR Code Pix';
-
-            document.getElementById(
-              'qrContainer'
-            ).replaceChildren(img);
-
-          }
-
-
-          document.getElementById(
-            'pixStatusMessage'
-          ).innerText =
-            'Aguardando confirmação do pagamento...';
-
-
-          iniciarChecagemPagamento();
-
-        } else {
-
-          document.getElementById(
-            'pixStatusMessage'
-          ).innerText =
-            'Não foi possível gerar a cobrança.';
-
-
-          alert(
-            data.detail ||
-            'Erro ao gerar cobrança Pix. Tente novamente em instantes.'
-          );
-
-        }
-
-      } catch (err) {
-
-        console.error(err);
-
-        document.getElementById(
-          'pixStatusMessage'
-        ).innerText =
-          'Erro ao gerar cobrança.';
-
-
-        alert(
-          'Erro na conexão com o servidor de pagamento.'
-        );
-
-      }
-
-    }
-
-
-    // ==================================================
-    // FECHAR MODAL PIX
-    // ==================================================
-
-    function fecharModalPix() {
-
-      document.getElementById(
-        'pixModal'
-      ).style.display =
-        'none';
-
-
-      if (statusCheckInterval) {
-
-        clearInterval(
-          statusCheckInterval
-        );
-
-        statusCheckInterval = null;
-
-      }
-
-    }
-
-
-    // ==================================================
-    // COPIAR PIX
-    // ==================================================
-
-    async function copiarPix() {
-
-      const input =
-        document.getElementById(
-          'pixCopiaColaInput'
-        );
-
-
-      if (
-        !input.value ||
-        input.value === 'Aguarde...'
-      ) {
-
-        alert(
-          'O código Pix ainda não está disponível.'
-        );
-
-        return;
-      }
-
-
-      try {
-
-        await navigator.clipboard.writeText(
-          input.value
-        );
-
-        alert(
-          'Código Pix copiado para a área de transferência!'
-        );
-
-      } catch (err) {
-
-        input.select();
-
-        input.setSelectionRange(
-          0,
-          99999
-        );
-
-        document.execCommand(
-          'copy'
-        );
-
-        alert(
-          'Código Pix copiado!'
-        );
-
-      }
-
-    }
-
-
-    // ==================================================
-    // CHECAR PAGAMENTO
-    // ==================================================
-
-    function iniciarChecagemPagamento() {
-
-      if (statusCheckInterval) {
-
-        clearInterval(
-          statusCheckInterval
-        );
-
-      }
-
-
-      statusCheckInterval =
-        setInterval(
-          async () => {
-
-            if (!txidAtual) {
-              return;
-            }
-
-
-            try {
-
-              const res =
-                await fetch(
-                  `/checar-status/${encodeURIComponent(txidAtual)}`
-                );
-
-
-              if (!res.ok) {
-                return;
-              }
-
-
-              const data =
-                await res.json();
-
-
-              if (
-                data.status === 'pago'
-              ) {
-
-                clearInterval(
-                  statusCheckInterval
-                );
-
-                statusCheckInterval =
-                  null;
-
-
-                fecharModalPix();
-
-
-                liberarRelatorioPago(
-                  data.registros
-                );
-
-              }
-
-            } catch (e) {
-
-              console.error(
-                'Erro ao verificar pagamento:',
-                e
-              );
-
-            }
-
-          },
-          5000
-        );
-
-    }
-
-
-    // ==================================================
-    // LIBERAR RELATÓRIO APÓS PAGAMENTO
-    // ==================================================
-
-    function liberarRelatorioPago(
-      registros
-    ) {
-
-      document.getElementById(
-        'previewArea'
-      ).style.display =
-        'none';
-
-
-      document.getElementById(
-        'resultArea'
-      ).style.display =
-        'block';
-
-
-      if (
-        Array.isArray(registros) &&
-        registros.length > 0
-      ) {
-
-        registrosAtuais =
-          registros;
-
-        indiceAtual = 0;
-
-        renderizarRegistro();
-
-      } else {
-
-        registrosAtuais = [];
-
-        indiceAtual = 0;
-
-
-        document.getElementById(
-          'recordIndicator'
-        ).innerText =
-          'Nenhum registro';
-
-
-        document.getElementById(
-          'prevBtn'
-        ).disabled =
-          true;
-
-
-        document.getElementById(
-          'nextBtn'
-        ).disabled =
-          true;
-
-
-        document.getElementById(
-          'recordContent'
-        ).innerHTML =
-          `
-          <div class="empty-result">
-            O pagamento foi confirmado, mas a consulta não retornou registros para exibição.
-            <br><br>
-            Se você acredita que isso está incorreto, entre em contato com o suporte.
+            <a href="/orcamento" class="button">
+              Criar orçamento
+            </a>
           </div>
-          `;
 
-      }
-
-
-      iniciarTimer5Minutos();
-
-    }
-
-
-    // ==================================================
-    // RENDERIZAR REGISTRO
-    // ==================================================
-
-    function renderizarRegistro() {
-
-      const total =
-        registrosAtuais.length;
-
-
-      if (
-        total === 0 ||
-        !registrosAtuais[indiceAtual]
-      ) {
-
-        return;
-      }
-
-
-      const reg =
-        registrosAtuais[indiceAtual];
-
-
-      document.getElementById(
-        'recordIndicator'
-      ).innerText =
-        `Registro ${indiceAtual + 1} de ${total}`;
-
-
-      document.getElementById(
-        'prevBtn'
-      ).disabled =
-        indiceAtual === 0;
-
-
-      document.getElementById(
-        'nextBtn'
-      ).disabled =
-        indiceAtual === total - 1;
-
-
-      // Não inserimos os valores da API
-      // diretamente como HTML.
-      const recordContent =
-        document.getElementById(
-          'recordContent'
-        );
-
-
-      recordContent.innerHTML = '';
-
-
-      const nome =
-        document.createElement('p');
-
-      nome.style.color =
-        'var(--primary)';
-
-      nome.style.fontWeight =
-        'bold';
-
-      nome.style.marginBottom =
-        '5px';
-
-      nome.innerText =
-        reg.nome || 'NÃO INFORMADO';
-
-
-      const cpf =
-        document.createElement('p');
-
-      cpf.style.fontSize =
-        '0.9rem';
-
-      cpf.style.color =
-        'var(--text-muted)';
-
-      cpf.innerText =
-        `CPF: ${reg.cpf || '***.***.***-**'}`;
-
-
-      const operadora =
-        document.createElement('p');
-
-      operadora.style.fontSize =
-        '0.9rem';
-
-      operadora.style.color =
-        'var(--text-muted)';
-
-      operadora.innerText =
-        `Operadora: ${reg.operadora || 'NÃO INFORMADA'}`;
-
-
-      const status =
-        document.createElement('p');
-
-      status.style.fontSize =
-        '0.8rem';
-
-      status.style.color =
-        '#64748B';
-
-      status.style.marginTop =
-        '5px';
-
-      status.innerText =
-        `Status: ${
-          reg.status ||
-          reg.obs ||
-          'Ativo'
-        }`;
-
-
-      recordContent.appendChild(nome);
-      recordContent.appendChild(cpf);
-      recordContent.appendChild(operadora);
-      recordContent.appendChild(status);
-
-    }
-
-
-    // ==================================================
-    // MUDAR REGISTRO
-    // ==================================================
-
-    function mudarRegistro(
-      direcao
-    ) {
-
-      const novoIndice =
-        indiceAtual + direcao;
-
-
-      if (
-        novoIndice < 0 ||
-        novoIndice >= registrosAtuais.length
-      ) {
-
-        return;
-      }
-
-
-      indiceAtual =
-        novoIndice;
-
-
-      renderizarRegistro();
-
-    }
-
-
-    // ==================================================
-    // TIMER DE 5 MINUTOS
-    // ==================================================
-
-    function iniciarTimer5Minutos() {
-
-      document.getElementById(
-        'timerBanner'
-      ).style.display =
-        'block';
-
-
-      tempoRestante =
-        300;
-
-
-      if (timerInterval) {
-
-        clearInterval(
-          timerInterval
-        );
-
-      }
-
-
-      atualizarRelogio();
-
-
-      timerInterval =
-        setInterval(
-          () => {
-
-            tempoRestante--;
-
-            atualizarRelogio();
-
-
-            if (
-              tempoRestante <= 0
-            ) {
-
-              clearInterval(
-                timerInterval
-              );
-
-              timerInterval =
-                null;
-
-
-              document.getElementById(
-                'resultArea'
-              ).style.display =
-                'none';
-
-
-              document.getElementById(
-                'previewArea'
-              ).style.display =
-                'none';
-
-
-              document.getElementById(
-                'timerBanner'
-              ).style.display =
-                'none';
-
-
-              document.getElementById(
-                'phoneInput'
-              ).value =
-                '';
-
-
-              registrosAtuais = [];
-
-              indiceAtual = 0;
-
-              txidAtual = null;
-
-
-              alert(
-                'Sessão expirada por motivos de segurança.'
-              );
-
-            }
-
-          },
-          1000
-        );
-
-    }
-
-
-    function atualizarRelogio() {
-
-      let minutos =
-        Math.floor(
-          tempoRestante / 60
-        );
-
-
-      let segundos =
-        tempoRestante % 60;
-
-
-      minutos =
-        minutos < 10
-          ? '0' + minutos
-          : minutos;
-
-
-      segundos =
-        segundos < 10
-          ? '0' + segundos
-          : segundos;
-
-
-      document.getElementById(
-        'timerClock'
-      ).innerText =
-        `${minutos}:${segundos}`;
-
-    }
-
-
-    // ==================================================
-    // SAC
-    // ==================================================
-
-    function abrirSAC() {
-
-      document.getElementById(
-        'sacModal'
-      ).style.display =
-        'flex';
-
-    }
-
-
-    function fecharSAC() {
-
-      document.getElementById(
-        'sacModal'
-      ).style.display =
-        'none';
-
-    }
-
-
-    function tratarMotivoSAC() {
-
-      const motivo =
-        document.getElementById(
-          'sacMotivo'
-        ).value;
-
-
-      document
-        .querySelectorAll('.faq-answer')
-        .forEach(
-          el => {
-            el.style.display =
-              'none';
-          }
-        );
-
-
-      if (motivo) {
-
-        const respostaEl =
-          document.getElementById(
-            'answer_' + motivo
-          );
-
-
-        if (respostaEl) {
-
-          respostaEl.style.display =
-            'block';
-
-        }
-
-
-        document.getElementById(
-          'sacForm'
-        ).style.display =
-          'block';
-
-      } else {
-
-        document.getElementById(
-          'sacForm'
-        ).style.display =
-          'none';
-
-      }
-
-    }
-
-
-    // ==================================================
-    // ENVIAR SAC
-    // ==================================================
-
-    async function enviarMensagemSAC(
-      event
-    ) {
-
-      event.preventDefault();
-
-
-      const nome =
-        document.getElementById(
-          'sacNome'
-        ).value.trim();
-
-
-      const contato =
-        document.getElementById(
-          'sacContato'
-        ).value.trim();
-
-
-      const numero_pesquisado =
-        document.getElementById(
-          'sacNumeroPesquisado'
-        ).value.trim();
-
-
-      const mensagem =
-        document.getElementById(
-          'sacMensagem'
-        ).value.trim();
-
-
-      if (
-        !nome ||
-        !contato ||
-        !mensagem
-      ) {
-
-        alert(
-          'Preencha os campos obrigatórios.'
-        );
-
-        return;
-      }
-
-
-      try {
-
-        const response =
-          await fetch(
-            '/sac',
-            {
-              method: 'POST',
-
-              headers: {
-                'Content-Type': 'application/json'
-              },
-
-              body: JSON.stringify({
-                nome,
-                contato,
-                numero_pesquisado,
-                mensagem
-              })
-            }
-          );
-
-
-        let data = {};
-
-        try {
-          data = await response.json();
-        } catch (e) {
-          data = {};
-        }
-
-
-        if (response.ok) {
-
-          alert(
-            data.mensagem ||
-            'Mensagem enviada com sucesso ao suporte!'
-          );
-
-
-          document.getElementById(
-            'sacForm'
-          ).reset();
-
-
-          document.getElementById(
-            'sacForm'
-          ).style.display =
-            'none';
-
-
-          document.getElementById(
-            'sacMotivo'
-          ).value =
-            '';
-
-
-          document
-            .querySelectorAll('.faq-answer')
-            .forEach(
-              el => {
-                el.style.display =
-                  'none';
-              }
-            );
-
-
-          fecharSAC();
-
-        } else {
-
-          alert(
-            data.detail ||
-            'Erro ao enviar mensagem. Tente novamente.'
-          );
-
-        }
-
-      } catch (e) {
-
-        console.error(e);
-
-        alert(
-          'Erro ao conectar com o servidor do SAC.'
-        );
-
-      }
-
-    }
-
-
-    // ==================================================
-    // FECHAR MODAIS AO CLICAR FORA
-    // ==================================================
-
-    window.addEventListener(
-      'click',
-      function(event) {
-
-        const pixModal =
-          document.getElementById(
-            'pixModal'
-          );
-
-        const sacModal =
-          document.getElementById(
-            'sacModal'
-          );
-
-
-        if (
-          event.target === pixModal
-        ) {
-
-          fecharModalPix();
-
-        }
-
-
-        if (
-          event.target === sacModal
-        ) {
-
-          fecharSAC();
-
-        }
-
-      }
-    );
-
-
-    // ==================================================
-    // ENTER NO CAMPO DO TELEFONE
-    // ==================================================
-
-    document
-      .getElementById('phoneInput')
-      .addEventListener(
-        'keydown',
-        function(event) {
-
-          if (
-            event.key === 'Enter'
-          ) {
-
-            buscarNumero();
-
-          }
-
-        }
-      );
-
-  </script>
+          <div class="featured-side">
+            <h3>Mais ferramentas em breve</h3>
+
+            <p>
+              Estamos construindo uma plataforma com várias soluções
+              úteis em um só lugar.
+            </p>
+
+            <div class="coming" id="em-breve">
+              <div class="coming-item">🧾 Recibos</div>
+              <div class="coming-item">🛠️ Ordens de serviço</div>
+              <div class="coming-item">📑 Ferramentas para PDF</div>
+              <div class="coming-item">🗂️ Planejamentos e checklists</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <section class="container">
+      <div class="ad">
+        Publicidade
+      </div>
+    </section>
+
+    <section class="section" id="sobre">
+      <div class="container">
+        <div class="section-title">
+          <h2>Um site que vai crescer com você</h2>
+          <p>
+            A ideia é reunir ferramentas úteis em um único lugar,
+            com páginas independentes para cada necessidade.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>Meu Site © 2026 • Todos os direitos reservados</p>
+    </div>
+  </footer>
 
 </body>
 </html>
