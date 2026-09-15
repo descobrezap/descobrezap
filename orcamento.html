@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="description"
+    content="Crie orçamentos profissionais de forma rápida e gratuita."
+  >
+
+  <title>Criar Orçamento — Meu Site</title>
+
+  <style>
+    :root {
+      --bg: #0b1020;
+      --surface: #121a2b;
+      --surface-2: #182238;
+      --border: #26324a;
+      --text: #f5f7fb;
+      --muted: #aab4c7;
+      --primary: #5eead4;
+      --primary-dark: #0f766e;
+      --danger: #f87171;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(1050px, 92%);
+      margin: 0 auto;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      background: rgba(11, 16, 32, 0.96);
+    }
+
+    .header-inner {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .logo {
+      font-size: 1.35rem;
+      font-weight: 800;
+    }
+
+    .logo span {
+      color: var(--primary);
+    }
+
+    .back {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .back:hover {
+      color: var(--white);
+    }
+
+    main {
+      padding: 50px 0 80px;
+    }
+
+    .title {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .title h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      margin-bottom: 10px;
+    }
+
+    .title p {
+      color: var(--muted);
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+
+    .card h2 {
+      font-size: 1.25rem;
+      margin-bottom: 22px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: var(--surface-2);
+      color: var(--text);
+      padding: 12px 13px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--primary);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .items-header {
+      display: grid;
+      grid-template-columns: 1fr 100px 150px 110px;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 8px;
+    }
+
+    .item {
+      display: grid;
+      grid-template-columns: 1fr 100px 150px 110px;
+      gap: 10px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+
+    .item-total {
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: var(--surface-2);
+      text-align: right;
+      min-height: 44px;
+    }
+
+    .remove {
+      border: 1px solid rgba(248, 113, 113, 0.35);
+      background: transparent;
+      color: var(--danger);
+      border-radius: 8px;
+      padding: 9px 10px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .remove:hover {
+      background: rgba(248, 113, 113, 0.08);
+    }
+
+    .add-item {
+      margin-top: 8px;
+      border: 1px solid var(--primary);
+      background: transparent;
+      color: var(--primary);
+      border-radius: 9px;
+      padding: 11px 15px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .add-item:hover {
+      background: rgba(94, 234, 212, 0.08);
+    }
+
+    .total-box {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 18px;
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .total-label {
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .total-value {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+
+    .button {
+      border: none;
+      border-radius: 10px;
+      padding: 14px 22px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .button-primary {
+      background: var(--primary);
+      color: #06201d;
+    }
+
+    .button-primary:hover {
+      background: #8af3e4;
+    }
+
+    .button-secondary {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .button-secondary:hover {
+      border-color: var(--primary);
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 30px 0;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 750px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .field.full {
+        grid-column: auto;
+      }
+
+      .items-header {
+        display: none;
+      }
+
+      .item {
+        grid-template-columns: 1fr 90px;
+        gap: 10px;
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        margin-bottom: 12px;
+      }
+
+      .item .description {
+        grid-column: 1 / -1;
+      }
+
+      .item .quantity {
+        grid-column: 1;
+      }
+
+      .item .price {
+        grid-column: 2;
+      }
+
+      .item .item-total {
+        grid-column: 1;
+      }
+
+      .item .remove {
+        grid-column: 2;
+      }
+
+      .card {
+        padding: 20px;
+      }
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+        color: #000000;
+      }
+
+      header,
+      .actions,
+      .add-item,
+      .remove,
+      footer {
+        display: none !important;
+      }
+
+      main {
+        padding: 0;
+      }
+
+      .container {
+        width: 100%;
+      }
+
+      .card {
+        border: 1px solid #cccccc;
+        background: #ffffff;
+        color: #000000;
+        box-shadow: none;
+        page-break-inside: avoid;
+      }
+
+      input,
+      textarea,
+      .item-total {
+        background: #ffffff;
+        color: #000000;
+        border-color: #cccccc;
+      }
+
+      label,
+      .total-label {
+        color: #555555;
+      }
+
+      .total-value {
+        color: #000000;
+      }
+
+      .title p {
+        color: #555555;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="container header-inner">
+
+      <a href="/" class="logo">
+        Meu<span>Site</span>
+      </a>
+
+      <a href="/" class="back">
+        ← Voltar para o início
+      </a>
+
+    </div>
+  </header>
+
+
+  <main>
+
+    <div class="container">
+
+      <div class="title">
+
+        <h1>
+          Criar orçamento
+        </h1>
+
+        <p>
+          Preencha os dados abaixo e gere seu orçamento profissional.
+        </p>
+
+      </div>
+
+
+      <section class="card">
+
+        <h2>
+          Dados do profissional ou empresa
+        </h2>
+
+        <div class="grid">
+
+          <div class="field">
+            <label for="empresa">
+              Nome / Empresa
+            </label>
+
+            <input
+              type="text"
+              id="empresa"
+              placeholder="Ex.: João Silva Serviços"
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="telefone">
+              Telefone
+            </label>
+
+            <input
+              type="text"
+              id="telefone"
+              placeholder="(00) 00000-0000"
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="email">
+              E-mail
+            </label>
+
+            <input
+              type="email"
+              id="email"
+              placeholder="seuemail@email.com"
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="cidade">
+              Cidade / Estado
+            </label>
+
+            <input
+              type="text"
+              id="cidade"
+              placeholder="Belo Horizonte - MG"
+            >
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <section class="card">
+
+        <h2>
+          Dados do cliente
+        </h2>
+
+        <div class="grid">
+
+          <div class="field">
+            <label for="cliente">
+              Nome do cliente
+            </label>
+
+            <input
+              type="text"
+              id="cliente"
+              placeholder="Nome do cliente"
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="clienteTelefone">
+              Telefone
+            </label>
+
+            <input
+              type="text"
+              id="clienteTelefone"
+              placeholder="(00) 00000-0000"
+            >
+          </div>
+
+
+          <div class="field full">
+            <label for="clienteEndereco">
+              Endereço
+            </label>
+
+            <input
+              type="text"
+              id="clienteEndereco"
+              placeholder="Endereço do cliente"
+            >
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <section class="card">
+
+        <h2>
+          Serviços / Produtos
+        </h2>
+
+
+        <div class="items-header">
+
+          <div>
+            Descrição
+          </div>
+
+          <div>
+            Quantidade
+          </div>
+
+          <div>
+            Valor unitário
+          </div>
+
+          <div>
+            Total
+          </div>
+
+        </div>
+
+
+        <div id="items">
+
+          <div class="item">
+
+            <input
+              class="description"
+              type="text"
+              placeholder="Descrição do serviço ou produto"
+            >
+
+            <input
+              class="quantity"
+              type="number"
+              min="0"
+              step="1"
+              value="1"
+              oninput="calcularTotal()"
+            >
+
+            <input
+              class="price"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="0,00"
+              oninput="calcularTotal()"
+            >
+
+            <div class="item-total">
+              R$ 0,00
+            </div>
+
+            <button
+              type="button"
+              class="remove"
+              onclick="removerItem(this)"
+            >
+              Remover
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="add-item"
+          onclick="adicionarItem()"
+        >
+          + Adicionar item
+        </button>
+
+
+        <div class="total-box">
+
+          <span class="total-label">
+            Total do orçamento:
+          </span>
+
+          <span
+            class="total-value"
+            id="total"
+          >
+            R$ 0,00
+          </span>
+
+        </div>
+
+      </section>
+
+
+      <section class="card">
+
+        <h2>
+          Observações
+        </h2>
+
+        <div class="field">
+
+          <label for="observacoes">
+            Informações adicionais
+          </label>
+
+          <textarea
+            id="observacoes"
+            placeholder="Ex.: Prazo de entrega, condições de pagamento, validade do orçamento..."
+          ></textarea>
+
+        </div>
+
+      </section>
+
+
+      <div class="actions">
+
+        <button
+          type="button"
+          class="button button-primary"
+          onclick="window.print()"
+        >
+          🖨️ Imprimir / Salvar PDF
+        </button>
+
+
+        <button
+          type="button"
+          class="button button-secondary"
+          onclick="limparFormulario()"
+        >
+          Limpar formulário
+        </button>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <footer>
+
+    <div class="container">
+
+      <p>
+        Meu Site © 2026 • Todos os direitos reservados
+      </p>
+
+    </div>
+
+  </footer>
+
+
+  <script>
+
+    function formatarMoeda(valor) {
+
+      return valor.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      });
+
+    }
+
+
+    function calcularTotal() {
+
+      const itens = document.querySelectorAll(".item");
+
+      let totalGeral = 0;
+
+
+      itens.forEach(function(item) {
+
+        const quantidade =
+          parseFloat(
+            item.querySelector(".quantity").value
+          ) || 0;
+
+        const valor =
+          parseFloat(
+            item.querySelector(".price").value
+          ) || 0;
+
+        const totalItem =
+          quantidade * valor;
+
+
+        item.querySelector(".item-total").textContent =
+          formatarMoeda(totalItem);
+
+
+        totalGeral += totalItem;
+
+      });
+
+
+      document.getElementById("total").textContent =
+        formatarMoeda(totalGeral);
+
+    }
+
+
+    function adicionarItem() {
+
+      const container =
+        document.getElementById("items");
+
+
+      const item =
+        document.createElement("div");
+
+
+      item.className = "item";
+
+
+      item.innerHTML = `
+
+        <input
+          class="description"
+          type="text"
+          placeholder="Descrição do serviço ou produto"
+        >
+
+        <input
+          class="quantity"
+          type="number"
+          min="0"
+          step="1"
+          value="1"
+          oninput="calcularTotal()"
+        >
+
+        <input
+          class="price"
+          type="number"
+          min="0"
+          step="0.01"
+          placeholder="0,00"
+          oninput="calcularTotal()"
+        >
+
+        <div class="item-total">
+          R$ 0,00
+        </div>
+
+        <button
+          type="button"
+          class="remove"
+          onclick="removerItem(this)"
+        >
+          Remover
+        </button>
+
+      `;
+
+
+      container.appendChild(item);
+
+      calcularTotal();
+
+    }
+
+
+    function removerItem(botao) {
+
+      const itens =
+        document.querySelectorAll(".item");
+
+
+      if (itens.length <= 1) {
+
+        alert("O orçamento precisa ter pelo menos um item.");
+
+        return;
+
+      }
+
+
+      botao.parentElement.remove();
+
+      calcularTotal();
+
+    }
+
+
+    function limparFormulario() {
+
+      const confirmar =
+        confirm(
+          "Tem certeza que deseja limpar todo o orçamento?"
+        );
+
+
+      if (!confirmar) {
+        return;
+      }
+
+
+      document.querySelectorAll("input").forEach(function(input) {
+
+        if (input.classList.contains("quantity")) {
+
+          input.value = "1";
+
+        } else {
+
+          input.value = "";
+
+        }
+
+      });
+
+
+      document.getElementById("observacoes").value = "";
+
+
+      const itens =
+        document.querySelectorAll(".item");
+
+
+      itens.forEach(function(item, index) {
+
+        if (index > 0) {
+          item.remove();
+        }
+
+      });
+
+
+      calcularTotal();
+
+    }
+
+
+    calcularTotal();
+
+  </script>
+
+</body>
+</html>
