@@ -1,876 +1,2198 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta
-    name="description"
-    content="Crie orçamentos profissionais de forma rápida e gratuita."
-  >
+    <title>Criar Orçamento | Meu Site</title>
+    <meta name="description" content="Crie orçamentos profissionais online de forma rápida e gratuita.">
 
-  <title>Criar Orçamento — Meu Site</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-  <style>
-    :root {
-      --bg: #0b1020;
-      --surface: #121a2b;
-      --surface-2: #182238;
-      --border: #26324a;
-      --text: #f5f7fb;
-      --muted: #aab4c7;
-      --primary: #5eead4;
-      --primary-dark: #0f766e;
-      --danger: #f87171;
-      --white: #ffffff;
-    }
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --background: #f5f7fa;
+            --white: #ffffff;
+            --danger: #dc2626;
+            --success: #16a34a;
+        }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.5;
+        }
 
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-    }
+        /* =========================
+           CABEÇALHO
+        ========================= */
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
+        header {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            padding: 18px 25px;
+        }
 
-    .container {
-      width: min(1050px, 92%);
-      margin: 0 auto;
-    }
+        .header-content {
+            max-width: 1250px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
 
-    header {
-      border-bottom: 1px solid var(--border);
-      background: rgba(11, 16, 32, 0.96);
-    }
+        .brand {
+            text-decoration: none;
+            color: var(--text);
+            font-size: 21px;
+            font-weight: 700;
+        }
 
-    .header-inner {
-      min-height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-    }
+        .brand span {
+            color: var(--primary);
+        }
 
-    .logo {
-      font-size: 1.35rem;
-      font-weight: 800;
-    }
+        .back-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 14px;
+        }
 
-    .logo span {
-      color: var(--primary);
-    }
+        .back-link:hover {
+            color: var(--primary);
+        }
 
-    .back {
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
+        /* =========================
+           CONTAINER
+        ========================= */
 
-    .back:hover {
-      color: var(--white);
-    }
+        .page {
+            max-width: 1250px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
 
-    main {
-      padding: 50px 0 80px;
-    }
+        .page-title {
+            margin-bottom: 25px;
+        }
 
-    .title {
-      text-align: center;
-      margin-bottom: 35px;
-    }
+        .page-title h1 {
+            font-size: 30px;
+            margin-bottom: 5px;
+        }
 
-    .title h1 {
-      font-size: clamp(2rem, 5vw, 3rem);
-      margin-bottom: 10px;
-    }
+        .page-title p {
+            color: var(--muted);
+            font-size: 15px;
+        }
 
-    .title p {
-      color: var(--muted);
-    }
+        .workspace {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(380px, 0.8fr);
+            gap: 25px;
+            align-items: start;
+        }
 
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 28px;
-      margin-bottom: 20px;
-    }
+        /* =========================
+           FORMULÁRIO
+        ========================= */
 
-    .card h2 {
-      font-size: 1.25rem;
-      margin-bottom: 22px;
-    }
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 18px;
-    }
+        .card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        }
 
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
 
-    .field.full {
-      grid-column: 1 / -1;
-    }
+        .section-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #eff6ff;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
 
-    label {
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
+        .section-title h2 {
+            font-size: 18px;
+        }
 
-    input,
-    textarea {
-      width: 100%;
-      border: 1px solid var(--border);
-      border-radius: 9px;
-      background: var(--surface-2);
-      color: var(--text);
-      padding: 12px 13px;
-      font-family: inherit;
-      font-size: 0.95rem;
-      outline: none;
-    }
+        .section-description {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: -12px;
+            margin-bottom: 18px;
+        }
 
-    input:focus,
-    textarea:focus {
-      border-color: var(--primary);
-    }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
 
-    textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
 
-    .items-header {
-      display: grid;
-      grid-template-columns: 1fr 100px 150px 110px;
-      gap: 10px;
-      color: var(--muted);
-      font-size: 0.82rem;
-      margin-bottom: 8px;
-    }
+        .field.full {
+            grid-column: 1 / -1;
+        }
 
-    .item {
-      display: grid;
-      grid-template-columns: 1fr 100px 150px 110px;
-      gap: 10px;
-      margin-bottom: 10px;
-      align-items: center;
-    }
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+        }
 
-    .item-total {
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 9px;
-      background: var(--surface-2);
-      text-align: right;
-      min-height: 44px;
-    }
+        .optional {
+            color: #9ca3af;
+            font-weight: normal;
+        }
 
-    .remove {
-      border: 1px solid rgba(248, 113, 113, 0.35);
-      background: transparent;
-      color: var(--danger);
-      border-radius: 8px;
-      padding: 9px 10px;
-      cursor: pointer;
-      font-weight: 700;
-    }
+        input,
+        textarea,
+        select {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 11px 12px;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text);
+            background: #fff;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
 
-    .remove:hover {
-      background: rgba(248, 113, 113, 0.08);
-    }
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+        }
 
-    .add-item {
-      margin-top: 8px;
-      border: 1px solid var(--primary);
-      background: transparent;
-      color: var(--primary);
-      border-radius: 9px;
-      padding: 11px 15px;
-      cursor: pointer;
-      font-weight: 700;
-    }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
 
-    .add-item:hover {
-      background: rgba(94, 234, 212, 0.08);
-    }
+        /* =========================
+           LOGO
+        ========================= */
 
-    .total-box {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 18px;
-      margin-top: 25px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
-    }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 20px;
+        }
 
-    .total-label {
-      color: var(--muted);
-      font-size: 1rem;
-    }
+        .logo-preview {
+            width: 82px;
+            height: 82px;
+            border: 1px dashed #cbd5e1;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #f8fafc;
+            color: #94a3b8;
+            font-size: 12px;
+            text-align: center;
+            flex-shrink: 0;
+        }
 
-    .total-value {
-      font-size: 1.7rem;
-      font-weight: 800;
-      color: var(--primary);
-    }
+        .logo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
 
-    .actions {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 30px;
-    }
+        .logo-info {
+            flex: 1;
+        }
 
-    .button {
-      border: none;
-      border-radius: 10px;
-      padding: 14px 22px;
-      font-family: inherit;
-      font-size: 0.95rem;
-      font-weight: 800;
-      cursor: pointer;
-    }
+        .logo-info strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
 
-    .button-primary {
-      background: var(--primary);
-      color: #06201d;
-    }
+        .logo-info p {
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
 
-    .button-primary:hover {
-      background: #8af3e4;
-    }
+        .file-label {
+            display: inline-block;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            background: #fff;
+        }
 
-    .button-secondary {
-      background: var(--surface-2);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
+        .file-label:hover {
+            background: #f9fafb;
+        }
 
-    .button-secondary:hover {
-      border-color: var(--primary);
-    }
+        #logoInput {
+            display: none;
+        }
 
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 30px 0;
-      color: var(--muted);
-      text-align: center;
-      font-size: 0.85rem;
-    }
+        /* =========================
+           ITENS
+        ========================= */
 
-    @media (max-width: 750px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
+        .items-header {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 75px 120px 120px 38px;
+            gap: 8px;
+            margin-bottom: 8px;
+            padding: 0 2px;
+        }
 
-      .field.full {
-        grid-column: auto;
-      }
+        .items-header span {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
 
-      .items-header {
-        display: none;
-      }
+        .item-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 75px 120px 120px 38px;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
 
-      .item {
-        grid-template-columns: 1fr 90px;
-        gap: 10px;
-        padding: 14px;
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        margin-bottom: 12px;
-      }
+        .item-row input {
+            padding: 10px;
+        }
 
-      .item .description {
-        grid-column: 1 / -1;
-      }
+        .item-total {
+            font-size: 14px;
+            font-weight: 600;
+            text-align: right;
+            white-space: nowrap;
+        }
 
-      .item .quantity {
-        grid-column: 1;
-      }
+        .remove-item {
+            border: none;
+            background: #fee2e2;
+            color: var(--danger);
+            width: 34px;
+            height: 34px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 16px;
+        }
 
-      .item .price {
-        grid-column: 2;
-      }
+        .remove-item:hover {
+            background: #fecaca;
+        }
 
-      .item .item-total {
-        grid-column: 1;
-      }
+        .add-item {
+            margin-top: 8px;
+            border: 1px dashed #93c5fd;
+            background: #eff6ff;
+            color: var(--primary);
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+        }
 
-      .item .remove {
-        grid-column: 2;
-      }
+        .add-item:hover {
+            background: #dbeafe;
+        }
 
-      .card {
-        padding: 20px;
-      }
-    }
+        .totals {
+            border-top: 1px solid var(--border);
+            margin-top: 20px;
+            padding-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
 
-    @media print {
-      body {
-        background: #ffffff;
-        color: #000000;
-      }
+        .total-line {
+            display: flex;
+            justify-content: space-between;
+            gap: 50px;
+            min-width: 250px;
+            font-size: 14px;
+        }
 
-      header,
-      .actions,
-      .add-item,
-      .remove,
-      footer {
-        display: none !important;
-      }
+        .grand-total {
+            font-size: 20px;
+            font-weight: 700;
+            margin-top: 5px;
+        }
 
-      main {
-        padding: 0;
-      }
+        /* =========================
+           BOTÕES
+        ========================= */
 
-      .container {
-        width: 100%;
-      }
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
 
-      .card {
-        border: 1px solid #cccccc;
-        background: #ffffff;
-        color: #000000;
-        box-shadow: none;
-        page-break-inside: avoid;
-      }
+        button {
+            font-family: inherit;
+        }
 
-      input,
-      textarea,
-      .item-total {
-        background: #ffffff;
-        color: #000000;
-        border-color: #cccccc;
-      }
+        .primary-button {
+            flex: 1;
+            border: none;
+            background: var(--primary);
+            color: white;
+            padding: 13px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+        }
 
-      label,
-      .total-label {
-        color: #555555;
-      }
+        .primary-button:hover {
+            background: var(--primary-dark);
+        }
 
-      .total-value {
-        color: #000000;
-      }
+        .secondary-button {
+            border: 1px solid #d1d5db;
+            background: white;
+            color: #374151;
+            padding: 13px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
 
-      .title p {
-        color: #555555;
-      }
-    }
-  </style>
+        .secondary-button:hover {
+            background: #f9fafb;
+        }
+
+        /* =========================
+           PRÉVIA
+        ========================= */
+
+        .preview-column {
+            position: sticky;
+            top: 20px;
+        }
+
+        .preview-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .preview-wrapper {
+            background: #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .quote-preview {
+            background: white;
+            width: 100%;
+            min-height: 700px;
+            padding: 35px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+            font-size: 11px;
+            color: #222;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            border-bottom: 2px solid #1f2937;
+            padding-bottom: 18px;
+            margin-bottom: 20px;
+        }
+
+        .preview-company {
+            flex: 1;
+        }
+
+        .preview-logo {
+            width: 85px;
+            max-height: 65px;
+            object-fit: contain;
+            margin-bottom: 8px;
+        }
+
+        .preview-company-name {
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .preview-company-info {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .preview-document {
+            text-align: right;
+        }
+
+        .preview-document h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .preview-document p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .preview-block {
+            margin-bottom: 18px;
+        }
+
+        .preview-block-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-bottom: 8px;
+        }
+
+        .preview-client {
+            line-height: 1.6;
+        }
+
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+
+        .preview-table th {
+            text-align: left;
+            background: #f3f4f6;
+            padding: 7px;
+            font-size: 9px;
+        }
+
+        .preview-table td {
+            padding: 7px;
+            border-bottom: 1px solid #eee;
+            font-size: 9px;
+        }
+
+        .preview-table th:not(:first-child),
+        .preview-table td:not(:first-child) {
+            text-align: right;
+        }
+
+        .preview-total {
+            margin-top: 10px;
+            display: flex;
+            justify-content: flex-end;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .preview-text {
+            white-space: pre-line;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .preview-empty {
+            color: #999;
+            font-style: italic;
+        }
+
+        .preview-footer {
+            margin-top: 30px;
+            padding-top: 12px;
+            border-top: 1px solid #ddd;
+            color: #777;
+            font-size: 9px;
+            text-align: center;
+        }
+
+        /* =========================
+           AVISO
+        ========================= */
+
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 9px;
+            padding: 12px 14px;
+            font-size: 12px;
+            color: #1e40af;
+        }
+
+        /* =========================
+           RODAPÉ
+        ========================= */
+
+        footer {
+            text-align: center;
+            color: #9ca3af;
+            font-size: 12px;
+            padding: 30px 20px;
+        }
+
+        /* =========================
+           IMPRESSÃO
+        ========================= */
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            header,
+            .page-title,
+            .form-column,
+            .preview-title,
+            footer {
+                display: none !important;
+            }
+
+            .page {
+                margin: 0;
+                padding: 0;
+                max-width: none;
+            }
+
+            .workspace {
+                display: block;
+            }
+
+            .preview-column {
+                position: static;
+            }
+
+            .preview-wrapper {
+                padding: 0;
+                background: white;
+            }
+
+            .quote-preview {
+                box-shadow: none;
+                width: 100%;
+                min-height: auto;
+                padding: 0;
+            }
+        }
+
+        /* =========================
+           RESPONSIVO
+        ========================= */
+
+        @media (max-width: 950px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-column {
+                position: static;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .page {
+                margin: 20px auto;
+                padding: 0 12px;
+            }
+
+            .page-title h1 {
+                font-size: 25px;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .field.full {
+                grid-column: auto;
+            }
+
+            .items-header {
+                display: none;
+            }
+
+            .item-row {
+                grid-template-columns: 1fr 75px;
+                gap: 8px;
+                padding: 12px;
+                border: 1px solid var(--border);
+                border-radius: 8px;
+            }
+
+            .item-row .description {
+                grid-column: 1 / -1;
+            }
+
+            .item-row .item-total {
+                text-align: left;
+                padding-left: 5px;
+            }
+
+            .remove-item {
+                justify-self: end;
+            }
+
+            .quote-preview {
+                padding: 20px;
+            }
+
+            .preview-header {
+                flex-direction: column;
+            }
+
+            .preview-document {
+                text-align: left;
+            }
+
+            .logo-area {
+                align-items: flex-start;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-  <header>
-    <div class="container header-inner">
+<header>
+    <div class="header-content">
+        <a href="/" class="brand">Meu <span>Site</span></a>
+        <a href="/" class="back-link">← Voltar para o início</a>
+    </div>
+</header>
 
-      <a href="/" class="logo">
-        Meu<span>Site</span>
-      </a>
+<main class="page">
 
-      <a href="/" class="back">
-        ← Voltar para o início
-      </a>
+    <div class="page-title">
+        <h1>Criar orçamento</h1>
+        <p>Preencha os dados abaixo e veja seu orçamento profissional em tempo real.</p>
+    </div>
+
+    <div class="workspace">
+
+        <!-- =========================
+             COLUNA DO FORMULÁRIO
+        ========================== -->
+
+        <div class="form-column">
+
+            <div class="form-container">
+
+                <!-- EMPRESA -->
+
+                <section class="card">
+
+                    <div class="section-title">
+                        <div class="section-number">1</div>
+                        <h2>Dados da sua empresa</h2>
+                    </div>
+
+                    <div class="logo-area">
+
+                        <div class="logo-preview" id="logoPreview">
+                            Sua logo
+                        </div>
+
+                        <div class="logo-info">
+                            <strong>Logo da empresa <span class="optional">(opcional)</span></strong>
+
+                            <p>
+                                Adicione sua logo para deixar o orçamento mais profissional.
+                            </p>
+
+                            <label for="logoInput" class="file-label">
+                                Escolher imagem
+                            </label>
+
+                            <input
+                                type="file"
+                                id="logoInput"
+                                accept="image/*"
+                            >
+                        </div>
+
+                    </div>
+
+                    <div class="grid">
+
+                        <div class="field full">
+                            <label for="companyName">
+                                Nome da empresa
+                            </label>
+
+                            <input
+                                type="text"
+                                id="companyName"
+                                placeholder="Ex.: João Pinturas"
+                            >
+                        </div>
+
+                        <div class="field">
+                            <label for="companyPhone">
+                                Telefone
+                            </label>
+
+                            <input
+                                type="tel"
+                                id="companyPhone"
+                                placeholder="(00) 00000-0000"
+                            >
+                        </div>
+
+                        <div class="field">
+                            <label for="companyEmail">
+                                E-mail
+                            </label>
+
+                            <input
+                                type="email"
+                                id="companyEmail"
+                                placeholder="contato@empresa.com"
+                            >
+                        </div>
+
+                        <div class="field full">
+                            <label for="companyAddress">
+                                Endereço da empresa <span class="optional">(opcional)</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="companyAddress"
+                                placeholder="Rua, número, bairro, cidade - Estado"
+                            >
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ORÇAMENTO -->
+
+                <section class="card">
+
+                    <div class="section-title">
+                        <div class="section-number">2</div>
+                        <h2>Dados do orçamento</h2>
+                    </div>
+
+                    <div class="grid">
+
+                        <div class="field">
+                            <label for="quoteNumber">
+                                Número do orçamento
+                            </label>
+
+                            <input
+                                type="text"
+                                id="quoteNumber"
+                                value="0001"
+                            >
+                        </div>
+
+                        <div class="field">
+                            <label for="quoteDate">
+                                Data
+                            </label>
+
+                            <input
+                                type="date"
+                                id="quoteDate"
+                            >
+                        </div>
+
+                        <div class="field">
+                            <label for="quoteValidity">
+                                Validade do orçamento
+                            </label>
+
+                            <input
+                                type="text"
+                                id="quoteValidity"
+                                placeholder="Ex.: 10 dias"
+                            >
+                        </div>
+
+                        <div class="field">
+                            <label for="deliveryTime">
+                                Prazo de entrega <span class="optional">(opcional)</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="deliveryTime"
+                                placeholder="Ex.: 15 dias úteis"
+                            >
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- CLIENTE -->
+
+                <section class="card">
+
+                    <div class="section-title">
+                        <div class="section-number">3</div>
+                        <h2>Dados do cliente</h2>
+                    </div>
+
+                    <div class="grid">
+
+                        <div class="field full">
+                            <label for="clientName">
+                                Nome do cliente
+                            </label>
+
+                            <input
+                                type="text"
+                                id="clientName"
+                                placeholder="Nome completo ou empresa"
+                            >
+                        </div>
+
+                        <div class="field">
+                            <label for="clientPhone">
+                                Telefone <span class="optional">(opcional)</span>
+                            </label>
+
+                            <input
+                                type="tel"
+                                id="clientPhone"
+                                placeholder="(00) 00000-0000"
+                            >
+                        </div>
+
+                        <div class="field">
+                            <label for="clientEmail">
+                                E-mail <span class="optional">(opcional)</span>
+                            </label>
+
+                            <input
+                                type="email"
+                                id="clientEmail"
+                                placeholder="cliente@email.com"
+                            >
+                        </div>
+
+                        <div class="field full">
+                            <label for="clientAddress">
+                                Endereço do cliente <span class="optional">(opcional)</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="clientAddress"
+                                placeholder="Rua, número, bairro, cidade - Estado"
+                            >
+                        </div>
+
+                        <div class="field full">
+                            <label for="deliveryAddress">
+                                Local de entrega / execução <span class="optional">(opcional)</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="deliveryAddress"
+                                placeholder="Informe somente se for diferente do endereço do cliente"
+                            >
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ITENS -->
+
+                <section class="card">
+
+                    <div class="section-title">
+                        <div class="section-number">4</div>
+                        <h2>Produtos ou serviços</h2>
+                    </div>
+
+                    <p class="section-description">
+                        Adicione os produtos ou serviços que farão parte deste orçamento.
+                    </p>
+
+                    <div class="items-header">
+                        <span>Descrição</span>
+                        <span>Qtd.</span>
+                        <span>Valor unit.</span>
+                        <span>Total</span>
+                        <span></span>
+                    </div>
+
+                    <div id="itemsContainer"></div>
+
+                    <button
+                        type="button"
+                        class="add-item"
+                        id="addItemButton"
+                    >
+                        + Adicionar produto ou serviço
+                    </button>
+
+                    <div class="totals">
+
+                        <div class="total-line">
+                            <span>Subtotal</span>
+                            <strong id="formSubtotal">R$ 0,00</strong>
+                        </div>
+
+                        <div class="total-line grand-total">
+                            <span>Total</span>
+                            <strong id="formTotal">R$ 0,00</strong>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- PAGAMENTO -->
+
+                <section class="card">
+
+                    <div class="section-title">
+                        <div class="section-number">5</div>
+                        <h2>Condições de pagamento</h2>
+                    </div>
+
+                    <div class="grid">
+
+                        <div class="field full">
+                            <label for="paymentConditions">
+                                Forma e condições de pagamento <span class="optional">(opcional)</span>
+                            </label>
+
+                            <textarea
+                                id="paymentConditions"
+                                placeholder="Ex.: 50% na aprovação e 50% na entrega. Pagamento via Pix, dinheiro ou transferência."
+                            ></textarea>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- SOBRE A EMPRESA -->
+
+                <section class="card">
+
+                    <div class="section-title">
+                        <div class="section-number">6</div>
+                        <h2>Sobre a empresa <span class="optional">(opcional)</span></h2>
+                    </div>
+
+                    <p class="section-description">
+                        Apresente brevemente sua empresa, experiência ou diferenciais.
+                    </p>
+
+                    <textarea
+                        id="aboutCompany"
+                        placeholder="Ex.: Somos uma empresa especializada em pintura residencial e comercial, com experiência e compromisso com a qualidade."
+                    ></textarea>
+
+                </section>
+
+
+                <!-- ESCOPO -->
+
+                <section class="card">
+
+                    <div class="section-title">
+                        <div class="section-number">7</div>
+                        <h2>Escopo do serviço <span class="optional">(opcional)</span></h2>
+                    </div>
+
+                    <p class="section-description">
+                        Descreva o que será realizado, materiais, etapas ou o que está incluído no serviço.
+                    </p>
+
+                    <textarea
+                        id="serviceScope"
+                        placeholder="Ex.: Preparação da superfície, aplicação de duas demãos de tinta e limpeza do local após a conclusão."
+                    ></textarea>
+
+                </section>
+
+
+                <!-- OBSERVAÇÕES -->
+
+                <section class="card">
+
+                    <div class="section-title">
+                        <div class="section-number">8</div>
+                        <h2>Observações <span class="optional">(opcional)</span></h2>
+                    </div>
+
+                    <textarea
+                        id="observations"
+                        placeholder="Inclua informações importantes, condições específicas ou outras observações."
+                    ></textarea>
+
+                </section>
+
+
+                <!-- AVISO -->
+
+                <div class="info-box">
+                    💡 <strong>Dica:</strong> confira os dados e os valores na prévia antes de gerar o orçamento.
+                </div>
+
+
+                <!-- AÇÕES -->
+
+                <section class="card">
+
+                    <div class="actions">
+
+                        <button
+                            type="button"
+                            class="primary-button"
+                            id="printButton"
+                        >
+                            Gerar orçamento / Salvar PDF
+                        </button>
+
+                        <button
+                            type="button"
+                            class="secondary-button"
+                            id="clearButton"
+                        >
+                            Limpar
+                        </button>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             COLUNA DA PRÉVIA
+        ========================== -->
+
+        <div class="preview-column">
+
+            <div class="preview-title">
+                Prévia do orçamento
+            </div>
+
+            <div class="preview-wrapper">
+
+                <div class="quote-preview" id="quotePreview">
+
+                    <div class="preview-header">
+
+                        <div class="preview-company">
+
+                            <img
+                                id="previewLogo"
+                                class="preview-logo"
+                                style="display:none;"
+                                alt="Logo"
+                            >
+
+                            <div
+                                class="preview-company-name"
+                                id="previewCompanyName"
+                            >
+                                Sua empresa
+                            </div>
+
+                            <div
+                                class="preview-company-info"
+                                id="previewCompanyInfo"
+                            >
+                                Telefone e e-mail aparecerão aqui
+                            </div>
+
+                        </div>
+
+                        <div class="preview-document">
+
+                            <h3>ORÇAMENTO</h3>
+
+                            <p>
+                                Nº <span id="previewQuoteNumber">0001</span>
+                            </p>
+
+                            <p>
+                                <span id="previewQuoteDate">Data</span>
+                            </p>
+
+                            <p id="previewValidityContainer">
+                                Validade: <span id="previewValidity">—</span>
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CLIENTE -->
+
+                    <div class="preview-block">
+
+                        <div class="preview-block-title">
+                            Cliente
+                        </div>
+
+                        <div
+                            class="preview-client"
+                            id="previewClient"
+                        >
+                            <span class="preview-empty">
+                                Os dados do cliente aparecerão aqui.
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <!-- ENTREGA -->
+
+                    <div
+                        class="preview-block"
+                        id="previewDeliveryBlock"
+                        style="display:none;"
+                    >
+
+                        <div class="preview-block-title">
+                            Local de entrega / execução
+                        </div>
+
+                        <div
+                            class="preview-text"
+                            id="previewDelivery"
+                        ></div>
+
+                    </div>
+
+
+                    <!-- ITENS -->
+
+                    <div class="preview-block">
+
+                        <div class="preview-block-title">
+                            Produtos / Serviços
+                        </div>
+
+                        <table class="preview-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Descrição</th>
+                                    <th>Qtd.</th>
+                                    <th>Valor unit.</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="previewItems">
+
+                            </tbody>
+
+                        </table>
+
+                        <div class="preview-total">
+                            Total: <span id="previewTotal" style="margin-left: 5px;">
+                                R$ 0,00
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <!-- PRAZO -->
+
+                    <div
+                        class="preview-block"
+                        id="previewTimeBlock"
+                        style="display:none;"
+                    >
+
+                        <div class="preview-block-title">
+                            Prazo de entrega
+                        </div>
+
+                        <div
+                            class="preview-text"
+                            id="previewDeliveryTime"
+                        ></div>
+
+                    </div>
+
+
+                    <!-- PAGAMENTO -->
+
+                    <div
+                        class="preview-block"
+                        id="previewPaymentBlock"
+                        style="display:none;"
+                    >
+
+                        <div class="preview-block-title">
+                            Condições de pagamento
+                        </div>
+
+                        <div
+                            class="preview-text"
+                            id="previewPayment"
+                        ></div>
+
+                    </div>
+
+
+                    <!-- SOBRE -->
+
+                    <div
+                        class="preview-block"
+                        id="previewAboutBlock"
+                        style="display:none;"
+                    >
+
+                        <div class="preview-block-title">
+                            Sobre a empresa
+                        </div>
+
+                        <div
+                            class="preview-text"
+                            id="previewAbout"
+                        ></div>
+
+                    </div>
+
+
+                    <!-- ESCOPO -->
+
+                    <div
+                        class="preview-block"
+                        id="previewScopeBlock"
+                        style="display:none;"
+                    >
+
+                        <div class="preview-block-title">
+                            Escopo do serviço
+                        </div>
+
+                        <div
+                            class="preview-text"
+                            id="previewScope"
+                        ></div>
+
+                    </div>
+
+
+                    <!-- OBSERVAÇÕES -->
+
+                    <div
+                        class="preview-block"
+                        id="previewObservationsBlock"
+                        style="display:none;"
+                    >
+
+                        <div class="preview-block-title">
+                            Observações
+                        </div>
+
+                        <div
+                            class="preview-text"
+                            id="previewObservations"
+                        ></div>
+
+                    </div>
+
+
+                    <div class="preview-footer">
+                        Orçamento gerado pelo Meu Site
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
-  </header>
+
+</main>
+
+<footer>
+    Meu Site — Ferramentas práticas online
+</footer>
 
 
-  <main>
+<script>
 
-    <div class="container">
+    /* ==========================================
+       DATA ATUAL
+    ========================================== */
 
-      <div class="title">
+    const today = new Date();
 
-        <h1>
-          Criar orçamento
-        </h1>
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
 
-        <p>
-          Preencha os dados abaixo e gere seu orçamento profissional.
-        </p>
-
-      </div>
-
-
-      <section class="card">
-
-        <h2>
-          Dados do profissional ou empresa
-        </h2>
-
-        <div class="grid">
-
-          <div class="field">
-            <label for="empresa">
-              Nome / Empresa
-            </label>
-
-            <input
-              type="text"
-              id="empresa"
-              placeholder="Ex.: João Silva Serviços"
-            >
-          </div>
+    document.getElementById("quoteDate").value =
+        `${year}-${month}-${day}`;
 
 
-          <div class="field">
-            <label for="telefone">
-              Telefone
-            </label>
+    /* ==========================================
+       ELEMENTOS
+    ========================================== */
 
-            <input
-              type="text"
-              id="telefone"
-              placeholder="(00) 00000-0000"
-            >
-          </div>
+    const itemsContainer =
+        document.getElementById("itemsContainer");
 
+    const addItemButton =
+        document.getElementById("addItemButton");
 
-          <div class="field">
-            <label for="email">
-              E-mail
-            </label>
+    const printButton =
+        document.getElementById("printButton");
 
-            <input
-              type="email"
-              id="email"
-              placeholder="seuemail@email.com"
-            >
-          </div>
+    const clearButton =
+        document.getElementById("clearButton");
+
+    const logoInput =
+        document.getElementById("logoInput");
 
 
-          <div class="field">
-            <label for="cidade">
-              Cidade / Estado
-            </label>
+    /* ==========================================
+       FORMATAÇÃO DE DINHEIRO
+    ========================================== */
 
-            <input
-              type="text"
-              id="cidade"
-              placeholder="Belo Horizonte - MG"
-            >
-          </div>
+    function formatMoney(value) {
 
-        </div>
+        return Number(value || 0).toLocaleString(
+            "pt-BR",
+            {
+                style: "currency",
+                currency: "BRL"
+            }
+        );
+    }
 
-      </section>
 
+    /* ==========================================
+       CRIAR ITEM
+    ========================================== */
 
-      <section class="card">
+    function createItem() {
 
-        <h2>
-          Dados do cliente
-        </h2>
+        const row = document.createElement("div");
 
-        <div class="grid">
+        row.className = "item-row";
 
-          <div class="field">
-            <label for="cliente">
-              Nome do cliente
-            </label>
+        row.innerHTML = `
 
             <input
-              type="text"
-              id="cliente"
-              placeholder="Nome do cliente"
-            >
-          </div>
-
-
-          <div class="field">
-            <label for="clienteTelefone">
-              Telefone
-            </label>
-
-            <input
-              type="text"
-              id="clienteTelefone"
-              placeholder="(00) 00000-0000"
-            >
-          </div>
-
-
-          <div class="field full">
-            <label for="clienteEndereco">
-              Endereço
-            </label>
-
-            <input
-              type="text"
-              id="clienteEndereco"
-              placeholder="Endereço do cliente"
-            >
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <section class="card">
-
-        <h2>
-          Serviços / Produtos
-        </h2>
-
-
-        <div class="items-header">
-
-          <div>
-            Descrição
-          </div>
-
-          <div>
-            Quantidade
-          </div>
-
-          <div>
-            Valor unitário
-          </div>
-
-          <div>
-            Total
-          </div>
-
-        </div>
-
-
-        <div id="items">
-
-          <div class="item">
-
-            <input
-              class="description"
-              type="text"
-              placeholder="Descrição do serviço ou produto"
+                type="text"
+                class="description"
+                placeholder="Descrição do produto ou serviço"
             >
 
             <input
-              class="quantity"
-              type="number"
-              min="0"
-              step="1"
-              value="1"
-              oninput="calcularTotal()"
+                type="number"
+                class="quantity"
+                min="0"
+                step="0.01"
+                value="1"
             >
 
             <input
-              class="price"
-              type="number"
-              min="0"
-              step="0.01"
-              placeholder="0,00"
-              oninput="calcularTotal()"
+                type="number"
+                class="unit-price"
+                min="0"
+                step="0.01"
+                placeholder="0,00"
             >
 
             <div class="item-total">
-              R$ 0,00
+                R$ 0,00
             </div>
 
             <button
-              type="button"
-              class="remove"
-              onclick="removerItem(this)"
+                type="button"
+                class="remove-item"
+                title="Remover item"
             >
-              Remover
+                ×
             </button>
+        `;
 
-          </div>
+        itemsContainer.appendChild(row);
 
-        </div>
+        const inputs = row.querySelectorAll("input");
 
+        inputs.forEach(input => {
 
-        <button
-          type="button"
-          class="add-item"
-          onclick="adicionarItem()"
-        >
-          + Adicionar item
-        </button>
+            input.addEventListener(
+                "input",
+                updateAll
+            );
 
+        });
 
-        <div class="total-box">
+        row.querySelector(".remove-item")
+            .addEventListener(
+                "click",
+                function() {
 
-          <span class="total-label">
-            Total do orçamento:
-          </span>
+                    row.remove();
 
-          <span
-            class="total-value"
-            id="total"
-          >
-            R$ 0,00
-          </span>
+                    updateAll();
 
-        </div>
+                }
+            );
 
-      </section>
-
-
-      <section class="card">
-
-        <h2>
-          Observações
-        </h2>
-
-        <div class="field">
-
-          <label for="observacoes">
-            Informações adicionais
-          </label>
-
-          <textarea
-            id="observacoes"
-            placeholder="Ex.: Prazo de entrega, condições de pagamento, validade do orçamento..."
-          ></textarea>
-
-        </div>
-
-      </section>
-
-
-      <div class="actions">
-
-        <button
-          type="button"
-          class="button button-primary"
-          onclick="window.print()"
-        >
-          🖨️ Imprimir / Salvar PDF
-        </button>
-
-
-        <button
-          type="button"
-          class="button button-secondary"
-          onclick="limparFormulario()"
-        >
-          Limpar formulário
-        </button>
-
-      </div>
-
-    </div>
-
-  </main>
-
-
-  <footer>
-
-    <div class="container">
-
-      <p>
-        Meu Site © 2026 • Todos os direitos reservados
-      </p>
-
-    </div>
-
-  </footer>
-
-
-  <script>
-
-    function formatarMoeda(valor) {
-
-      return valor.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL"
-      });
-
+        updateAll();
     }
 
 
-    function calcularTotal() {
+    /* ==========================================
+       ATUALIZAR ITENS E TOTAIS
+    ========================================== */
 
-      const itens = document.querySelectorAll(".item");
+    function updateItems() {
 
-      let totalGeral = 0;
+        const rows =
+            itemsContainer.querySelectorAll(".item-row");
 
+        let subtotal = 0;
 
-      itens.forEach(function(item) {
+        rows.forEach(row => {
 
-        const quantidade =
-          parseFloat(
-            item.querySelector(".quantity").value
-          ) || 0;
+            const quantity =
+                parseFloat(
+                    row.querySelector(".quantity").value
+                ) || 0;
 
-        const valor =
-          parseFloat(
-            item.querySelector(".price").value
-          ) || 0;
+            const price =
+                parseFloat(
+                    row.querySelector(".unit-price").value
+                ) || 0;
 
-        const totalItem =
-          quantidade * valor;
+            const total =
+                quantity * price;
 
+            row.querySelector(".item-total")
+                .textContent = formatMoney(total);
 
-        item.querySelector(".item-total").textContent =
-          formatarMoeda(totalItem);
+            subtotal += total;
 
+        });
 
-        totalGeral += totalItem;
+        document.getElementById("formSubtotal")
+            .textContent = formatMoney(subtotal);
 
-      });
+        document.getElementById("formTotal")
+            .textContent = formatMoney(subtotal);
 
-
-      document.getElementById("total").textContent =
-        formatarMoeda(totalGeral);
-
+        return subtotal;
     }
 
 
-    function adicionarItem() {
+    /* ==========================================
+       PRÉVIA DA EMPRESA
+    ========================================== */
 
-      const container =
-        document.getElementById("items");
+    function updateCompanyPreview() {
 
+        const name =
+            document.getElementById("companyName").value.trim();
 
-      const item =
-        document.createElement("div");
+        const phone =
+            document.getElementById("companyPhone").value.trim();
 
+        const email =
+            document.getElementById("companyEmail").value.trim();
 
-      item.className = "item";
+        const address =
+            document.getElementById("companyAddress").value.trim();
 
+        document.getElementById("previewCompanyName")
+            .textContent =
+            name || "Sua empresa";
 
-      item.innerHTML = `
+        let info = [];
 
-        <input
-          class="description"
-          type="text"
-          placeholder="Descrição do serviço ou produto"
-        >
+        if (phone) {
+            info.push(phone);
+        }
 
-        <input
-          class="quantity"
-          type="number"
-          min="0"
-          step="1"
-          value="1"
-          oninput="calcularTotal()"
-        >
+        if (email) {
+            info.push(email);
+        }
 
-        <input
-          class="price"
-          type="number"
-          min="0"
-          step="0.01"
-          placeholder="0,00"
-          oninput="calcularTotal()"
-        >
+        if (address) {
+            info.push(address);
+        }
 
-        <div class="item-total">
-          R$ 0,00
-        </div>
-
-        <button
-          type="button"
-          class="remove"
-          onclick="removerItem(this)"
-        >
-          Remover
-        </button>
-
-      `;
-
-
-      container.appendChild(item);
-
-      calcularTotal();
-
+        document.getElementById("previewCompanyInfo")
+            .textContent =
+            info.length
+                ? info.join(" • ")
+                : "Telefone e e-mail aparecerão aqui";
     }
 
 
-    function removerItem(botao) {
+    /* ==========================================
+       PRÉVIA DO CLIENTE
+    ========================================== */
 
-      const itens =
-        document.querySelectorAll(".item");
+    function updateClientPreview() {
 
+        const name =
+            document.getElementById("clientName").value.trim();
 
-      if (itens.length <= 1) {
+        const phone =
+            document.getElementById("clientPhone").value.trim();
 
-        alert("O orçamento precisa ter pelo menos um item.");
+        const email =
+            document.getElementById("clientEmail").value.trim();
 
-        return;
+        const address =
+            document.getElementById("clientAddress").value.trim();
 
-      }
+        const clientPreview =
+            document.getElementById("previewClient");
 
+        if (!name && !phone && !email && !address) {
 
-      botao.parentElement.remove();
+            clientPreview.innerHTML =
+                `<span class="preview-empty">
+                    Os dados do cliente aparecerão aqui.
+                </span>`;
 
-      calcularTotal();
+            return;
+        }
 
+        let html = "";
+
+        if (name) {
+            html += `<strong>${escapeHtml(name)}</strong><br>`;
+        }
+
+        if (phone) {
+            html += `${escapeHtml(phone)}<br>`;
+        }
+
+        if (email) {
+            html += `${escapeHtml(email)}<br>`;
+        }
+
+        if (address) {
+            html += `${escapeHtml(address)}`;
+        }
+
+        clientPreview.innerHTML = html;
     }
 
 
-    function limparFormulario() {
+    /* ==========================================
+       PRÉVIA DO DOCUMENTO
+    ========================================== */
 
-      const confirmar =
-        confirm(
-          "Tem certeza que deseja limpar todo o orçamento?"
-        );
+    function updateDocumentPreview() {
 
+        const number =
+            document.getElementById("quoteNumber").value.trim();
 
-      if (!confirmar) {
-        return;
-      }
+        const date =
+            document.getElementById("quoteDate").value;
 
+        const validity =
+            document.getElementById("quoteValidity").value.trim();
 
-      document.querySelectorAll("input").forEach(function(input) {
+        document.getElementById("previewQuoteNumber")
+            .textContent =
+            number || "—";
 
-        if (input.classList.contains("quantity")) {
+        if (date) {
 
-          input.value = "1";
+            const parts = date.split("-");
+
+            document.getElementById("previewQuoteDate")
+                .textContent =
+                `${parts[2]}/${parts[1]}/${parts[0]}`;
 
         } else {
 
-          input.value = "";
+            document.getElementById("previewQuoteDate")
+                .textContent = "—";
 
         }
 
-      });
-
-
-      document.getElementById("observacoes").value = "";
-
-
-      const itens =
-        document.querySelectorAll(".item");
-
-
-      itens.forEach(function(item, index) {
-
-        if (index > 0) {
-          item.remove();
-        }
-
-      });
-
-
-      calcularTotal();
-
+        document.getElementById("previewValidity")
+            .textContent =
+            validity || "—";
     }
 
 
-    calcularTotal();
+    /* ==========================================
+       PRÉVIA DE ENTREGA
+    ========================================== */
 
-  </script>
+    function updateDeliveryPreview() {
+
+        const delivery =
+            document.getElementById("deliveryAddress")
+                .value.trim();
+
+        const block =
+            document.getElementById("previewDeliveryBlock");
+
+        if (delivery) {
+
+            block.style.display = "block";
+
+            document.getElementById("previewDelivery")
+                .textContent = delivery;
+
+        } else {
+
+            block.style.display = "none";
+
+        }
+    }
+
+
+    /* ==========================================
+       PRAZO
+    ========================================== */
+
+    function updateDeliveryTime() {
+
+        const value =
+            document.getElementById("deliveryTime")
+                .value.trim();
+
+        const block =
+            document.getElementById("previewTimeBlock");
+
+        if (value) {
+
+            block.style.display = "block";
+
+            document.getElementById("previewDeliveryTime")
+                .textContent = value;
+
+        } else {
+
+            block.style.display = "none";
+
+        }
+    }
+
+
+    /* ==========================================
+       PAGAMENTO
+    ========================================== */
+
+    function updatePayment() {
+
+        const value =
+            document.getElementById("paymentConditions")
+                .value.trim();
+
+        const block =
+            document.getElementById("previewPaymentBlock");
+
+        if (value) {
+
+            block.style.display = "block";
+
+            document.getElementById("previewPayment")
+                .textContent = value;
+
+        } else {
+
+            block.style.display = "none";
+
+        }
+    }
+
+
+    /* ==========================================
+       SOBRE A EMPRESA
+    ========================================== */
+
+    function updateAbout() {
+
+        const value =
+            document.getElementById("aboutCompany")
+                .value.trim();
+
+        const block =
+            document.getElementById("previewAboutBlock");
+
+        if (value) {
+
+            block.style.display = "block";
+
+            document.getElementById("previewAbout")
+                .textContent = value;
+
+        } else {
+
+            block.style.display = "none";
+
+        }
+    }
+
+
+    /* ==========================================
+       ESCOPO
+    ========================================== */
+
+    function updateScope() {
+
+        const value =
+            document.getElementById("serviceScope")
+                .value.trim();
+
+        const block =
+            document.getElementById("previewScopeBlock");
+
+        if (value) {
+
+            block.style.display = "block";
+
+            document.getElementById("previewScope")
+                .textContent = value;
+
+        } else {
+
+            block.style.display = "none";
+
+        }
+    }
+
+
+    /* ==========================================
+       OBSERVAÇÕES
+    ========================================== */
+
+    function updateObservations() {
+
+        const value =
+            document.getElementById("observations")
+                .value.trim();
+
+        const block =
+            document.getElementById(
+                "previewObservationsBlock"
+            );
+
+        if (value) {
+
+            block.style.display = "block";
+
+            document.getElementById("previewObservations")
+                .textContent = value;
+
+        } else {
+
+            block.style.display = "none";
+
+        }
+    }
+
+
+    /* ==========================================
+       PRÉVIA DOS ITENS
+    ========================================== */
+
+    function updateItemsPreview() {
+
+        const rows =
+            itemsContainer.querySelectorAll(".item-row");
+
+        const preview =
+            document.getElementById("previewItems");
+
+        preview.innerHTML = "";
+
+        let total = 0;
+
+        rows.forEach(row => {
+
+            const description =
+                row.querySelector(".description")
+                    .value.trim();
+
+            const quantity =
+                parseFloat(
+                    row.querySelector(".quantity").value
+                ) || 0;
+
+            const price =
+                parseFloat(
+                    row.querySelector(".unit-price").value
+                ) || 0;
+
+            const itemTotal =
+                quantity * price;
+
+            total += itemTotal;
+
+            if (
+                description ||
+                quantity ||
+                price
+            ) {
+
+                const tr =
+                    document.createElement("tr");
+
+                tr.innerHTML = `
+                    <td>
+                        ${escapeHtml(description || "Item")}
+                    </td>
+
+                    <td>
+                        ${quantity}
+                    </td>
+
+                    <td>
+                        ${formatMoney(price)}
+                    </td>
+
+                    <td>
+                        ${formatMoney(itemTotal)}
+                    </td>
+                `;
+
+                preview.appendChild(tr);
+            }
+
+        });
+
+        if (!preview.children.length) {
+
+            preview.innerHTML = `
+                <tr>
+                    <td colspan="4"
+                        style="text-align:center;color:#999;">
+                        Nenhum item adicionado.
+                    </td>
+                </tr>
+            `;
+
+        }
+
+        document.getElementById("previewTotal")
+            .textContent = formatMoney(total);
+    }
+
+
+    /* ==========================================
+       SEGURANÇA BÁSICA PARA TEXTO
+    ========================================== */
+
+    function escapeHtml(text) {
+
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    /* ==========================================
+       ATUALIZAR TUDO
+    ========================================== */
+
+    function updateAll() {
+
+        updateCompanyPreview();
+
+        updateClientPreview();
+
+        updateDocumentPreview();
+
+        updateDeliveryPreview();
+
+        updateDeliveryTime();
+
+        updatePayment();
+
+        updateAbout();
+
+        updateScope();
+
+        updateObservations();
+
+        updateItems();
+
+        updateItemsPreview();
+    }
+
+
+    /* ==========================================
+       LISTENERS DOS CAMPOS
+    ========================================== */
+
+    const fieldsToWatch = [
+
+        "companyName",
+        "companyPhone",
+        "companyEmail",
+        "companyAddress",
+
+        "quoteNumber",
+        "quoteDate",
+        "quoteValidity",
+        "deliveryTime",
+
+        "clientName",
+        "clientPhone",
+        "clientEmail",
+        "clientAddress",
+        "deliveryAddress",
+
+        "paymentConditions",
+        "aboutCompany",
+        "serviceScope",
+        "observations"
+
+    ];
+
+    fieldsToWatch.forEach(id => {
+
+        const element =
+            document.getElementById(id);
+
+        if (element) {
+
+            element.addEventListener(
+                "input",
+                updateAll
+            );
+
+            element.addEventListener(
+                "change",
+                updateAll
+            );
+        }
+
+    });
+
+
+    /* ==========================================
+       ADICIONAR ITEM
+    ========================================== */
+
+    addItemButton.addEventListener(
+        "click",
+        createItem
+    );
+
+
+    /* ==========================================
+       LOGO
+    ========================================== */
+
+    logoInput.addEventListener(
+        "change",
+        function(event) {
+
+            const file =
+                event.target.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            const reader =
+                new FileReader();
+
+            reader.onload =
+                function(e) {
+
+                    const image =
+                        e.target.result;
+
+                    document.getElementById(
+                        "logoPreview"
+                    ).innerHTML =
+                        `<img src="${image}" alt="Logo">`;
+
+                    const previewLogo =
+                        document.getElementById(
+                            "previewLogo"
+                        );
+
+                    previewLogo.src = image;
+
+                    previewLogo.style.display =
+                        "block";
+                };
+
+            reader.readAsDataURL(file);
+        }
+    );
+
+
+    /* ==========================================
+       IMPRIMIR / SALVAR PDF
+    ========================================== */
+
+    printButton.addEventListener(
+        "click",
+        function() {
+
+            updateAll();
+
+            window.print();
+
+        }
+    );
+
+
+    /* ==========================================
+       LIMPAR FORMULÁRIO
+    ========================================== */
+
+    clearButton.addEventListener(
+        "click",
+        function() {
+
+            const confirmed =
+                confirm(
+                    "Tem certeza que deseja limpar todos os dados do orçamento?"
+                );
+
+            if (!confirmed) {
+                return;
+            }
+
+            fieldsToWatch.forEach(id => {
+
+                const element =
+                    document.getElementById(id);
+
+                if (element) {
+
+                    if (id === "quoteNumber") {
+
+                        element.value = "0001";
+
+                    } else if (id === "quoteDate") {
+
+                        element.value =
+                            `${year}-${month}-${day}`;
+
+                    } else {
+
+                        element.value = "";
+
+                    }
+
+                }
+
+            });
+
+            logoInput.value = "";
+
+            document.getElementById(
+                "logoPreview"
+            ).innerHTML = "Sua logo";
+
+            document.getElementById(
+                "previewLogo"
+            ).style.display = "none";
+
+            itemsContainer.innerHTML = "";
+
+            createItem();
+
+            updateAll();
+
+        }
+    );
+
+
+    /* ==========================================
+       ITEM INICIAL
+    ========================================== */
+
+    createItem();
+
+    updateAll();
+
+</script>
 
 </body>
 </html>
