@@ -23,7 +23,6 @@
             --background: #f5f7fa;
             --white: #ffffff;
             --danger: #dc2626;
-            --success: #16a34a;
         }
 
         body {
@@ -32,10 +31,6 @@
             color: var(--text);
             line-height: 1.5;
         }
-
-        /* =========================
-           CABEÇALHO
-        ========================= */
 
         header {
             background: var(--white);
@@ -73,10 +68,6 @@
             color: var(--primary);
         }
 
-        /* =========================
-           CONTAINER
-        ========================= */
-
         .page {
             max-width: 1250px;
             margin: 35px auto;
@@ -103,10 +94,6 @@
             gap: 25px;
             align-items: start;
         }
-
-        /* =========================
-           FORMULÁRIO
-        ========================= */
 
         .form-container {
             display: flex;
@@ -208,10 +195,6 @@
             min-height: 100px;
         }
 
-        /* =========================
-           LOGO
-        ========================= */
-
         .logo-area {
             display: flex;
             align-items: center;
@@ -220,8 +203,8 @@
         }
 
         .logo-preview {
-            width: 82px;
-            height: 82px;
+            width: 100px;
+            height: 90px;
             border: 1px dashed #cbd5e1;
             border-radius: 10px;
             display: flex;
@@ -275,10 +258,6 @@
         #logoInput {
             display: none;
         }
-
-        /* =========================
-           ITENS
-        ========================= */
 
         .items-header {
             display: grid;
@@ -369,10 +348,6 @@
             margin-top: 5px;
         }
 
-        /* =========================
-           BOTÕES
-        ========================= */
-
         .actions {
             display: flex;
             gap: 10px;
@@ -413,10 +388,6 @@
         .secondary-button:hover {
             background: #f9fafb;
         }
-
-        /* =========================
-           PRÉVIA
-        ========================= */
 
         .preview-column {
             position: sticky;
@@ -560,10 +531,6 @@
             text-align: center;
         }
 
-        /* =========================
-           AVISO
-        ========================= */
-
         .info-box {
             background: #eff6ff;
             border: 1px solid #bfdbfe;
@@ -573,10 +540,6 @@
             color: #1e40af;
         }
 
-        /* =========================
-           RODAPÉ
-        ========================= */
-
         footer {
             text-align: center;
             color: #9ca3af;
@@ -584,55 +547,8 @@
             padding: 30px 20px;
         }
 
-        /* =========================
-           IMPRESSÃO
-        ========================= */
-
-        @media print {
-            body {
-                background: white;
-            }
-
-            header,
-            .page-title,
-            .form-column,
-            .preview-title,
-            footer {
-                display: none !important;
-            }
-
-            .page {
-                margin: 0;
-                padding: 0;
-                max-width: none;
-            }
-
-            .workspace {
-                display: block;
-            }
-
-            .preview-column {
-                position: static;
-            }
-
-            .preview-wrapper {
-                padding: 0;
-                background: white;
-            }
-
-            .quote-preview {
-                box-shadow: none;
-                width: 100%;
-                min-height: auto;
-                padding: 0;
-            }
-        }
-
-        /* =========================
-           RESPONSIVO
-        ========================= */
-
         @media (max-width: 950px) {
+
             .workspace {
                 grid-template-columns: 1fr;
             }
@@ -643,6 +559,7 @@
         }
 
         @media (max-width: 700px) {
+
             .page {
                 margin: 20px auto;
                 padding: 0 12px;
@@ -712,51 +629,86 @@
 
 <header>
     <div class="header-content">
-        <a href="/" class="brand">Meu <span>Site</span></a>
-        <a href="/" class="back-link">← Voltar para o início</a>
+
+        <a href="/" class="brand">
+            Meu <span>Site</span>
+        </a>
+
+        <a href="/" class="back-link">
+            ← Voltar para o início
+        </a>
+
     </div>
 </header>
+
 
 <main class="page">
 
     <div class="page-title">
+
         <h1>Criar orçamento</h1>
-        <p>Preencha os dados abaixo e veja seu orçamento profissional em tempo real.</p>
+
+        <p>
+            Preencha os dados abaixo e veja seu orçamento profissional em tempo real.
+        </p>
+
     </div>
+
 
     <div class="workspace">
 
-        <!-- =========================
-             COLUNA DO FORMULÁRIO
-        ========================== -->
+
+        <!-- FORMULÁRIO -->
 
         <div class="form-column">
 
             <div class="form-container">
+
 
                 <!-- EMPRESA -->
 
                 <section class="card">
 
                     <div class="section-title">
-                        <div class="section-number">1</div>
-                        <h2>Dados da sua empresa</h2>
+
+                        <div class="section-number">
+                            1
+                        </div>
+
+                        <h2>
+                            Dados da sua empresa
+                        </h2>
+
                     </div>
+
 
                     <div class="logo-area">
 
-                        <div class="logo-preview" id="logoPreview">
+                        <div
+                            class="logo-preview"
+                            id="logoPreview"
+                        >
                             Sua logo
                         </div>
 
+
                         <div class="logo-info">
-                            <strong>Logo da empresa <span class="optional">(opcional)</span></strong>
+
+                            <strong>
+                                Logo da empresa
+                                <span class="optional">
+                                    (opcional)
+                                </span>
+                            </strong>
 
                             <p>
                                 Adicione sua logo para deixar o orçamento mais profissional.
                             </p>
 
-                            <label for="logoInput" class="file-label">
+                            <label
+                                for="logoInput"
+                                class="file-label"
+                            >
                                 Escolher imagem
                             </label>
 
@@ -765,13 +717,16 @@
                                 id="logoInput"
                                 accept="image/*"
                             >
+
                         </div>
 
                     </div>
 
+
                     <div class="grid">
 
                         <div class="field full">
+
                             <label for="companyName">
                                 Nome da empresa
                             </label>
@@ -781,9 +736,12 @@
                                 id="companyName"
                                 placeholder="Ex.: João Pinturas"
                             >
+
                         </div>
 
+
                         <div class="field">
+
                             <label for="companyPhone">
                                 Telefone
                             </label>
@@ -793,9 +751,12 @@
                                 id="companyPhone"
                                 placeholder="(00) 00000-0000"
                             >
+
                         </div>
 
+
                         <div class="field">
+
                             <label for="companyEmail">
                                 E-mail
                             </label>
@@ -805,11 +766,17 @@
                                 id="companyEmail"
                                 placeholder="contato@empresa.com"
                             >
+
                         </div>
 
+
                         <div class="field full">
+
                             <label for="companyAddress">
-                                Endereço da empresa <span class="optional">(opcional)</span>
+                                Endereço da empresa
+                                <span class="optional">
+                                    (opcional)
+                                </span>
                             </label>
 
                             <input
@@ -817,6 +784,7 @@
                                 id="companyAddress"
                                 placeholder="Rua, número, bairro, cidade - Estado"
                             >
+
                         </div>
 
                     </div>
@@ -829,13 +797,22 @@
                 <section class="card">
 
                     <div class="section-title">
-                        <div class="section-number">2</div>
-                        <h2>Dados do orçamento</h2>
+
+                        <div class="section-number">
+                            2
+                        </div>
+
+                        <h2>
+                            Dados do orçamento
+                        </h2>
+
                     </div>
+
 
                     <div class="grid">
 
                         <div class="field">
+
                             <label for="quoteNumber">
                                 Número do orçamento
                             </label>
@@ -845,9 +822,12 @@
                                 id="quoteNumber"
                                 value="0001"
                             >
+
                         </div>
 
+
                         <div class="field">
+
                             <label for="quoteDate">
                                 Data
                             </label>
@@ -856,9 +836,12 @@
                                 type="date"
                                 id="quoteDate"
                             >
+
                         </div>
 
+
                         <div class="field">
+
                             <label for="quoteValidity">
                                 Validade do orçamento
                             </label>
@@ -868,11 +851,17 @@
                                 id="quoteValidity"
                                 placeholder="Ex.: 10 dias"
                             >
+
                         </div>
 
+
                         <div class="field">
+
                             <label for="deliveryTime">
-                                Prazo de entrega <span class="optional">(opcional)</span>
+                                Prazo de entrega
+                                <span class="optional">
+                                    (opcional)
+                                </span>
                             </label>
 
                             <input
@@ -880,6 +869,7 @@
                                 id="deliveryTime"
                                 placeholder="Ex.: 15 dias úteis"
                             >
+
                         </div>
 
                     </div>
@@ -892,13 +882,22 @@
                 <section class="card">
 
                     <div class="section-title">
-                        <div class="section-number">3</div>
-                        <h2>Dados do cliente</h2>
+
+                        <div class="section-number">
+                            3
+                        </div>
+
+                        <h2>
+                            Dados do cliente
+                        </h2>
+
                     </div>
+
 
                     <div class="grid">
 
                         <div class="field full">
+
                             <label for="clientName">
                                 Nome do cliente
                             </label>
@@ -908,11 +907,17 @@
                                 id="clientName"
                                 placeholder="Nome completo ou empresa"
                             >
+
                         </div>
 
+
                         <div class="field">
+
                             <label for="clientPhone">
-                                Telefone <span class="optional">(opcional)</span>
+                                Telefone
+                                <span class="optional">
+                                    (opcional)
+                                </span>
                             </label>
 
                             <input
@@ -920,11 +925,17 @@
                                 id="clientPhone"
                                 placeholder="(00) 00000-0000"
                             >
+
                         </div>
 
+
                         <div class="field">
+
                             <label for="clientEmail">
-                                E-mail <span class="optional">(opcional)</span>
+                                E-mail
+                                <span class="optional">
+                                    (opcional)
+                                </span>
                             </label>
 
                             <input
@@ -932,11 +943,17 @@
                                 id="clientEmail"
                                 placeholder="cliente@email.com"
                             >
+
                         </div>
 
+
                         <div class="field full">
+
                             <label for="clientAddress">
-                                Endereço do cliente <span class="optional">(opcional)</span>
+                                Endereço do cliente
+                                <span class="optional">
+                                    (opcional)
+                                </span>
                             </label>
 
                             <input
@@ -944,11 +961,17 @@
                                 id="clientAddress"
                                 placeholder="Rua, número, bairro, cidade - Estado"
                             >
+
                         </div>
 
+
                         <div class="field full">
+
                             <label for="deliveryAddress">
-                                Local de entrega / execução <span class="optional">(opcional)</span>
+                                Local de entrega / execução
+                                <span class="optional">
+                                    (opcional)
+                                </span>
                             </label>
 
                             <input
@@ -956,6 +979,7 @@
                                 id="deliveryAddress"
                                 placeholder="Informe somente se for diferente do endereço do cliente"
                             >
+
                         </div>
 
                     </div>
@@ -968,23 +992,48 @@
                 <section class="card">
 
                     <div class="section-title">
-                        <div class="section-number">4</div>
-                        <h2>Produtos ou serviços</h2>
+
+                        <div class="section-number">
+                            4
+                        </div>
+
+                        <h2>
+                            Produtos ou serviços
+                        </h2>
+
                     </div>
+
 
                     <p class="section-description">
                         Adicione os produtos ou serviços que farão parte deste orçamento.
                     </p>
 
+
                     <div class="items-header">
-                        <span>Descrição</span>
-                        <span>Qtd.</span>
-                        <span>Valor unit.</span>
-                        <span>Total</span>
+
+                        <span>
+                            Descrição
+                        </span>
+
+                        <span>
+                            Qtd.
+                        </span>
+
+                        <span>
+                            Valor unit.
+                        </span>
+
+                        <span>
+                            Total
+                        </span>
+
                         <span></span>
+
                     </div>
 
+
                     <div id="itemsContainer"></div>
+
 
                     <button
                         type="button"
@@ -994,16 +1043,32 @@
                         + Adicionar produto ou serviço
                     </button>
 
+
                     <div class="totals">
 
                         <div class="total-line">
-                            <span>Subtotal</span>
-                            <strong id="formSubtotal">R$ 0,00</strong>
+
+                            <span>
+                                Subtotal
+                            </span>
+
+                            <strong id="formSubtotal">
+                                R$ 0,00
+                            </strong>
+
                         </div>
 
+
                         <div class="total-line grand-total">
-                            <span>Total</span>
-                            <strong id="formTotal">R$ 0,00</strong>
+
+                            <span>
+                                Total
+                            </span>
+
+                            <strong id="formTotal">
+                                R$ 0,00
+                            </strong>
+
                         </div>
 
                     </div>
@@ -1016,21 +1081,34 @@
                 <section class="card">
 
                     <div class="section-title">
-                        <div class="section-number">5</div>
-                        <h2>Condições de pagamento</h2>
+
+                        <div class="section-number">
+                            5
+                        </div>
+
+                        <h2>
+                            Condições de pagamento
+                        </h2>
+
                     </div>
+
 
                     <div class="grid">
 
                         <div class="field full">
+
                             <label for="paymentConditions">
-                                Forma e condições de pagamento <span class="optional">(opcional)</span>
+                                Forma e condições de pagamento
+                                <span class="optional">
+                                    (opcional)
+                                </span>
                             </label>
 
                             <textarea
                                 id="paymentConditions"
                                 placeholder="Ex.: 50% na aprovação e 50% na entrega. Pagamento via Pix, dinheiro ou transferência."
                             ></textarea>
+
                         </div>
 
                     </div>
@@ -1038,18 +1116,30 @@
                 </section>
 
 
-                <!-- SOBRE A EMPRESA -->
+                <!-- SOBRE -->
 
                 <section class="card">
 
                     <div class="section-title">
-                        <div class="section-number">6</div>
-                        <h2>Sobre a empresa <span class="optional">(opcional)</span></h2>
+
+                        <div class="section-number">
+                            6
+                        </div>
+
+                        <h2>
+                            Sobre a empresa
+                            <span class="optional">
+                                (opcional)
+                            </span>
+                        </h2>
+
                     </div>
+
 
                     <p class="section-description">
                         Apresente brevemente sua empresa, experiência ou diferenciais.
                     </p>
+
 
                     <textarea
                         id="aboutCompany"
@@ -1064,13 +1154,25 @@
                 <section class="card">
 
                     <div class="section-title">
-                        <div class="section-number">7</div>
-                        <h2>Escopo do serviço <span class="optional">(opcional)</span></h2>
+
+                        <div class="section-number">
+                            7
+                        </div>
+
+                        <h2>
+                            Escopo do serviço
+                            <span class="optional">
+                                (opcional)
+                            </span>
+                        </h2>
+
                     </div>
+
 
                     <p class="section-description">
                         Descreva o que será realizado, materiais, etapas ou o que está incluído no serviço.
                     </p>
+
 
                     <textarea
                         id="serviceScope"
@@ -1085,9 +1187,20 @@
                 <section class="card">
 
                     <div class="section-title">
-                        <div class="section-number">8</div>
-                        <h2>Observações <span class="optional">(opcional)</span></h2>
+
+                        <div class="section-number">
+                            8
+                        </div>
+
+                        <h2>
+                            Observações
+                            <span class="optional">
+                                (opcional)
+                            </span>
+                        </h2>
+
                     </div>
+
 
                     <textarea
                         id="observations"
@@ -1097,14 +1210,15 @@
                 </section>
 
 
-                <!-- AVISO -->
-
                 <div class="info-box">
-                    💡 <strong>Dica:</strong> confira os dados e os valores na prévia antes de gerar o orçamento.
+
+                    💡 <strong>Dica:</strong>
+                    confira os dados e os valores na prévia antes de gerar o PDF.
+
                 </div>
 
 
-                <!-- AÇÕES -->
+                <!-- BOTÕES -->
 
                 <section class="card">
 
@@ -1113,10 +1227,11 @@
                         <button
                             type="button"
                             class="primary-button"
-                            id="printButton"
+                            id="pdfButton"
                         >
-                            Gerar orçamento / Salvar PDF
+                            📄 Gerar PDF
                         </button>
+
 
                         <button
                             type="button"
@@ -1135,9 +1250,7 @@
         </div>
 
 
-        <!-- =========================
-             COLUNA DA PRÉVIA
-        ========================== -->
+        <!-- PRÉVIA -->
 
         <div class="preview-column">
 
@@ -1145,11 +1258,17 @@
                 Prévia do orçamento
             </div>
 
+
             <div class="preview-wrapper">
 
-                <div class="quote-preview" id="quotePreview">
+                <div
+                    class="quote-preview"
+                    id="quotePreview"
+                >
+
 
                     <div class="preview-header">
+
 
                         <div class="preview-company">
 
@@ -1160,12 +1279,14 @@
                                 alt="Logo"
                             >
 
+
                             <div
                                 class="preview-company-name"
                                 id="previewCompanyName"
                             >
                                 Sua empresa
                             </div>
+
 
                             <div
                                 class="preview-company-info"
@@ -1176,20 +1297,34 @@
 
                         </div>
 
+
                         <div class="preview-document">
 
-                            <h3>ORÇAMENTO</h3>
+                            <h3>
+                                ORÇAMENTO
+                            </h3>
+
 
                             <p>
-                                Nº <span id="previewQuoteNumber">0001</span>
+                                Nº
+                                <span id="previewQuoteNumber">
+                                    0001
+                                </span>
                             </p>
 
+
                             <p>
-                                <span id="previewQuoteDate">Data</span>
+                                <span id="previewQuoteDate">
+                                    Data
+                                </span>
                             </p>
+
 
                             <p id="previewValidityContainer">
-                                Validade: <span id="previewValidity">—</span>
+                                Validade:
+                                <span id="previewValidity">
+                                    —
+                                </span>
                             </p>
 
                         </div>
@@ -1205,13 +1340,16 @@
                             Cliente
                         </div>
 
+
                         <div
                             class="preview-client"
                             id="previewClient"
                         >
+
                             <span class="preview-empty">
                                 Os dados do cliente aparecerão aqui.
                             </span>
+
                         </div>
 
                     </div>
@@ -1229,6 +1367,7 @@
                             Local de entrega / execução
                         </div>
 
+
                         <div
                             class="preview-text"
                             id="previewDelivery"
@@ -1245,27 +1384,50 @@
                             Produtos / Serviços
                         </div>
 
+
                         <table class="preview-table">
 
                             <thead>
+
                                 <tr>
-                                    <th>Descrição</th>
-                                    <th>Qtd.</th>
-                                    <th>Valor unit.</th>
-                                    <th>Total</th>
+
+                                    <th>
+                                        Descrição
+                                    </th>
+
+                                    <th>
+                                        Qtd.
+                                    </th>
+
+                                    <th>
+                                        Valor unit.
+                                    </th>
+
+                                    <th>
+                                        Total
+                                    </th>
+
                                 </tr>
+
                             </thead>
 
-                            <tbody id="previewItems">
 
-                            </tbody>
+                            <tbody id="previewItems"></tbody>
 
                         </table>
 
+
                         <div class="preview-total">
-                            Total: <span id="previewTotal" style="margin-left: 5px;">
+
+                            Total:
+
+                            <span
+                                id="previewTotal"
+                                style="margin-left:5px;"
+                            >
                                 R$ 0,00
                             </span>
+
                         </div>
 
                     </div>
@@ -1282,6 +1444,7 @@
                         <div class="preview-block-title">
                             Prazo de entrega
                         </div>
+
 
                         <div
                             class="preview-text"
@@ -1303,6 +1466,7 @@
                             Condições de pagamento
                         </div>
 
+
                         <div
                             class="preview-text"
                             id="previewPayment"
@@ -1322,6 +1486,7 @@
                         <div class="preview-block-title">
                             Sobre a empresa
                         </div>
+
 
                         <div
                             class="preview-text"
@@ -1343,6 +1508,7 @@
                             Escopo do serviço
                         </div>
 
+
                         <div
                             class="preview-text"
                             id="previewScope"
@@ -1362,6 +1528,7 @@
                         <div class="preview-block-title">
                             Observações
                         </div>
+
 
                         <div
                             class="preview-text"
@@ -1385,9 +1552,19 @@
 
 </main>
 
+
 <footer>
     Meu Site — Ferramentas práticas online
 </footer>
+
+
+<!--
+    Biblioteca para geração direta do PDF.
+    Ela transforma somente a área do orçamento
+    em um arquivo PDF A4.
+-->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 
 <script>
@@ -1399,8 +1576,13 @@
     const today = new Date();
 
     const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
+
+    const month =
+        String(today.getMonth() + 1).padStart(2, "0");
+
+    const day =
+        String(today.getDate()).padStart(2, "0");
+
 
     document.getElementById("quoteDate").value =
         `${year}-${month}-${day}`;
@@ -1416,8 +1598,8 @@
     const addItemButton =
         document.getElementById("addItemButton");
 
-    const printButton =
-        document.getElementById("printButton");
+    const pdfButton =
+        document.getElementById("pdfButton");
 
     const clearButton =
         document.getElementById("clearButton");
@@ -1427,7 +1609,7 @@
 
 
     /* ==========================================
-       FORMATAÇÃO DE DINHEIRO
+       DINHEIRO
     ========================================== */
 
     function formatMoney(value) {
@@ -1448,9 +1630,11 @@
 
     function createItem() {
 
-        const row = document.createElement("div");
+        const row =
+            document.createElement("div");
 
         row.className = "item-row";
+
 
         row.innerHTML = `
 
@@ -1489,9 +1673,13 @@
             </button>
         `;
 
+
         itemsContainer.appendChild(row);
 
-        const inputs = row.querySelectorAll("input");
+
+        const inputs =
+            row.querySelectorAll("input");
+
 
         inputs.forEach(input => {
 
@@ -1501,6 +1689,7 @@
             );
 
         });
+
 
         row.querySelector(".remove-item")
             .addEventListener(
@@ -1514,12 +1703,13 @@
                 }
             );
 
+
         updateAll();
     }
 
 
     /* ==========================================
-       ATUALIZAR ITENS E TOTAIS
+       ITENS E TOTAIS
     ========================================== */
 
     function updateItems() {
@@ -1527,7 +1717,9 @@
         const rows =
             itemsContainer.querySelectorAll(".item-row");
 
+
         let subtotal = 0;
+
 
         rows.forEach(row => {
 
@@ -1536,69 +1728,94 @@
                     row.querySelector(".quantity").value
                 ) || 0;
 
+
             const price =
                 parseFloat(
                     row.querySelector(".unit-price").value
                 ) || 0;
 
+
             const total =
                 quantity * price;
 
+
             row.querySelector(".item-total")
-                .textContent = formatMoney(total);
+                .textContent =
+                formatMoney(total);
+
 
             subtotal += total;
 
         });
 
+
         document.getElementById("formSubtotal")
-            .textContent = formatMoney(subtotal);
+            .textContent =
+            formatMoney(subtotal);
+
 
         document.getElementById("formTotal")
-            .textContent = formatMoney(subtotal);
+            .textContent =
+            formatMoney(subtotal);
+
 
         return subtotal;
     }
 
 
     /* ==========================================
-       PRÉVIA DA EMPRESA
+       EMPRESA
     ========================================== */
 
     function updateCompanyPreview() {
 
         const name =
-            document.getElementById("companyName").value.trim();
+            document.getElementById("companyName")
+                .value.trim();
+
 
         const phone =
-            document.getElementById("companyPhone").value.trim();
+            document.getElementById("companyPhone")
+                .value.trim();
+
 
         const email =
-            document.getElementById("companyEmail").value.trim();
+            document.getElementById("companyEmail")
+                .value.trim();
+
 
         const address =
-            document.getElementById("companyAddress").value.trim();
+            document.getElementById("companyAddress")
+                .value.trim();
 
-        document.getElementById("previewCompanyName")
-            .textContent =
+
+        document.getElementById(
+            "previewCompanyName"
+        ).textContent =
             name || "Sua empresa";
 
+
         let info = [];
+
 
         if (phone) {
             info.push(phone);
         }
 
+
         if (email) {
             info.push(email);
         }
+
 
         if (address) {
             info.push(address);
         }
 
-        document.getElementById("previewCompanyInfo")
-            .textContent =
+
+        document.getElementById(
+            "previewCompanyInfo"
+        ).textContent =
             info.length
                 ? info.join(" • ")
                 : "Telefone e e-mail aparecerão aqui";
@@ -1606,25 +1823,34 @@
 
 
     /* ==========================================
-       PRÉVIA DO CLIENTE
+       CLIENTE
     ========================================== */
 
     function updateClientPreview() {
 
         const name =
-            document.getElementById("clientName").value.trim();
+            document.getElementById("clientName")
+                .value.trim();
+
 
         const phone =
-            document.getElementById("clientPhone").value.trim();
+            document.getElementById("clientPhone")
+                .value.trim();
+
 
         const email =
-            document.getElementById("clientEmail").value.trim();
+            document.getElementById("clientEmail")
+                .value.trim();
+
 
         const address =
-            document.getElementById("clientAddress").value.trim();
+            document.getElementById("clientAddress")
+                .value.trim();
+
 
         const clientPreview =
             document.getElementById("previewClient");
+
 
         if (!name && !phone && !email && !address) {
 
@@ -1636,87 +1862,127 @@
             return;
         }
 
+
         let html = "";
 
+
         if (name) {
-            html += `<strong>${escapeHtml(name)}</strong><br>`;
+
+            html +=
+                `<strong>${escapeHtml(name)}</strong><br>`;
+
         }
+
 
         if (phone) {
-            html += `${escapeHtml(phone)}<br>`;
+
+            html +=
+                `${escapeHtml(phone)}<br>`;
+
         }
+
 
         if (email) {
-            html += `${escapeHtml(email)}<br>`;
+
+            html +=
+                `${escapeHtml(email)}<br>`;
+
         }
 
+
         if (address) {
-            html += `${escapeHtml(address)}`;
+
+            html +=
+                `${escapeHtml(address)}`;
+
         }
+
 
         clientPreview.innerHTML = html;
     }
 
 
     /* ==========================================
-       PRÉVIA DO DOCUMENTO
+       DOCUMENTO
     ========================================== */
 
     function updateDocumentPreview() {
 
         const number =
-            document.getElementById("quoteNumber").value.trim();
+            document.getElementById("quoteNumber")
+                .value.trim();
+
 
         const date =
-            document.getElementById("quoteDate").value;
+            document.getElementById("quoteDate")
+                .value;
+
 
         const validity =
-            document.getElementById("quoteValidity").value.trim();
+            document.getElementById("quoteValidity")
+                .value.trim();
 
-        document.getElementById("previewQuoteNumber")
-            .textContent =
+
+        document.getElementById(
+            "previewQuoteNumber"
+        ).textContent =
             number || "—";
+
 
         if (date) {
 
-            const parts = date.split("-");
+            const parts =
+                date.split("-");
 
-            document.getElementById("previewQuoteDate")
-                .textContent =
+
+            document.getElementById(
+                "previewQuoteDate"
+            ).textContent =
                 `${parts[2]}/${parts[1]}/${parts[0]}`;
 
         } else {
 
-            document.getElementById("previewQuoteDate")
-                .textContent = "—";
-
+            document.getElementById(
+                "previewQuoteDate"
+            ).textContent =
+                "—";
         }
 
-        document.getElementById("previewValidity")
-            .textContent =
+
+        document.getElementById(
+            "previewValidity"
+        ).textContent =
             validity || "—";
     }
 
 
     /* ==========================================
-       PRÉVIA DE ENTREGA
+       ENTREGA
     ========================================== */
 
     function updateDeliveryPreview() {
 
         const delivery =
-            document.getElementById("deliveryAddress")
-                .value.trim();
+            document.getElementById(
+                "deliveryAddress"
+            ).value.trim();
+
 
         const block =
-            document.getElementById("previewDeliveryBlock");
+            document.getElementById(
+                "previewDeliveryBlock"
+            );
+
 
         if (delivery) {
 
             block.style.display = "block";
 
-            document.getElementById("previewDelivery")
-                .textContent = delivery;
+
+            document.getElementById(
+                "previewDelivery"
+            ).textContent =
+                delivery;
 
         } else {
 
@@ -1733,18 +1999,26 @@
     function updateDeliveryTime() {
 
         const value =
-            document.getElementById("deliveryTime")
-                .value.trim();
+            document.getElementById(
+                "deliveryTime"
+            ).value.trim();
+
 
         const block =
-            document.getElementById("previewTimeBlock");
+            document.getElementById(
+                "previewTimeBlock"
+            );
+
 
         if (value) {
 
             block.style.display = "block";
 
-            document.getElementById("previewDeliveryTime")
-                .textContent = value;
+
+            document.getElementById(
+                "previewDeliveryTime"
+            ).textContent =
+                value;
 
         } else {
 
@@ -1761,18 +2035,26 @@
     function updatePayment() {
 
         const value =
-            document.getElementById("paymentConditions")
-                .value.trim();
+            document.getElementById(
+                "paymentConditions"
+            ).value.trim();
+
 
         const block =
-            document.getElementById("previewPaymentBlock");
+            document.getElementById(
+                "previewPaymentBlock"
+            );
+
 
         if (value) {
 
             block.style.display = "block";
 
-            document.getElementById("previewPayment")
-                .textContent = value;
+
+            document.getElementById(
+                "previewPayment"
+            ).textContent =
+                value;
 
         } else {
 
@@ -1789,18 +2071,26 @@
     function updateAbout() {
 
         const value =
-            document.getElementById("aboutCompany")
-                .value.trim();
+            document.getElementById(
+                "aboutCompany"
+            ).value.trim();
+
 
         const block =
-            document.getElementById("previewAboutBlock");
+            document.getElementById(
+                "previewAboutBlock"
+            );
+
 
         if (value) {
 
             block.style.display = "block";
 
-            document.getElementById("previewAbout")
-                .textContent = value;
+
+            document.getElementById(
+                "previewAbout"
+            ).textContent =
+                value;
 
         } else {
 
@@ -1817,18 +2107,26 @@
     function updateScope() {
 
         const value =
-            document.getElementById("serviceScope")
-                .value.trim();
+            document.getElementById(
+                "serviceScope"
+            ).value.trim();
+
 
         const block =
-            document.getElementById("previewScopeBlock");
+            document.getElementById(
+                "previewScopeBlock"
+            );
+
 
         if (value) {
 
             block.style.display = "block";
 
-            document.getElementById("previewScope")
-                .textContent = value;
+
+            document.getElementById(
+                "previewScope"
+            ).textContent =
+                value;
 
         } else {
 
@@ -1845,20 +2143,26 @@
     function updateObservations() {
 
         const value =
-            document.getElementById("observations")
-                .value.trim();
+            document.getElementById(
+                "observations"
+            ).value.trim();
+
 
         const block =
             document.getElementById(
                 "previewObservationsBlock"
             );
 
+
         if (value) {
 
             block.style.display = "block";
 
-            document.getElementById("previewObservations")
-                .textContent = value;
+
+            document.getElementById(
+                "previewObservations"
+            ).textContent =
+                value;
 
         } else {
 
@@ -1875,35 +2179,53 @@
     function updateItemsPreview() {
 
         const rows =
-            itemsContainer.querySelectorAll(".item-row");
+            itemsContainer.querySelectorAll(
+                ".item-row"
+            );
+
 
         const preview =
-            document.getElementById("previewItems");
+            document.getElementById(
+                "previewItems"
+            );
+
 
         preview.innerHTML = "";
 
+
         let total = 0;
+
 
         rows.forEach(row => {
 
             const description =
-                row.querySelector(".description")
-                    .value.trim();
+                row.querySelector(
+                    ".description"
+                ).value.trim();
+
 
             const quantity =
                 parseFloat(
-                    row.querySelector(".quantity").value
+                    row.querySelector(
+                        ".quantity"
+                    ).value
                 ) || 0;
+
 
             const price =
                 parseFloat(
-                    row.querySelector(".unit-price").value
+                    row.querySelector(
+                        ".unit-price"
+                    ).value
                 ) || 0;
+
 
             const itemTotal =
                 quantity * price;
 
+
             total += itemTotal;
+
 
             if (
                 description ||
@@ -1914,9 +2236,13 @@
                 const tr =
                     document.createElement("tr");
 
+
                 tr.innerHTML = `
+
                     <td>
-                        ${escapeHtml(description || "Item")}
+                        ${escapeHtml(
+                            description || "Item"
+                        )}
                     </td>
 
                     <td>
@@ -1930,33 +2256,45 @@
                     <td>
                         ${formatMoney(itemTotal)}
                     </td>
+
                 `;
 
+
                 preview.appendChild(tr);
+
             }
 
         });
 
+
         if (!preview.children.length) {
 
             preview.innerHTML = `
+
                 <tr>
-                    <td colspan="4"
-                        style="text-align:center;color:#999;">
+
+                    <td
+                        colspan="4"
+                        style="text-align:center;color:#999;"
+                    >
                         Nenhum item adicionado.
                     </td>
-                </tr>
-            `;
 
+                </tr>
+
+            `;
         }
 
-        document.getElementById("previewTotal")
-            .textContent = formatMoney(total);
+
+        document.getElementById(
+            "previewTotal"
+        ).textContent =
+            formatMoney(total);
     }
 
 
     /* ==========================================
-       SEGURANÇA BÁSICA PARA TEXTO
+       SEGURANÇA DE TEXTO
     ========================================== */
 
     function escapeHtml(text) {
@@ -2001,7 +2339,7 @@
 
 
     /* ==========================================
-       LISTENERS DOS CAMPOS
+       CAMPOS OBSERVADOS
     ========================================== */
 
     const fieldsToWatch = [
@@ -2029,10 +2367,12 @@
 
     ];
 
+
     fieldsToWatch.forEach(id => {
 
         const element =
             document.getElementById(id);
+
 
         if (element) {
 
@@ -2041,10 +2381,12 @@
                 updateAll
             );
 
+
             element.addEventListener(
                 "change",
                 updateAll
             );
+
         }
 
     });
@@ -2071,12 +2413,15 @@
             const file =
                 event.target.files[0];
 
+
             if (!file) {
                 return;
             }
 
+
             const reader =
                 new FileReader();
+
 
             reader.onload =
                 function(e) {
@@ -2084,21 +2429,28 @@
                     const image =
                         e.target.result;
 
+
                     document.getElementById(
                         "logoPreview"
                     ).innerHTML =
                         `<img src="${image}" alt="Logo">`;
+
 
                     const previewLogo =
                         document.getElementById(
                             "previewLogo"
                         );
 
-                    previewLogo.src = image;
+
+                    previewLogo.src =
+                        image;
+
 
                     previewLogo.style.display =
                         "block";
+
                 };
+
 
             reader.readAsDataURL(file);
         }
@@ -2106,23 +2458,148 @@
 
 
     /* ==========================================
-       IMPRIMIR / SALVAR PDF
+       GERAR PDF
     ========================================== */
 
-    printButton.addEventListener(
+    pdfButton.addEventListener(
         "click",
-        function() {
+        async function() {
 
             updateAll();
 
-            window.print();
+
+            const element =
+                document.getElementById(
+                    "quotePreview"
+                );
+
+
+            const companyName =
+                document.getElementById(
+                    "companyName"
+                ).value.trim();
+
+
+            const quoteNumber =
+                document.getElementById(
+                    "quoteNumber"
+                ).value.trim();
+
+
+            const safeCompanyName =
+                companyName
+                    ? companyName
+                        .replace(
+                            /[^a-zA-Z0-9À-ÿ\s_-]/g,
+                            ""
+                        )
+                        .trim()
+                        .replace(/\s+/g, "-")
+                    : "Orcamento";
+
+
+            const safeNumber =
+                quoteNumber || "0001";
+
+
+            const fileName =
+                `Orcamento-${safeCompanyName}-${safeNumber}.pdf`;
+
+
+            const options = {
+
+                margin: [
+                    10,
+                    10,
+                    10,
+                    10
+                ],
+
+                filename: fileName,
+
+                image: {
+                    type: "jpeg",
+                    quality: 0.98
+                },
+
+                html2canvas: {
+
+                    scale: 2,
+
+                    useCORS: true,
+
+                    backgroundColor: "#ffffff",
+
+                    logging: false
+
+                },
+
+                jsPDF: {
+
+                    unit: "mm",
+
+                    format: "a4",
+
+                    orientation: "portrait"
+
+                },
+
+                pagebreak: {
+
+                    mode: [
+                        "css",
+                        "legacy"
+                    ]
+
+                }
+
+            };
+
+
+            const oldText =
+                pdfButton.textContent;
+
+
+            pdfButton.disabled = true;
+
+            pdfButton.textContent =
+                "Gerando PDF...";
+
+
+            try {
+
+                await html2pdf()
+                    .set(options)
+                    .from(element)
+                    .save();
+
+            } catch (error) {
+
+                console.error(
+                    "Erro ao gerar PDF:",
+                    error
+                );
+
+
+                alert(
+                    "Não foi possível gerar o PDF. Tente novamente."
+                );
+
+            } finally {
+
+                pdfButton.disabled = false;
+
+                pdfButton.textContent =
+                    oldText;
+
+            }
 
         }
     );
 
 
     /* ==========================================
-       LIMPAR FORMULÁRIO
+       LIMPAR
     ========================================== */
 
     clearButton.addEventListener(
@@ -2134,49 +2611,63 @@
                     "Tem certeza que deseja limpar todos os dados do orçamento?"
                 );
 
+
             if (!confirmed) {
                 return;
             }
+
 
             fieldsToWatch.forEach(id => {
 
                 const element =
                     document.getElementById(id);
 
-                if (element) {
 
-                    if (id === "quoteNumber") {
+                if (!element) {
+                    return;
+                }
 
-                        element.value = "0001";
 
-                    } else if (id === "quoteDate") {
+                if (id === "quoteNumber") {
 
-                        element.value =
-                            `${year}-${month}-${day}`;
+                    element.value =
+                        "0001";
 
-                    } else {
+                } else if (id === "quoteDate") {
 
-                        element.value = "";
+                    element.value =
+                        `${year}-${month}-${day}`;
 
-                    }
+                } else {
+
+                    element.value = "";
 
                 }
 
             });
 
+
             logoInput.value = "";
+
 
             document.getElementById(
                 "logoPreview"
-            ).innerHTML = "Sua logo";
+            ).innerHTML =
+                "Sua logo";
+
 
             document.getElementById(
                 "previewLogo"
-            ).style.display = "none";
+            ).style.display =
+                "none";
 
-            itemsContainer.innerHTML = "";
+
+            itemsContainer.innerHTML =
+                "";
+
 
             createItem();
+
 
             updateAll();
 
